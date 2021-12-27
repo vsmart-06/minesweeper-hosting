@@ -2,11 +2,12 @@ import discord
 import discord.ext.commands
 from minesweeper_class import minesweeper
 from records import global_leaderboard, server_leaderboard, profile
+import os
 
 intents = discord.Intents.default()
 intents.members = True
 bot = discord.Client(intents = intents)
-token = "ODU2ODQ4MjkxNTc2MDIxMDAy.YNHAKA.ccZHHoLV-j6HKL7I8X4zrXm4xBg"
+token = os.environ("token")
 
 @bot.event
 async def on_ready():
