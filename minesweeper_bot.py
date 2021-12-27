@@ -7,7 +7,7 @@ import os
 intents = discord.Intents.default()
 intents.members = True
 bot = discord.Client(intents = intents)
-token = os.environ("DISCORD_TOKEN")
+token = os.getenv("DISCORD_TOKEN")
 
 @bot.event
 async def on_ready():
