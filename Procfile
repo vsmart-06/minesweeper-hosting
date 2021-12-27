@@ -1,0 +1,1 @@
+worker: python minesweeper_bot.py
