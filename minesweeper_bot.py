@@ -322,7 +322,7 @@ async def on_message(mess):
         await mess.channel.send(embed = invite)
     
     if msg == ";help":
-        help = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`", colour = discord.Colour.blue())
+        help = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
         help.add_field(name = "Rules: ", value = 
         '''The basic rules of the game are:
 1. Behind each circle is either a bomb, a number, or nothing.
