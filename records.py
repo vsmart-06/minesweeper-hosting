@@ -1,25 +1,24 @@
 import sqlite3
 
-conn = sqlite3.connect("records.db")
-c = conn.cursor()
-
-try:
-    c.execute('''
-    CREATE TABLE high_scores (
-        user_id integer NOT NULL PRIMARY KEY,
-        best_time integer,
-        games_won integer NOT NULL,
-        games_lost integer NOT NULL,
-        total_games integer NOT NULL,
-        win_percent integer NOT NULL,
-        tot_time integer,
-        avg_time integer
-    )''')
-    conn.commit()
-except sqlite3.OperationalError:
-    pass
-
 def stats_update(id, win):
+    conn = sqlite3.connect("records.db")
+    c = conn.cursor()
+
+    try:
+        c.execute('''
+        CREATE TABLE high_scores (
+            user_id integer NOT NULL PRIMARY KEY,
+            best_time integer,
+            games_won integer NOT NULL,
+            games_lost integer NOT NULL,
+            total_games integer NOT NULL,
+            win_percent integer NOT NULL,
+            tot_time integer,
+            avg_time integer
+        )''')
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
     try:
         if win == 1:
             c.execute("INSERT INTO high_scores VALUES ("+str(id)+", NULL, 1, 0, 1, 100, NULL, NULL)")
@@ -40,13 +39,33 @@ def stats_update(id, win):
             new_percent = (record[2]/new_total)*100
             c.execute("UPDATE high_scores SET games_lost = "+str(new_lost)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+" WHERE user_id = "+str(id))
         conn.commit()
+    conn.close()
 
 def score_check(id, time):
+    conn = sqlite3.connect("records.db")
+    c = conn.cursor()
+
+    try:
+        c.execute('''
+        CREATE TABLE high_scores (
+            user_id integer NOT NULL PRIMARY KEY,
+            best_time integer,
+            games_won integer NOT NULL,
+            games_lost integer NOT NULL,
+            total_games integer NOT NULL,
+            win_percent integer NOT NULL,
+            tot_time integer,
+            avg_time integer
+        )''')
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
     c.execute("SELECT * FROM high_scores WHERE user_id = "+str(id))
     record = c.fetchone()
     if record[1] == None:
         c.execute("UPDATE high_scores SET best_time = "+str(time)+", tot_time = "+str(time)+", avg_time = "+str(time)+" WHERE user_id = "+str(id))
         conn.commit()
+        conn.close()
         return "new high"
     else:
         old_tot_time = record[6]
@@ -56,21 +75,60 @@ def score_check(id, time):
         if time < record[1]:
             c.execute("UPDATE high_scores SET best_time = "+str(time)+" WHERE user_id = "+str(id))
             conn.commit()
+            conn.close()
             return "new record"
     conn.commit()
+    conn.close()
     return "no change"
     
     
 def global_leaderboard():
+    conn = sqlite3.connect("records.db")
+    c = conn.cursor()
+
+    try:
+        c.execute('''
+        CREATE TABLE high_scores (
+            user_id integer NOT NULL PRIMARY KEY,
+            best_time integer,
+            games_won integer NOT NULL,
+            games_lost integer NOT NULL,
+            total_games integer NOT NULL,
+            win_percent integer NOT NULL,
+            tot_time integer,
+            avg_time integer
+        )''')
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
     c.execute('''
                 SELECT user_id, best_time
                 FROM high_scores
                 ORDER BY best_time''')
     leaders = c.fetchmany(10)
     conn.commit()
+    conn.close()
     return leaders
 
 def server_leaderboard(members):
+    conn = sqlite3.connect("records.db")
+    c = conn.cursor()
+
+    try:
+        c.execute('''
+        CREATE TABLE high_scores (
+            user_id integer NOT NULL PRIMARY KEY,
+            best_time integer,
+            games_won integer NOT NULL,
+            games_lost integer NOT NULL,
+            total_games integer NOT NULL,
+            win_percent integer NOT NULL,
+            tot_time integer,
+            avg_time integer
+        )''')
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
     server_leaders = []
     for x in members:
         try:
@@ -85,12 +143,33 @@ def server_leaderboard(members):
             break
     server_leaders.sort(key = lambda a: a[1])
     conn.commit()
+    conn.close()
     return server_leaders[0:10]
 
 def profile(id):
+    conn = sqlite3.connect("records.db")
+    c = conn.cursor()
+
+    try:
+        c.execute('''
+        CREATE TABLE high_scores (
+            user_id integer NOT NULL PRIMARY KEY,
+            best_time integer,
+            games_won integer NOT NULL,
+            games_lost integer NOT NULL,
+            total_games integer NOT NULL,
+            win_percent integer NOT NULL,
+            tot_time integer,
+            avg_time integer
+        )''')
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
     try:
         c.execute("SELECT * FROM high_scores WHERE user_id = "+str(id))
         conn.commit()
+        conn.close()
         return c.fetchone()
     except sqlite3.OperationalError:
         pass
+        conn.close()
