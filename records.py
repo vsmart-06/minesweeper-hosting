@@ -172,4 +172,3 @@ def profile(id):
         return c.fetchone()
     except sqlite3.OperationalError:
         pass
-        
