@@ -322,7 +322,7 @@ async def on_message(mess):
         await mess.channel.send(embed = invite)
     
     if msg == ";help":
-        help = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord!", colour = discord.Colour.blue())
+        help = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`", colour = discord.Colour.blue())
         help.add_field(name = "Rules: ", value = 
         '''The basic rules of the game are:
 1. Behind each circle is either a bomb, a number, or nothing.
@@ -333,17 +333,17 @@ async def on_message(mess):
         , inline = False)
         help.add_field(name = "Commands: ", value = 
         '''
-;help: Open the guide.
-;minesweeper: Start a new minesweeper game in an 8x8 grid with 8 bombs.
-;ms: Alias of ;minesweeper.
-;minesweeper custom: Start a custom minesweeper game.
-;mscustom: Alias of ;minesweeper custom.
-;leaderboard: View the global leaderboard.
-;lb: Alias of ;leaderboard.
-;server leaderboard: View the server leaderboard.
-;serverlb: Alias of ;server leaderboard.
-;profile: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
-;invite: Get a link to invite this bot to a server.''')
+`;help`: Open the guide.
+`;minesweeper`: Start a new minesweeper game in an 8x8 grid with 8 bombs.
+`;ms`: Alias of `;minesweeper`.
+`;minesweeper custom`: Start a custom minesweeper game.
+`;mscustom`: Alias of `;minesweeper custom`.
+`;leaderboard`: View the global leaderboard.
+`;lb`: Alias of `;leaderboard`.
+`;server leaderboard`: View the server leaderboard.
+`;serverlb`: Alias of `;server leaderboard`.
+`;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
+`;invite`: Get a link to invite this bot to a server.''')
         await mess.channel.send(embed = help)
 
 bot.run(token)
