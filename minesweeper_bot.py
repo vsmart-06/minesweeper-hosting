@@ -142,6 +142,8 @@ async def on_message(mess):
                     num_bombs = int(num_bombs_msg.content)
                     if num_bombs >= (num_rows*num_cols):
                         await mess.channel.send("You have too many bombs")
+                    elif num_bombs <= 0:
+                        await mess.channel.send("You have too less bombs")
                     else:
                         break
                 except ValueError:
@@ -189,7 +191,7 @@ async def on_message(mess):
                             '''
                             + play.str_row, color=discord.Color.blue())
                             await mess.channel.send(embed=game_real)
-                        elif r == "board":
+                        elif r == "quit":
                             play.game = 0
                             play.end_msg = "I'm sorry to see you leave 😢"
                             break
