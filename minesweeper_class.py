@@ -390,7 +390,7 @@ class minesweeper:
                 self.mins = int(self.tot_time//60)
                 self.secs = int(self.tot_time%60)
                 stats_update(self.user_id, 1)
-                if score_check(self.user_id, self.tot_time) != "new high":
+                if score_check(self.user_id, self.tot_time) not in ["new high", "new record"]:
                     self.end_msg = '''You won 🥳
 Time taken: '''+str(self.mins)+"m and "+str(self.secs)+"s"
                 else:
