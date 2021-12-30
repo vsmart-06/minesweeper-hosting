@@ -1,60 +1,73 @@
-import sqlite3
+import mysql.connector as db
+import os
 
-conn = sqlite3.connect("records.db")
+db_url = os.getenv("JAWSDB_URL")
+db_url_temp = db_url.replace("mysql://", "")
+db_url_temp = db_url_temp.replace("@", ":")
+db_url_temp = db_url_temp.replace("3306/", "")
+h, u, p, d = map(str, db_url_temp.split(":"))
+
+conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+)
 c = conn.cursor()
-
 try:
-    c.execute('''
-    CREATE TABLE high_scores (
-        user_id integer NOT NULL PRIMARY KEY,
-        best_time integer,
-        games_won integer NOT NULL,
-        games_lost integer NOT NULL,
-        total_games integer NOT NULL,
-        win_percent integer NOT NULL,
-        tot_time integer,
-        avg_time integer
-    )''')
-    conn.commit()
-except sqlite3.OperationalError:
+    c.execute('''CREATE TABLE user_data (
+        user_id BIGINT NOT NULL PRIMARY KEY,
+        best_time INT,
+        games_won INT NOT NULL,
+        games_lost INT NOT NULL,
+        total_games INT NOT NULL,
+        win_percent DECIMAL NOT NULL,
+        tot_time INT,
+        avg_time INT
+        )''')
+except db.errors.ProgrammingError:
     pass
 
 def stats_update(id, win):
     try:
         if win == 1:
-            c.execute("INSERT INTO high_scores VALUES ("+str(id)+", NULL, 1, 0, 1, 100, NULL, NULL)")
+            c.execute('''INSERT INTO user_data 
+            (user_id, games_won, games_lost, total_games, win_percent) 
+            VALUES ('''+str(id)+", 1, 0, 1, 100)")
         else:
-            c.execute("INSERT INTO high_scores VALUES ("+str(id)+", NULL, 0, 1, 1, 0, NULL, NULL)")
+            c.execute('''INSERT INTO user_data 
+            (user_id, games_won, games_lost, total_games, win_percent) 
+            VALUES ('''+str(id)+", 0, 1, 1, 0)")
         conn.commit()
-    except sqlite3.IntegrityError:
-        c.execute("SELECT * FROM high_scores WHERE user_id = "+str(id))
+    except db.errors.IntegrityError:
+        c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
         record = c.fetchone()
         if win == 1:
             new_wins = record[2]+1
             new_total = record[4]+1
             new_percent = (new_wins/new_total)*100
-            c.execute("UPDATE high_scores SET games_won = "+str(new_wins)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+" WHERE user_id = "+str(id))
+            c.execute("UPDATE user_data SET games_won = "+str(new_wins)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+" WHERE user_id = "+str(id))
         else:
             new_lost = record[3]+1
             new_total = record[4]+1
             new_percent = (record[2]/new_total)*100
-            c.execute("UPDATE high_scores SET games_lost = "+str(new_lost)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+" WHERE user_id = "+str(id))
+            c.execute("UPDATE user_data SET games_lost = "+str(new_lost)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+" WHERE user_id = "+str(id))
         conn.commit()
 
 def score_check(id, time):
-    c.execute("SELECT * FROM high_scores WHERE user_id = "+str(id))
+    c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
     record = c.fetchone()
     if record[1] == None:
-        c.execute("UPDATE high_scores SET best_time = "+str(time)+", tot_time = "+str(time)+", avg_time = "+str(time)+" WHERE user_id = "+str(id))
+        c.execute("UPDATE user_data SET best_time = "+str(time)+", tot_time = "+str(time)+", avg_time = "+str(time)+" WHERE user_id = "+str(id))
         conn.commit()
         return "new high"
     else:
         old_tot_time = record[6]
         new_tot_time = old_tot_time+time
         new_avg_time = int(new_tot_time/record[2])
-        c.execute("UPDATE high_scores SET tot_time = "+str(new_tot_time)+", avg_time = "+str(new_avg_time)+" WHERE user_id = "+str(id))
+        c.execute("UPDATE user_data SET tot_time = "+str(new_tot_time)+", avg_time = "+str(new_avg_time)+" WHERE user_id = "+str(id))
         if time < record[1]:
-            c.execute("UPDATE high_scores SET best_time = "+str(time)+" WHERE user_id = "+str(id))
+            c.execute("UPDATE user_data SET best_time = "+str(time)+" WHERE user_id = "+str(id))
             conn.commit()
             return "new record"
     conn.commit()
@@ -64,19 +77,18 @@ def score_check(id, time):
 def global_leaderboard():
     c.execute('''
                 SELECT user_id, best_time
-                FROM high_scores
+                FROM user_data
                 ORDER BY best_time''')
     leaders = c.fetchmany(10)
-    conn.commit()
     return leaders
 
 def server_leaderboard(members):
     server_leaders = []
     for x in members:
         try:
-            c.execute("SELECT user_id, best_time FROM high_scores WHERE user_id = "+str(x))
+            c.execute("SELECT user_id, best_time FROM user_data WHERE user_id = "+str(x))
             server_leaders.append(c.fetchone())
-        except sqlite3.OperationalError:
+        except db.errors.OperationalError:
             pass
     while True:
         try:
@@ -84,13 +96,11 @@ def server_leaderboard(members):
         except ValueError:
             break
     server_leaders.sort(key = lambda a: a[1])
-    conn.commit()
     return server_leaders[0:10]
 
 def profile(id):
     try:
-        c.execute("SELECT * FROM high_scores WHERE user_id = "+str(id))
-        conn.commit()
+        c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
         return c.fetchone()
-    except sqlite3.OperationalError:
+    except db.errors.OperationalError:
         pass
