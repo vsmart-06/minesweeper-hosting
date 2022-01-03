@@ -377,7 +377,6 @@ class minesweeper:
                 raise UnboundLocalError
             self.string_rows()
 
-
     def game_end(self):
         if self.game_over == 1:
             self.end_msg = "You lost 😢"
