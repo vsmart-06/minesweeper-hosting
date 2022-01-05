@@ -104,3 +104,10 @@ def profile(id):
         return c.fetchone()
     except db.errors.OperationalError:
         pass
+
+def privacy_change(id, p):
+    try:
+        c.execute("UPDATE user_data SET privacy = "+p+"WHERE user_id = "+str(id))
+        conn.commit()
+    except db.errors.OperationalError:
+        pass
