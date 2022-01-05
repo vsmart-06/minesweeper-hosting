@@ -1,7 +1,7 @@
 import discord
 import discord.ext.commands
 from minesweeper_class import minesweeper
-from records import global_leaderboard, server_leaderboard, profile
+from records import global_leaderboard, server_leaderboard, profile, privacy_change
 import os
 
 intents = discord.Intents.default()
@@ -268,9 +268,23 @@ async def on_message(mess):
 
     if msg.startswith(";profile"):
         valid_id = 0
+        inv_setting = 0
+        prof_author = 0
         if msg == ";profile":
             user_id = mess.author.id
+            prof_author = user_id
             valid_id = 1
+        elif msg.startswith(";profile settings"):
+            if msg == ";profile settings public":
+                user_id = mess.author.id
+                priv = "public"
+                privacy_change(user_id, priv)
+            elif msg == ";profile settings private":
+                user_id = mess.author.id
+                priv = "private"
+                privacy_change(user_id, priv)
+            else:
+                inv_setting = 1
         elif msg.startswith(";profile <@!") and msg.endswith(">"):
             user_id_temp = msg.replace(";profile <@!", "")
             user_id = user_id_temp.replace(">", "")
@@ -294,27 +308,33 @@ async def on_message(mess):
                 user_handle = str(u)
                 user_name = u.name
                 try:
-                    if prof[1] != None:
-                        time_mins = int(prof[1]//60)
-                        time_secs = int(prof[1]%60)
-                        avg_mins = int(prof[7]//60)
-                        avg_secs = int(prof[7]%60)
-                    user_profile = discord.Embed(title = user_name+"'s profile", description = "All stats about this user on the minesweeper bot!", color = discord.Color.blue())
-                    user_profile.add_field(name = "Discord handle", value = user_handle, inline = True)
-                    if prof[1] != None:
-                        user_profile.add_field(name = "Best time", value = str(time_mins)+"m "+str(time_secs)+"s", inline = True)
-                        user_profile.add_field(name = "Average winning time", value = str(avg_mins)+"m "+str(avg_secs)+"s", inline = True)
+                    if prof[8] == "public" or prof_author == user_id:
+                        if prof[1] != None:
+                            time_mins = int(prof[1]//60)
+                            time_secs = int(prof[1]%60)
+                            avg_mins = int(prof[7]//60)
+                            avg_secs = int(prof[7]%60)
+                        user_profile = discord.Embed(title = user_name+"'s profile", description = "All stats about this user on the minesweeper bot!", color = discord.Color.blue())
+                        user_profile.add_field(name = "Discord handle", value = user_handle, inline = True)
+                        if prof[1] != None:
+                            user_profile.add_field(name = "Best time", value = str(time_mins)+"m "+str(time_secs)+"s", inline = True)
+                            user_profile.add_field(name = "Average winning time", value = str(avg_mins)+"m "+str(avg_secs)+"s", inline = True)
+                        else:
+                            user_profile.add_field(name = "Best time", value = prof[1], inline = True)
+                            user_profile.add_field(name = "Average winning time", value = prof[7], inline = True)
+                        user_profile.add_field(name = "Games won", value = prof[2], inline = True)
+                        user_profile.add_field(name = "Games lost", value = prof[3], inline = True)
+                        user_profile.add_field(name = "Total games played", value = prof[4], inline = True)
+                        user_profile.add_field(name = "Win percentage", value = prof[5], inline = True)
+                        user_profile.add_field(name = "Profile type", value = prof[8].capitalize(), inline = True)
                     else:
-                        user_profile.add_field(name = "Best time", value = prof[1], inline = True)
-                        user_profile.add_field(name = "Average winning time", value = prof[7], inline = True)
-                    user_profile.add_field(name = "Games won", value = prof[2], inline = True)
-                    user_profile.add_field(name = "Games lost", value = prof[3], inline = True)
-                    user_profile.add_field(name = "Total games played", value = prof[4], inline = True)
-                    user_profile.add_field(name = "Win percentage", value = prof[5], inline = True)
+                        user_profile = discord.Embed(title = "Private profile!", description = "This profile is private so you cannot view it!", color = discord.Color.blue())
                 except TypeError:
                     user_profile = discord.Embed(title = "User not detected!", description = "This user hasn't used the bot yet!", color = discord.Color.blue())
             except discord.errors.NotFound:
                 user_profile = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
+        elif inv_setting == 0:
+            user_profile = discord.Embed(title = "Profile settings changed!", description = "Your profile is now "+priv+"!", color = discord.Color.blue())
         else:
             user_profile = discord.Embed(title = "Invalid syntax!", description = "The profile syntax is invalid!", color = discord.Color.blue())
         await mess.channel.send(embed=user_profile)
@@ -345,6 +365,7 @@ async def on_message(mess):
 `;server leaderboard`: View the server leaderboard.
 `;serverlb`: Alias of `;server leaderboard`.
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
+`;profile settings private/public`: Control who can view your profile. By default it is set to public.
 `;invite`: Get a link to invite this bot to a server.''')
         await mess.channel.send(embed = help)
 
