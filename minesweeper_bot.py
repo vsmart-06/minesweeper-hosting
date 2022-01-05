@@ -307,7 +307,7 @@ async def on_message(mess):
                 user_handle = str(u)
                 user_name = u.name
                 try:
-                    if prof[8] == "public" or prof_author == user_id:
+                    if prof[8] == "public" or prof_author == int(user_id):
                         if prof[1] != None:
                             time_mins = int(prof[1]//60)
                             time_secs = int(prof[1]%60)
