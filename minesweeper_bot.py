@@ -269,10 +269,9 @@ async def on_message(mess):
     if msg.startswith(";profile"):
         valid_id = 0
         inv_setting = 0
-        prof_author = 0
+        prof_author = mess.authro.id
         if msg == ";profile":
             user_id = mess.author.id
-            prof_author = user_id
             valid_id = 1
         elif msg.startswith(";profile settings"):
             if msg == ";profile settings public":
