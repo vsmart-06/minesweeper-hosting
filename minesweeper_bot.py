@@ -339,7 +339,7 @@ async def on_message(mess):
         await mess.channel.send(embed=user_profile)
 
     if msg == ";invite":
-        invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=377957125120&scope=bot", colour = discord.Colour.blue())
+        invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274877910016&scope=bot", colour = discord.Colour.blue())
         await mess.channel.send(embed = invite)
     
     if msg == ";help":
