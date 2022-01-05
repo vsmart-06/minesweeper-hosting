@@ -23,7 +23,8 @@ try:
         total_games INT NOT NULL,
         win_percent DECIMAL NOT NULL,
         tot_time INT,
-        avg_time INT
+        avg_time INT,
+        privacy VARCHAR
         )''')
 except db.errors.ProgrammingError:
     pass
