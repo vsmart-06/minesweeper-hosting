@@ -314,18 +314,18 @@ async def on_message(mess):
                             avg_mins = int(prof[7]//60)
                             avg_secs = int(prof[7]%60)
                         user_profile = discord.Embed(title = user_name+"'s profile", description = "All stats about this user on the minesweeper bot!", color = discord.Color.blue())
-                        user_profile.add_field(name = "Discord handle", value = user_handle, inline = True)
+                        user_profile.add_field(name = "Discord handle:", value = user_handle, inline = True)
                         if prof[1] != None:
-                            user_profile.add_field(name = "Best time", value = str(time_mins)+"m "+str(time_secs)+"s", inline = True)
-                            user_profile.add_field(name = "Average winning time", value = str(avg_mins)+"m "+str(avg_secs)+"s", inline = True)
+                            user_profile.add_field(name = "Best time:", value = str(time_mins)+"m "+str(time_secs)+"s", inline = True)
+                            user_profile.add_field(name = "Average winning time:", value = str(avg_mins)+"m "+str(avg_secs)+"s", inline = True)
                         else:
-                            user_profile.add_field(name = "Best time", value = prof[1], inline = True)
-                            user_profile.add_field(name = "Average winning time", value = prof[7], inline = True)
-                        user_profile.add_field(name = "Games won", value = prof[2], inline = True)
-                        user_profile.add_field(name = "Games lost", value = prof[3], inline = True)
-                        user_profile.add_field(name = "Total games played", value = prof[4], inline = True)
-                        user_profile.add_field(name = "Win percentage", value = prof[5], inline = True)
-                        user_profile.add_field(name = "Profile type", value = prof[8].capitalize(), inline = True)
+                            user_profile.add_field(name = "Best time:", value = prof[1], inline = True)
+                            user_profile.add_field(name = "Average winning time:", value = prof[7], inline = True)
+                        user_profile.add_field(name = "Games won:", value = prof[2], inline = True)
+                        user_profile.add_field(name = "Games lost:", value = prof[3], inline = True)
+                        user_profile.add_field(name = "Total games played:", value = prof[4], inline = True)
+                        user_profile.add_field(name = "Win percentage:", value = prof[5], inline = True)
+                        user_profile.add_field(name = "Profile type:", value = prof[8].capitalize(), inline = True)
                     else:
                         user_profile = discord.Embed(title = "Private profile!", description = "This profile is private so you cannot view it!", color = discord.Color.blue())
                 except TypeError:
