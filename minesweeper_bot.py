@@ -268,7 +268,7 @@ async def on_message(mess):
 
     if msg.startswith(";profile"):
         valid_id = 0
-        inv_setting = 0
+        inv_setting = 1
         prof_author = mess.author.id
         if msg == ";profile":
             user_id = mess.author.id
@@ -277,10 +277,12 @@ async def on_message(mess):
             if msg == ";profile settings public":
                 user_id = mess.author.id
                 priv = "public"
+                inv_setting = 0
                 privacy_change(user_id, priv)
             elif msg == ";profile settings private":
                 user_id = mess.author.id
                 priv = "private"
+                inv_setting = 0
                 privacy_change(user_id, priv)
             else:
                 inv_setting = 1
