@@ -6,6 +6,7 @@ import os
 
 intents = discord.Intents.default()
 intents.members = True
+intents.guilds = True
 bot = discord.Client(intents = intents)
 token = os.getenv("DISCORD_TOKEN")
 
@@ -14,6 +15,10 @@ async def on_ready():
     await bot.change_presence(activity = discord.Activity(type = discord.ActivityType.watching, name = ";help"))
     print("Ready for takeoff!")
 
+@bot.event
+async def on_guild_join(guild):
+    my_user = await bot.fetch_user(706855396828250153)
+    await my_user.send(guild)
 
 @bot.event
 async def on_message(mess):
