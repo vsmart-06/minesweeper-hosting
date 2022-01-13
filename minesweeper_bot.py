@@ -321,7 +321,7 @@ async def on_message(mess):
                             avg_mins = int(prof[7]//60)
                             avg_secs = int(prof[7]%60)
                         user_profile = discord.Embed(title = user_name+"'s profile", description = "All stats about this user on the minesweeper bot!", color = discord.Color.blue())
-                        user_profile.add_field(name = "Discord handle:", value = user_handle, inline = True)
+                        user_profile.add_field(name = "Discord handle:", value = "||"+user_handle+"||", inline = True)
                         if prof[1] != None:
                             user_profile.add_field(name = "Best time:", value = str(time_mins)+"m "+str(time_secs)+"s", inline = True)
                             user_profile.add_field(name = "Average winning time:", value = str(avg_mins)+"m "+str(avg_secs)+"s", inline = True)
