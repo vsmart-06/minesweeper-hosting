@@ -373,6 +373,8 @@ async def on_message(mess):
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
 `;profile settings private/public`: Control who can view your profile. By default it is set to public.
 `;invite`: Get a link to invite this bot to a server.''')
+        help.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274877910016&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote)", inline = False)
+        await mess.channel.send(embed = help)
         await mess.channel.send(embed = help)
 
 bot.run(token)
