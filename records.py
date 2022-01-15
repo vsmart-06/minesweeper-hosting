@@ -1,4 +1,4 @@
-import psycopg as db
+import psycopg2 as db
 import os
 db_url = os.getenv("DATABASE_URL")
 conn = db.connect(db_url)
@@ -16,7 +16,7 @@ try:
         avg_time INT,
         privacy VARCHAR
         )''')
-except db.errors.ProgrammingError:
+except db.ProgrammingError:
     pass
 
 def stats_update(id, win):
@@ -30,7 +30,7 @@ def stats_update(id, win):
             (user_id, games_won, games_lost, total_games, win_percent) 
             VALUES ('''+str(id)+", 0, 1, 1, 0)")
         conn.commit()
-    except db.errors.IntegrityError:
+    except db.IntegrityError:
         c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
         record = c.fetchone()
         if win == 1:
@@ -76,7 +76,7 @@ def server_leaderboard(members):
         try:
             c.execute("SELECT user_id, best_time FROM user_data WHERE user_id = "+str(x))
             server_leaders.append(c.fetchone())
-        except db.errors.OperationalError:
+        except db.OperationalError:
             pass
     while True:
         try:
@@ -90,12 +90,12 @@ def profile(id):
     try:
         c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
         return c.fetchone()
-    except db.errors.OperationalError:
+    except db.OperationalError:
         pass
 
 def privacy_change(id, p):
     try:
         c.execute("UPDATE user_data SET privacy = '"+str(p)+"' WHERE user_id = "+str(id))
         conn.commit()
-    except db.errors.OperationalError:
+    except db.OperationalError:
         pass

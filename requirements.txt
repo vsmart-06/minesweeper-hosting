@@ -1,3 +1,3 @@
 discord
-psycopg
-psycopg-binary
+psycopg2
+psycopg2-binary
