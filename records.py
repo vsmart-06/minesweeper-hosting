@@ -20,6 +20,9 @@ except db.errors.ProgrammingError:
     pass
 
 def stats_update(id, win):
+    db_url = os.getenv("DATABASE_URL")
+    conn = db.connect(db_url)
+    c = conn.cursor()
     try:
         if win == 1:
             c.execute('''INSERT INTO user_data 
@@ -46,6 +49,9 @@ def stats_update(id, win):
         conn.commit()
 
 def score_check(id, time):
+    db_url = os.getenv("DATABASE_URL")
+    conn = db.connect(db_url)
+    c = conn.cursor()
     c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
     record = c.fetchone()
     if record[1] == None:
@@ -74,6 +80,9 @@ def global_leaderboard():
     return leaders
 
 def server_leaderboard(members):
+    db_url = os.getenv("DATABASE_URL")
+    conn = db.connect(db_url)
+    c = conn.cursor()
     server_leaders = []
     for x in members:
         try:
@@ -90,6 +99,9 @@ def server_leaderboard(members):
     return server_leaders[0:10]
 
 def profile(id):
+    db_url = os.getenv("DATABASE_URL")
+    conn = db.connect(db_url)
+    c = conn.cursor()
     try:
         c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
         return c.fetchone()
@@ -97,6 +109,9 @@ def profile(id):
         pass
 
 def privacy_change(id, p):
+    db_url = os.getenv("DATABASE_URL")
+    conn = db.connect(db_url)
+    c = conn.cursor()
     try:
         c.execute("UPDATE user_data SET privacy = '"+str(p)+"' WHERE user_id = "+str(id))
         conn.commit()
