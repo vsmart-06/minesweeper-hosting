@@ -17,7 +17,7 @@ async def on_ready():
     print("Ready for takeoff!")
     conn = db.connect(os.getenv("DATABASE_URL"))
     c = conn.cursor()
-    c.execute("SELECT * FROM user_data")
+    c.execute("SELECT user_id, best_time FROM user_data ORDER BY best_time")
     rows = c.fetchone()
     print(rows)
 
