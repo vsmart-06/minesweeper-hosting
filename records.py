@@ -19,4 +19,4 @@ try:
 except db.errors.ProgrammingError:
     pass
 
-c.execute("INSERT INTO user_data VALUES (706855396828250153, 16, 33, 46, 79, 42, 1900, 57, `public`)")
+c.execute("INSERT INTO user_data VALUES (706855396828250153, 16, 33, 46, 79, 42, 1900, 57, 'public')")
