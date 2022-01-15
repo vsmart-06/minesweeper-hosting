@@ -21,6 +21,7 @@ except db.errors.ProgrammingError:
 try:
     c.execute("INSERT INTO user_data VALUES (706855396828250153, 16, 33, 46, 79, 42, 1900, 57, 'public')")
 except db.errors.IntegrityError:
+    print("hi")
     pass
 c.execute("INSERT INTO user_data VALUES (182729649703485440, NULL, 0, 1, 1, 0, NULL, NULL, 'public')")
 c.execute("INSERT INTO user_data VALUES (223150756335845377, NULL, 0, 2, 2, 0, NULL, NULL, 'public')")
