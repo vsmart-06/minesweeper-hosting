@@ -1,21 +1,10 @@
-import mysql.connector as db
+import psycopg as db
 import os
-
-db_url = os.getenv("JAWSDB_URL")
-db_url_temp = db_url.replace("mysql://", "")
-db_url_temp = db_url_temp.replace("@", ":")
-db_url_temp = db_url_temp.replace("3306/", "")
-u, p, h, d = map(str, db_url_temp.split(":"))
-
-conn = db.connect(
-    host = h,
-    user = u,
-    password = p,
-    database = d
-)
-
+db_url = os.getenv("DATABASE_URL")
+conn = db.connect(db_url)
 c = conn.cursor()
-try:
+
+try:   
     c.execute('''CREATE TABLE user_data (
         user_id BIGINT NOT NULL PRIMARY KEY,
         best_time INT,
@@ -77,10 +66,7 @@ def score_check(id, time):
     
     
 def global_leaderboard():
-    c.execute('''
-                SELECT user_id, best_time
-                FROM user_data
-                ORDER BY best_time''')
+    c.execute("SELECT user_id, best_time FROM user_data ORDER BY best_time")
     leaders = c.fetchmany(10)
     return leaders
 
