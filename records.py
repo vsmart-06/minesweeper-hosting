@@ -47,6 +47,8 @@ def stats_update(id, win):
             new_percent = (record[2]/new_total)*100
             c.execute("UPDATE user_data SET games_lost = "+str(new_lost)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+" WHERE user_id = "+str(id))
         conn.commit()
+    c.close()
+    conn.close()
 
 def score_check(id, time):
     db_url = os.getenv("DATABASE_URL")
@@ -57,6 +59,8 @@ def score_check(id, time):
     if record[1] == None:
         c.execute("UPDATE user_data SET best_time = "+str(time)+", tot_time = "+str(time)+", avg_time = "+str(time)+" WHERE user_id = "+str(id))
         conn.commit()
+        c.close()
+        conn.close()
         return "new high"
     else:
         old_tot_time = record[6]
@@ -66,8 +70,12 @@ def score_check(id, time):
         if time < record[1]:
             c.execute("UPDATE user_data SET best_time = "+str(time)+" WHERE user_id = "+str(id))
             conn.commit()
+            c.close()
+            conn.close()
             return "new record"
     conn.commit()
+    c.close()
+    conn.close()
     return "no change"
     
     
@@ -77,6 +85,8 @@ def global_leaderboard():
     c = conn.cursor()
     c.execute("SELECT user_id, best_time FROM user_data ORDER BY best_time")
     leaders = c.fetchmany(10)
+    c.close()
+    conn.close()
     return leaders
 
 def server_leaderboard(members):
@@ -96,6 +106,8 @@ def server_leaderboard(members):
         except ValueError:
             break
     server_leaders.sort(key = lambda a: a[1])
+    c.close()
+    conn.close()
     return server_leaders[0:10]
 
 def profile(id):
@@ -107,6 +119,8 @@ def profile(id):
         return c.fetchone()
     except db.errors.OperationalError:
         pass
+    c.close()
+    conn.close()
 
 def privacy_change(id, p):
     db_url = os.getenv("DATABASE_URL")
@@ -117,3 +131,5 @@ def privacy_change(id, p):
         conn.commit()
     except db.errors.OperationalError:
         pass
+    c.close()
+    conn.close()
