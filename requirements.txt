@@ -1,2 +1,3 @@
 discord
-psycopg[binary]
+psycopg
+psycopg-binary
