@@ -66,6 +66,9 @@ def score_check(id, time):
     
     
 def global_leaderboard():
+    db_url = os.getenv("DATABASE_URL")
+    conn = db.connect(db_url)
+    c = conn.cursor()
     c.execute("SELECT user_id, best_time FROM user_data ORDER BY best_time")
     leaders = c.fetchmany(10)
     return leaders
