@@ -133,3 +133,6 @@ def privacy_change(id, p):
         pass
     c.close()
     conn.close()
+
+c.close()
+conn.close()
