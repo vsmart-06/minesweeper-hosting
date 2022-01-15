@@ -3,7 +3,6 @@ import discord.ext.commands
 from minesweeper_class import minesweeper
 from records import global_leaderboard, server_leaderboard, profile, privacy_change
 import os
-import psycopg as db
 
 intents = discord.Intents.default()
 intents.members = True
@@ -15,11 +14,6 @@ token = os.getenv("DISCORD_TOKEN")
 async def on_ready():
     await bot.change_presence(activity = discord.Activity(type = discord.ActivityType.watching, name = ";help"))
     print("Ready for takeoff!")
-    conn = db.connect(os.getenv("DATABASE_URL"))
-    c = conn.cursor()
-    c.execute("SELECT user_id, best_time FROM user_data ORDER BY best_time")
-    rows = c.fetchone()
-    print(rows)
 
 @bot.event
 async def on_guild_join(guild):
