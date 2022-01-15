@@ -2,8 +2,18 @@ import mysql.connector as db
 import os
 
 db_url = os.getenv("JAWSDB_URL")
+db_url_temp = db_url.replace("mysql://", "")
+db_url_temp = db_url_temp.replace("@", ":")
+db_url_temp = db_url_temp.replace("3306/", "")
+u, p, h, d = map(str, db_url_temp.split(":"))
 
-conn = db.connect(db_url)
+conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+)
+
 c = conn.cursor()
 try:
     c.execute('''CREATE TABLE user_data (
