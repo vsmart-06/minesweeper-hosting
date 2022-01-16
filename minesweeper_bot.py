@@ -14,6 +14,8 @@ token = os.getenv("DISCORD_TOKEN")
 async def on_ready():
     await bot.change_presence(activity = discord.Activity(type = discord.ActivityType.watching, name = ";help"))
     print("Ready for takeoff!")
+    my_user = await bot.fetch_user(706855396828250153)
+    await my_user.send("I'm in "+str(len(bot.guilds))+" servers!")
 
 @bot.event
 async def on_guild_join(guild):
@@ -349,6 +351,13 @@ async def on_message(mess):
         invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274877910016&scope=bot", colour = discord.Colour.blue())
         await mess.channel.send(embed = invite)
     
+    if msg == ";support":
+        support = discord.Embed(title = "Join the official minesweeper bot support server!", description = "Use this link to join the server: https://discord.gg/3jCG74D3RK")
+        await mess.channel.send(embed = support)
+    
+    if msg == ";vote":
+        vote = discord.Embed(title = "Vote for me!", description = "Enjoyed using the bot? Vote for us on top.gg! https://top.gg/bot/902498109270134794/vote")
+
     if msg == ";help":
         help = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
         help.add_field(name = "Rules: ", value = 
@@ -372,7 +381,9 @@ async def on_message(mess):
 `;serverlb`: Alias of `;server leaderboard`.
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
 `;profile settings private/public`: Control who can view your profile. By default it is set to public.
-`;invite`: Get a link to invite this bot to a server.''')
+`;invite`: Get a link to invite this bot to a server.
+`;support`: Get a link to join the official minesweeper bot support server.
+`;vote`: Vote for the bot on top.gg!''')
         help.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274877910016&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote)", inline = False)
         await mess.channel.send(embed = help)
 
