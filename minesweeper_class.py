@@ -200,32 +200,32 @@ class minesweeper:
         self.str_row += "⬛"*len(str(self.num_rows))
         for ro in range(0, self.num_rows):
             for col in range(0, self.num_cols):
-                    item = self.items_g[ro][col]
-                    if item == "":
-                        item = "⚪"
-                    elif item == 1:
-                        item = "1️⃣"
-                    elif item == 2:
-                        item = "2️⃣"
-                    elif item == 3:
-                        item = "3️⃣"
-                    elif item == 4:
-                        item = "4️⃣"
-                    elif item == 5:
-                        item = "5️⃣"
-                    elif item == 6:
-                        item = "6️⃣"
-                    elif item == 7:
-                        item = "7️⃣"
-                    elif item == 8:
-                        item = "8️⃣"
-                    elif item == 0:
-                        item = "🟦"
-                    self.str_row += item
+                item = self.items_g[ro][col]
+                if item == "":
+                    item = "⚪"
+                elif item == 1:
+                    item = "1️⃣"
+                elif item == 2:
+                    item = "2️⃣"
+                elif item == 3:
+                    item = "3️⃣"
+                elif item == 4:
+                    item = "4️⃣"
+                elif item == 5:
+                    item = "5️⃣"
+                elif item == 6:
+                    item = "6️⃣"
+                elif item == 7:
+                    item = "7️⃣"
+                elif item == 8:
+                    item = "8️⃣"
+                elif item == 0:
+                    item = "🟦"
+                self.str_row += item
 
             self.str_row += '''
 '''
-            if ro != self.num_cols-1:
+            if ro != self.num_rows-1:
                 row += 1
                 r = str(row)
                 if len(r) == 1 and self.num_rows >= 10:
