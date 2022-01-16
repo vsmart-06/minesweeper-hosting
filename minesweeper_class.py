@@ -165,7 +165,7 @@ class minesweeper:
     def string_rows(self):
         if self.game_over == 1:
             for bomb_pos in self.bomb_list:
-                self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "💣"
+                self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "🧨"
         self.str_row = '''
 '''
         for i in range(len(str(self.num_cols))+1):
