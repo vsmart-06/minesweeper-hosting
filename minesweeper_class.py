@@ -22,6 +22,7 @@ class minesweeper:
         self.num_cols = num_cols
         self.num_bombs = num_bombs
         self.flag = "Off"
+        self.bomb_list = []
 
         for x in range(1, self.items_tot+1):
             self.row_brk.append("")
@@ -53,6 +54,7 @@ class minesweeper:
                 self.row_pos = rd.choice(choice_row)
                 self.col_pos = rd.choice(choice_column)
             self.items[self.row_pos-1][self.col_pos-1] = "💥"
+            self.bomb_list.append((self.row_pos, self.col_pos))
 
         for row in range(1, self.num_rows+1):
             for col in range(1, self.num_cols+1):
@@ -161,6 +163,9 @@ class minesweeper:
 
 
     def string_rows(self):
+        if self.game_over == 1:
+            for bomb_pos in self.bomb_list:
+                self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "💣"
         self.str_row = '''
 '''
         for i in range(len(str(self.num_cols))+1):
@@ -263,9 +268,10 @@ class minesweeper:
                 obj = self.items[r-1][c-1]
                 self.items_g[r-1][c-1] = obj
                 self.items_stat[r-1][c-1] = "dead"
-            self.string_rows()
             if obj == "💥":
                 self.game_over = 1
+                self.bomb_list.remove((r, c))
+            self.string_rows()
             self.turns += 1
             self.game_end()
 
