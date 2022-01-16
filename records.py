@@ -168,7 +168,7 @@ def profile(id):
     c.close()
     conn.close()
 
-def privacy_change(id, p):
+def privacy_change(id, priv):
     conn = db.connect(
     host = h,
     user = u,
@@ -178,7 +178,7 @@ def privacy_change(id, p):
 
     c = conn.cursor()
     try:
-        c.execute("UPDATE user_data SET privacy = '"+str(p)+"' WHERE user_id = "+str(id))
+        c.execute("UPDATE user_data SET privacy = '"+str(priv)+"' WHERE user_id = "+str(id))
         conn.commit()
     except db.errors.OperationalError:
         pass
