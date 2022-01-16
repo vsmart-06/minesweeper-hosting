@@ -23,6 +23,7 @@ class minesweeper:
         self.num_bombs = num_bombs
         self.flag = "Off"
         self.bomb_list = []
+        self.flag_pos = []
 
         for x in range(1, self.items_tot+1):
             self.row_brk.append("")
@@ -165,7 +166,13 @@ class minesweeper:
     def string_rows(self):
         if self.game_over == 1:
             for bomb_pos in self.bomb_list:
-                self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "🧨"
+                if self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] != "🚩":
+                    self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "⚠"
+                else:
+                    self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "✔"
+            for flag_p in self.flag_pos:
+                if flag_p not in self.bomb_list:
+                    self.items_g[flag_p[0]-1][flag_p[1]-1] = "❌"
         self.str_row = '''
 '''
         for i in range(len(str(self.num_cols))+1):
@@ -377,8 +384,10 @@ class minesweeper:
             if self.items_stat[r-1][c-1] == "alive":
                 if self.items_g[r-1][c-1] == "":
                     self.items_g[r-1][c-1] = "🚩"
+                    self.flag_pos.append((r, c))
                 elif self.items_g[r-1][c-1] == "🚩":
                     self.items_g[r-1][c-1] = ""
+                    self.flag_pos.remove((r, c))
             else:
                 raise UnboundLocalError
             self.string_rows()
