@@ -170,7 +170,7 @@ class minesweeper:
                 if self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] != "🚩":
                     self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "⚠"
                 else:
-                    self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "✔"
+                    self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "✅"
             for flag_p in self.flag_pos:
                 if flag_p not in self.bomb_list:
                     self.items_g[flag_p[0]-1][flag_p[1]-1] = "❌"
