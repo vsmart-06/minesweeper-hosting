@@ -352,11 +352,12 @@ async def on_message(mess):
         await mess.channel.send(embed = invite)
     
     if msg == ";support":
-        support = discord.Embed(title = "Join the official minesweeper bot support server!", description = "Use this link to join the server: https://discord.gg/3jCG74D3RK")
+        support = discord.Embed(title = "Join the official minesweeper bot support server!", description = "Use this link to join the server: https://discord.gg/3jCG74D3RK", colour = discord.Colour.blue())
         await mess.channel.send(embed = support)
     
     if msg == ";vote":
-        vote = discord.Embed(title = "Vote for me!", description = "Enjoyed using the bot? Vote for us on top.gg! https://top.gg/bot/902498109270134794/vote")
+        vote = discord.Embed(title = "Vote for me!", description = "Enjoyed using the bot? Vote for us on top.gg! https://top.gg/bot/902498109270134794/vote", colour = discord.Colour.blue())
+        await mess.channel.send(embed = vote)
 
     if msg == ";help":
         help = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
