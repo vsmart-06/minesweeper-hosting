@@ -20,7 +20,7 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild):
     my_user = await bot.fetch_user(706855396828250153)
-    await my_user.send(guild)
+    await my_user.send("New server: "+str(guild))
 
 @bot.event
 async def on_message(mess):

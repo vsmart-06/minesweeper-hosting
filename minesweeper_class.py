@@ -17,6 +17,7 @@ class minesweeper:
         self.row_brk_g = []
         self.items_stat_row = []
         self.game_over = 0
+        self.game_won = 0
         self.end_msg = ""
         self.num_rows = num_rows
         self.num_cols = num_cols
@@ -173,6 +174,9 @@ class minesweeper:
             for flag_p in self.flag_pos:
                 if flag_p not in self.bomb_list:
                     self.items_g[flag_p[0]-1][flag_p[1]-1] = "❌"
+        if self.game_won == 1:
+            for bomb_pos in self.bomb_list:
+                self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "✔"
         self.str_row = '''
 '''
         for i in range(len(str(self.num_cols))+1):
@@ -278,8 +282,10 @@ class minesweeper:
             if obj == "💥":
                 self.game_over = 1
                 self.bomb_list.remove((r, c))
-            self.string_rows()
             self.turns += 1
+            if self.turns == (self.items_tot-self.num_bombs):
+                self.game_won = 1
+            self.string_rows()
             self.game_end()
 
             if obj == 0:
@@ -397,7 +403,7 @@ class minesweeper:
             self.end_msg = "You lost 😢"
             self.game = 0
             stats_update(self.user_id, 0)
-        elif self.turns == (self.items_tot-self.num_bombs):
+        elif self.game_won == 1:
             if self.num_rows == 8 and self.num_cols == 8 and self.num_bombs == 8:
                 self.time_end = time.time()
                 self.tot_time = int(self.time_end-self.time_start)
