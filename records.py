@@ -15,6 +15,7 @@ conn = db.connect(
 )
 
 c = conn.cursor()
+
 try:
     c.execute('''CREATE TABLE user_data (
         user_id BIGINT NOT NULL PRIMARY KEY,
@@ -31,6 +32,14 @@ except db.errors.ProgrammingError:
     pass
 
 def stats_update(id, win):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+
+    c = conn.cursor()
     try:
         if win == 1:
             c.execute('''INSERT INTO user_data 
@@ -55,13 +64,25 @@ def stats_update(id, win):
             new_percent = (record[2]/new_total)*100
             c.execute("UPDATE user_data SET games_lost = "+str(new_lost)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+" WHERE user_id = "+str(id))
         conn.commit()
+    c.close()
+    conn.close()
 
 def score_check(id, time):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+
+    c = conn.cursor()
     c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
     record = c.fetchone()
     if record[1] == None:
         c.execute("UPDATE user_data SET best_time = "+str(time)+", tot_time = "+str(time)+", avg_time = "+str(time)+" WHERE user_id = "+str(id))
         conn.commit()
+        c.close()
+        conn.close()
         return "new high"
     else:
         old_tot_time = record[6]
@@ -71,12 +92,24 @@ def score_check(id, time):
         if time < record[1]:
             c.execute("UPDATE user_data SET best_time = "+str(time)+" WHERE user_id = "+str(id))
             conn.commit()
+            c.close()
+            conn.close()
             return "new record"
     conn.commit()
+    c.close()
+    conn.close()
     return "no change"
     
     
 def global_leaderboard():
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+
+    c = conn.cursor()
     c.execute('''
                 SELECT user_id, best_time
                 FROM user_data
@@ -85,9 +118,19 @@ def global_leaderboard():
     for record in leaders:
         if record[1] == None:
             leaders.remove(record)
+    c.close()
+    conn.close()
     return leaders[0:10]
 
 def server_leaderboard(members):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+
+    c = conn.cursor()
     server_leaders = []
     for x in members:
         try:
@@ -100,19 +143,46 @@ def server_leaderboard(members):
             server_leaders.remove(None)
         except ValueError:
             break
+    for y in server_leaders:
+        if y[1] == None:
+            server_leaders.remove(y)
     server_leaders.sort(key = lambda a: a[1])
+    c.close()
+    conn.close()
     return server_leaders[0:10]
 
 def profile(id):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+
+    c = conn.cursor()
     try:
         c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
         return c.fetchone()
     except db.errors.OperationalError:
         pass
+    c.close()
+    conn.close()
 
 def privacy_change(id, p):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+
+    c = conn.cursor()
     try:
         c.execute("UPDATE user_data SET privacy = '"+str(p)+"' WHERE user_id = "+str(id))
         conn.commit()
     except db.errors.OperationalError:
         pass
+    c.close()
+    conn.close()
+c.close()
+conn.close()
