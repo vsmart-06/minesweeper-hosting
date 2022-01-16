@@ -115,12 +115,13 @@ def global_leaderboard():
                 FROM user_data
                 ORDER BY best_time''')
     leaders = c.fetchall()
+    leaders_new = list(leaders)
     for record in leaders:
         if record[1] == None:
-            leaders.remove(record)
+            leaders_new.remove(record)
     c.close()
     conn.close()
-    return leaders[0:10]
+    return leaders_new[0:10]
 
 def server_leaderboard(members):
     conn = db.connect(
@@ -143,13 +144,14 @@ def server_leaderboard(members):
             server_leaders.remove(None)
         except ValueError:
             break
+    server_leaders_new = list(server_leaders)
     for y in server_leaders:
         if y[1] == None:
-            server_leaders.remove(y)
-    server_leaders.sort(key = lambda a: a[1])
+            server_leaders_new.remove(y)
+    server_leaders_new.sort(key = lambda a: a[1])
     c.close()
     conn.close()
-    return server_leaders[0:10]
+    return server_leaders_new[0:10]
 
 def profile(id):
     conn = db.connect(
