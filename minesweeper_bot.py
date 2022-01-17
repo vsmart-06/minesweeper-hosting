@@ -311,7 +311,7 @@ async def on_message(mess):
                             avg_mins = int(prof[7]//60)
                             avg_secs = int(prof[7]%60)
                         if prof[9] == "yes":
-                            initialsupporter = bot.get_emoji(932571326491811880)
+                            initialsupporter = bot.get_emoji(932671126486806579)
                             p_title = user_name+"'s profile "+str(initialsupporter)
                         else:
                             p_title = user_name+"'s profile"
