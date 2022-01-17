@@ -40,7 +40,7 @@ async def on_message(mess):
         while play.game == 1:
             while True:
                 while True:
-                    await mess.channel.send("Enter the row and column (format: 'row column') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                    await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
                     pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
                     try:
                         message = pos_msg.content
@@ -155,7 +155,7 @@ async def on_message(mess):
         while play.game == 1:
             while True:
                 while True:
-                    await mess.channel.send("Enter the row and column (format: 'row column') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                    await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
                     pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
                     try:
                         message = pos_msg.content
