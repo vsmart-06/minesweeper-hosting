@@ -282,6 +282,10 @@ class minesweeper:
             if obj == "💥":
                 self.game_over = 1
                 self.bomb_list.remove((r, c))
+                try:
+                    self.flag_pos.remove((r, c))
+                except ValueError:
+                    pass
             self.turns += 1
             if self.turns == (self.items_tot-self.num_bombs):
                 self.game_won = 1
