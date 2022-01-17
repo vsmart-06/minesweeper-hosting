@@ -40,67 +40,53 @@ async def on_message(mess):
         while play.game == 1:
             while True:
                 while True:
-                    await mess.channel.send("Enter the row (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                    r_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
+                    await mess.channel.send("Enter the row and column (format: 'row column') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                    pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
                     try:
-                        r = int(r_msg.content)
+                        message = pos_msg.content
+                        r, c = map(int, message.split())
                         if r <= 0 or r > play.num_rows:
                             await mess.channel.send("Row is out of range")
+                        elif c <= 0 or c > play.num_cols:
+                            await mess.channel.send("Column is out of range")
                         else:
                             break
                     except ValueError:
-                        r = str(r_msg.content).lower()
-                        if r == "flag":
+                        message = str(pos_msg.content).lower()
+                        if message == "flag":
                             if play.flag_var == 0:
                                 await mess.channel.send("Flag mode on")
                                 play.flag_var = 1
                             else:
                                 await mess.channel.send("Flag mode off")
                                 play.flag_var = 0
-                            break
-                        elif r == "board":
+                        elif message == "board":
                             if play.flag_var == 1:
                                 play.flag = "On"
                             else:
                                 play.flag = "Off"
 
-                            game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag +
+                            game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag+
                             '''
                             '''
                             + play.str_row, color=discord.Color.blue())
                             await mess.channel.send(embed=game_real)
-                        elif r == "quit":
+                        elif message == "quit":
                             play.game = 0
                             play.end_msg = "I'm sorry to see you leave 😢"
                             break
                         else:
                             await mess.channel.send("Invalid input")
 
-                if r != "flag" and r != "quit":
-                    while True:
-                        await mess.channel.send("Enter the column")
-                        c_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
-                        try:
-                            c = int(c_msg.content)
-                            if c <= 0 or c > play.num_cols:
-                                await mess.channel.send("Column is out of range")
-                            else:
-                                break
-                        except ValueError:
-                            await mess.channel.send("Invalid input")
-
-                elif r == "quit":
+                if message == "quit":
                     break
-
-                else:
-                    continue
 
                 try:
                     play.guess(r, c)
                     break
                 except UnboundLocalError:
                     await mess.channel.send("That position is already occupied")
-            if r != "quit":
+            if message != "quit":
                 if play.flag_var == 1:
                     play.flag = "On"
                 else:
@@ -169,25 +155,27 @@ async def on_message(mess):
         while play.game == 1:
             while True:
                 while True:
-                    await mess.channel.send("Enter the row (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                    r_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
+                    await mess.channel.send("Enter the row and column (format: 'row column') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                    pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
                     try:
-                        r = int(r_msg.content)
+                        message = pos_msg.content
+                        r, c = map(int, message.split())
                         if r <= 0 or r > play.num_rows:
                             await mess.channel.send("Row is out of range")
+                        elif c <= 0 or c > play.num_cols:
+                            await mess.channel.send("Column is out of range")
                         else:
                             break
                     except ValueError:
-                        r = str(r_msg.content).lower()
-                        if r == "flag":
+                        message = str(pos_msg.content).lower()
+                        if message == "flag":
                             if play.flag_var == 0:
                                 await mess.channel.send("Flag mode on")
                                 play.flag_var = 1
                             else:
                                 await mess.channel.send("Flag mode off")
                                 play.flag_var = 0
-                            break
-                        elif r == "board":
+                        elif message == "board":
                             if play.flag_var == 1:
                                 play.flag = "On"
                             else:
@@ -198,38 +186,22 @@ async def on_message(mess):
                             '''
                             + play.str_row, color=discord.Color.blue())
                             await mess.channel.send(embed=game_real)
-                        elif r == "quit":
+                        elif message == "quit":
                             play.game = 0
                             play.end_msg = "I'm sorry to see you leave 😢"
                             break
                         else:
                             await mess.channel.send("Invalid input")
 
-                if r != "flag" and r != "quit":
-                    while True:
-                        await mess.channel.send("Enter the column")
-                        c_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
-                        try:
-                            c = int(c_msg.content)
-                            if c <= 0 or c > play.num_cols:
-                                await mess.channel.send("Column is out of range")
-                            else:
-                                break
-                        except ValueError:
-                            await mess.channel.send("Invalid input")
-
-                elif r == "quit":
+                if message == "quit":
                     break
-
-                else:
-                    continue
 
                 try:
                     play.guess(r, c)
                     break
                 except UnboundLocalError:
                     await mess.channel.send("That position is already occupied")
-            if r != "quit":
+            if message != "quit":
                 if play.flag_var == 1:
                     play.flag = "On"
                 else:
