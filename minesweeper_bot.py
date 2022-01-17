@@ -26,7 +26,7 @@ async def on_guild_join(guild):
 async def on_message(mess):
     msg = mess.content.lower()
     author = mess.author.name
-    if mess.author == bot.user:
+    if mess.author == bot.user or mess.author.bot:
         return
 
     if msg == ";minesweeper" or msg == ";ms":
