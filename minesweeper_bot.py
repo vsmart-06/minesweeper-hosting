@@ -221,6 +221,14 @@ async def on_message(mess):
             if user[1] != None:
                 time_mins = int(user[1]//60)
                 time_secs = int(user[1]%60)
+                if user == leaders[0]:
+                    leaders_str += "🥇"
+                elif user == leaders[1]:
+                    leaders_str += "🥈"
+                elif user == leaders[2]:
+                    leaders_str += "🥉"
+                else:
+                    leaders_str += "👏"
                 leaders_str += "<@!"+str(user[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
                 leaders_str += '''
 '''
@@ -239,6 +247,14 @@ async def on_message(mess):
             if member[1] != None:
                 time_mins = int(member[1]//60)
                 time_secs = int(member[1]%60)
+                if member == server_leaders[0]:
+                    sleaders_str += "🥇"
+                elif member == server_leaders[1]:
+                    sleaders_str += "🥈"
+                elif member == server_leaders[2]:
+                    sleaders_str += "🥉"
+                else:
+                    sleaders_str += "👏"
                 sleaders_str += "<@!"+str(member[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
                 sleaders_str += '''
 '''
@@ -294,7 +310,12 @@ async def on_message(mess):
                             time_secs = int(prof[1]%60)
                             avg_mins = int(prof[7]//60)
                             avg_secs = int(prof[7]%60)
-                        user_profile = discord.Embed(title = user_name+"'s profile", description = "All stats about this user on the minesweeper bot!", color = discord.Color.blue())
+                        if prof[9] == "yes":
+                            initialsupporter = bot.get_emoji(932571326491811880)
+                            p_title = user_name+"'s profile "+str(initialsupporter)
+                        else:
+                            p_title = user_name+"'s profile"
+                        user_profile = discord.Embed(title = p_title, description = "All stats about this user on the minesweeper bot!", color = discord.Color.blue())
                         user_profile.add_field(name = "Discord handle:", value = "||"+user_handle+"||", inline = True)
                         if prof[1] != None:
                             user_profile.add_field(name = "Best time:", value = str(time_mins)+"m "+str(time_secs)+"s", inline = True)

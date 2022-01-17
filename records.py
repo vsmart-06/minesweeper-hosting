@@ -26,7 +26,8 @@ try:
         win_percent DECIMAL NOT NULL,
         tot_time INT,
         avg_time INT,
-        privacy VARCHAR
+        privacy VARCHAR,
+        initial_supporter VARCHAR
         )''')
 except db.errors.ProgrammingError:
     pass
@@ -40,15 +41,22 @@ def stats_update(id, win):
     )
 
     c = conn.cursor()
+    c.execute("SELECT * FROM user_data")
+    all_recs = c.fetchall()
+    length = len(all_recs)
     try:
         if win == 1:
             c.execute('''INSERT INTO user_data 
             (user_id, games_won, games_lost, total_games, win_percent) 
             VALUES ('''+str(id)+", 1, 0, 1, 100)")
+            if length > 100:
+                c.execute("UPDATE user_data SET initial_supporter = 'no' WHERE user_id = "+str(id))
         else:
             c.execute('''INSERT INTO user_data 
             (user_id, games_won, games_lost, total_games, win_percent) 
             VALUES ('''+str(id)+", 0, 1, 1, 0)")
+            if length > 100:
+                c.execute("UPDATE user_data SET initial_supporter = 'no' WHERE user_id = "+str(id))
         conn.commit()
     except db.errors.IntegrityError:
         c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
