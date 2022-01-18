@@ -224,11 +224,26 @@ async def on_message(mess):
                 if user == leaders[0]:
                     leaders_str += "🥇"
                 elif user == leaders[1]:
-                    leaders_str += "🥈"
+                    if user[1] == leaders[0][1]:
+                        leaders_str += "🥇"
+                    else:
+                        leaders_str += "🥈"
                 elif user == leaders[2]:
-                    leaders_str += "🥉"
+                    if user[1] == leaders[0][1]:
+                        leaders_str += "🥇"
+                    elif user[1] == leaders[1][1]:
+                        leaders_str += "🥈"
+                    else:
+                        leaders_str += "🥉"
                 else:
-                    leaders_str += "👏"
+                    if user[1] == leaders[0][1]:
+                        leaders_str += "🥇"
+                    elif user[1] == leaders[1][1]:
+                        leaders_str += "🥈"
+                    elif user[1] == leaders[2][1]:
+                        leaders_str += "🥉"
+                    else:
+                        leaders_str += "👏"
                 leaders_str += "<@!"+str(user[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
                 leaders_str += '''
 '''
@@ -250,11 +265,26 @@ async def on_message(mess):
                 if member == server_leaders[0]:
                     sleaders_str += "🥇"
                 elif member == server_leaders[1]:
-                    sleaders_str += "🥈"
+                    if member[1] == server_leaders[0][1]:
+                        sleaders_str += "🥇"
+                    else:
+                        sleaders_str += "🥈"
                 elif member == server_leaders[2]:
-                    sleaders_str += "🥉"
+                    if member[1] == server_leaders[0][1]:
+                        sleaders_str += "🥇"
+                    elif member[1] == server_leaders[1][1]:
+                        sleaders_str += "🥈"
+                    else:
+                        sleaders_str += "🥉"
                 else:
-                    sleaders_str += "👏"
+                    if member[1] == server_leaders[0][1]:
+                        sleaders_str += "🥇"
+                    elif member[1] == server_leaders[1][1]:
+                        sleaders_str += "🥈"
+                    elif member[1] == server_leaders[1][1]:
+                        sleaders_str += "🥉"
+                    else:
+                        sleaders_str += "👏"
                 sleaders_str += "<@!"+str(member[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
                 sleaders_str += '''
 '''
