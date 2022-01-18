@@ -382,7 +382,7 @@ Vote for us on discordbotlist: https://discordbotlist.com/bots/minesweeper-bot/u
 `;profile settings private/public`: Control who can view your profile. By default it is set to public.
 `;invite`: Get a link to invite this bot to a server.
 `;support`: Get a link to join the official minesweeper bot support server.
-`;vote`: Vote for the bot on top.gg!''')
+`;vote`: Vote for the bot!''')
         help.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274877910016&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote)", inline = False)
         await mess.channel.send(embed = help)
 
