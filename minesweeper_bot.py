@@ -349,7 +349,9 @@ async def on_message(mess):
         await mess.channel.send(embed = support)
     
     if msg == ";vote":
-        vote = discord.Embed(title = "Vote for me!", description = "Enjoyed using the bot? Vote for us on top.gg! https://top.gg/bot/902498109270134794/vote", colour = discord.Colour.blue())
+        vote = discord.Embed(title = "Vote for me!", description = '''Enjoyed using the bot?
+Vote for us on top.gg: https://top.gg/bot/902498109270134794/vote
+Vote for us on discordbotlist: https://discordbotlist.com/bots/minesweeper-bot/upvote''', colour = discord.Colour.blue())
         await mess.channel.send(embed = vote)
     
     if msg == ";strength" and mess.author.id == 706855396828250153:
