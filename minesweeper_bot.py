@@ -281,7 +281,7 @@ async def on_message(mess):
                         sleaders_str += "🥇"
                     elif member[1] == server_leaders[1][1]:
                         sleaders_str += "🥈"
-                    elif member[1] == server_leaders[1][1]:
+                    elif member[1] == server_leaders[2][1]:
                         sleaders_str += "🥉"
                     else:
                         sleaders_str += "👏"
