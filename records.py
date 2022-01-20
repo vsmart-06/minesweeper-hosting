@@ -205,6 +205,7 @@ def delete_record(id):
     c = conn.cursor()
     try:
         c.execute("DELETE FROM user_data WHERE user_id = "+str(id))
+        conn.commit()
     except db.errors.OperationalError:
         pass
     c.close()
