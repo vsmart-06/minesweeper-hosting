@@ -31,7 +31,7 @@ async def on_message(mess):
 
     if msg == ";minesweeper" or msg == ";ms":
         author_id = mess.author.id
-        play = minesweeper(8, 8, 8, author_id)
+        play = minesweeper(8, 8, 8, author_id, "no")
         game_init = discord.Embed(title=author+"'s minesweeper game", description='''
         You do not have to use ; while playing
         '''
@@ -142,7 +142,7 @@ async def on_message(mess):
                 except ValueError:
                     await mess.channel.send("Invalid input")
 
-            play = minesweeper(num_rows, num_cols, num_bombs, author_id)
+            play = minesweeper(num_rows, num_cols, num_bombs, author_id, "no")
             if play.items_tot+((((len(str(num_rows))+1)*num_rows))+((len(str(num_cols))+1)*num_cols)+((len(str(num_rows))+1)*(len(str(num_cols))+1))) > 198:
                 await mess.channel.send("Your grid is too big (you can have only a max of 198 objects (row and column numbers included))")
             else:
