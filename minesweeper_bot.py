@@ -558,7 +558,7 @@ async def on_message(mess):
     elif msg == ";delete":
         await mess.channel.send("Are you sure you want to delete all of your data on this bot? (confirm/cancel)")
         decision_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
-        decision = decision_msg.content().lower()
+        decision = decision_msg.content.lower()
         if decision == "confirm":
             u_id = mess.author.id
             delete_record(u_id)
