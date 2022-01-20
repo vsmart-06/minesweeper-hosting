@@ -99,7 +99,7 @@ async def on_message(mess):
                 await mess.channel.send(embed=game_real)
         await mess.channel.send(play.end_msg)
 
-    if msg == ";minesweeper custom" or msg == ";mscustom":
+    elif msg == ";minesweeper custom" or msg == ";mscustom":
         author_id = mess.author.id
         while True:
             while True:
@@ -214,7 +214,200 @@ async def on_message(mess):
                 await mess.channel.send(embed=game_real)
         await mess.channel.send(play.end_msg)
     
-    if msg == ";leaderboard" or msg == ";lb":
+    elif msg.startswith(";minesweeper") or msg.startswith(";ms"):
+        valid_id = 0
+        if msg.startswith(";minesweeper <@!") and msg.endswith(">"):
+            opp_id_temp = msg.replace(";minesweeper <@!", "")
+            opp_id = opp_id_temp.replace(">", "")
+            try:
+                int(opp_id)
+                valid_id = 1
+            except ValueError:
+                pass
+        elif msg.startswith(";ms <@!") and msg.endswith(">"):
+            opp_id_temp = msg.replace(";ms <@!", "")
+            opp_id = opp_id_temp.replace(">", "")
+            try:
+                int(opp_id)
+                valid_id = 1
+            except ValueError:
+                pass
+        if valid_id == 1:
+            opp_id = int(opp_id)
+            try:
+                a_id = mess.author.id
+                me = await bot.fetch_user(a_id)
+                opponent = await bot.fetch_user(opp_id)
+                server_id = mess.guild.id
+                guild = bot.get_guild(server_id)
+                members = []
+                for m in guild.members:
+                    members.append(m)
+                if opponent in members:
+                    player_1 = minesweeper(8, 8, 8, a_id, "yes")
+                    player_2 = minesweeper(8, 8, 8, opp_id, "yes")
+                    turn = 0
+                    while player_1.game == 1 and player_2.game == 1:
+                        if turn == 0:
+                            await mess.channel.send("<@!"+str(a_id)+"> it's your turn")
+                            game_init_1 = discord.Embed(title=me.name+"'s minesweeper game", description='''
+                            You do not have to use ; while playing
+                            '''
+                            + player_1.str_row, color=discord.Color.blue())
+                            await mess.channel.send(embed=game_init_1)
+                            while True:
+                                while True:
+                                    await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                                    pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel)
+                                    try:
+                                        message = pos_msg.content
+                                        r, c = map(int, message.split())
+                                        if r <= 0 or r > player_1.num_rows:
+                                            await mess.channel.send("Row is out of range")
+                                        elif c <= 0 or c > player_1.num_cols:
+                                            await mess.channel.send("Column is out of range")
+                                        else:
+                                            break
+                                    except ValueError:
+                                        message = str(pos_msg.content).lower()
+                                        if message == "flag":
+                                            if player_1.flag_var == 0:
+                                                await mess.channel.send("Flag mode on")
+                                                player_1.flag_var = 1
+                                            else:
+                                                await mess.channel.send("Flag mode off")
+                                                player_1.flag_var = 0
+                                        elif message == "board":
+                                            if player_1.flag_var == 1:
+                                                player_1.flag = "On"
+                                            else:
+                                                player_1.flag = "Off"
+
+                                            game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag+
+                                            '''
+                                            '''
+                                            + player_1.str_row, color=discord.Color.blue())
+                                            await mess.channel.send(embed=game_real)
+                                        elif message == "quit":
+                                            player_1.game = 0
+                                            player_1.end_msg = "I'm sorry to see you leave 😢"
+                                            break
+                                        else:
+                                            await mess.channel.send("Invalid input")
+
+                                if message == "quit":
+                                    break
+
+                                try:
+                                    player_1.guess(r, c)
+                                    break
+                                except UnboundLocalError:
+                                    await mess.channel.send("That position is already occupied")
+                            if message != "quit":
+                                if player_1.flag_var == 1:
+                                    player_1.flag = "On"
+                                else:
+                                    player_1.flag = "Off"
+
+                                game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag +
+                                '''
+                                '''
+                                + player_1.str_row, color=discord.Color.blue())
+                                await mess.channel.send(embed=game_real)
+                            turn = 1
+
+                        else:
+                            await mess.channel.send("<@!"+str(opp_id)+"> it's your turn")
+                            game_init_2 = discord.Embed(title=opponent.name+"'s minesweeper game", description='''
+                            You do not have to use ; while playing
+                            '''
+                            + player_2.str_row, color=discord.Color.blue())
+                            await mess.channel.send(embed=game_init_2)
+                            while True:
+                                while True:
+                                    await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                                    pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == opp_id and m.channel == mess.channel)
+                                    try:
+                                        message = pos_msg.content
+                                        r, c = map(int, message.split())
+                                        if r <= 0 or r > player_2.num_rows:
+                                            await mess.channel.send("Row is out of range")
+                                        elif c <= 0 or c > player_2.num_cols:
+                                            await mess.channel.send("Column is out of range")
+                                        else:
+                                            break
+                                    except ValueError:
+                                        message = str(pos_msg.content).lower()
+                                        if message == "flag":
+                                            if player_2.flag_var == 0:
+                                                await mess.channel.send("Flag mode on")
+                                                player_2.flag_var = 1
+                                            else:
+                                                await mess.channel.send("Flag mode off")
+                                                player_2.flag_var = 0
+                                        elif message == "board":
+                                            if player_2.flag_var == 1:
+                                                player_2.flag = "On"
+                                            else:
+                                                player_2.flag = "Off"
+
+                                            game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag+
+                                            '''
+                                            '''
+                                            + player_2.str_row, color=discord.Color.blue())
+                                            await mess.channel.send(embed=game_real)
+                                        elif message == "quit":
+                                            player_2.game = 0
+                                            player_2.end_msg = "I'm sorry to see you leave 😢"
+                                            break
+                                        else:
+                                            await mess.channel.send("Invalid input")
+
+                                if message == "quit":
+                                    break
+
+                                try:
+                                    player_2.guess(r, c)
+                                    break
+                                except UnboundLocalError:
+                                    await mess.channel.send("That position is already occupied")
+                            if message != "quit":
+                                if player_2.flag_var == 1:
+                                    player_2.flag = "On"
+                                else:
+                                    player_2.flag = "Off"
+
+                                game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag +
+                                '''
+                                '''
+                                + player_2.str_row, color=discord.Color.blue())
+                                await mess.channel.send(embed=game_real)
+                            turn = 0
+
+                    if player_1.game_over == 1:
+                        await mess.channel.send(player_1.end_msg)
+                        await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
+                    elif player_2.game_over == 1:
+                        await mess.channel.send(player_2.end_msg)
+                        await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
+                    elif player_1.game_won == 1:
+                        await mess.channel.send(player_1.end_msg)
+                        await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
+                    elif player_2.game_won == 1:
+                        await mess.channel.send(player_2.end_msg)
+                        await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
+
+                else:
+                    dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if he's not in the server!", color = discord.Color.blue())
+                    await mess.channel.send(embed = dual_game)
+            except discord.errors.NotFound:
+                dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
+                await mess.channel.send(embed = dual_game)
+        else:
+            dual_game = discord.Embed(title = "Invalid syntax!", description = "The minesweeper syntax is invalid!", color = discord.Color.blue())
+            await mess.channel.send(embed = dual_game)
+
+    elif msg == ";leaderboard" or msg == ";lb":
         leaders = global_leaderboard()
         leaders_str = ""
         for user in leaders:
@@ -250,7 +443,7 @@ async def on_message(mess):
         global_lb = discord.Embed(title="Global leaderboard", description = leaders_str, colour=discord.Color.blue())
         await mess.channel.send(embed=global_lb)
 
-    if msg == ";server leaderboard" or msg == ";serverlb":
+    elif msg == ";server leaderboard" or msg == ";serverlb":
         server_id = mess.guild.id
         guild = bot.get_guild(server_id)
         members = []
@@ -291,7 +484,7 @@ async def on_message(mess):
         server_lb = discord.Embed(title="Server leaderboard", description = sleaders_str, colour=discord.Color.blue())
         await mess.channel.send(embed=server_lb)
 
-    if msg.startswith(";profile"):
+    elif msg.startswith(";profile"):
         valid_id = 0
         inv_setting = 1
         prof_author = mess.author.id
@@ -313,14 +506,6 @@ async def on_message(mess):
                 inv_setting = 1
         elif msg.startswith(";profile <@!") and msg.endswith(">"):
             user_id_temp = msg.replace(";profile <@!", "")
-            user_id = user_id_temp.replace(">", "")
-            try:
-                int(user_id)
-                valid_id = 1
-            except ValueError:
-                pass
-        elif msg.startswith(";profile <@") and msg.endswith(">"):
-            user_id_temp = msg.replace(";profile <@", "")
             user_id = user_id_temp.replace(">", "")
             try:
                 int(user_id)
@@ -370,24 +555,24 @@ async def on_message(mess):
             user_profile = discord.Embed(title = "Invalid syntax!", description = "The profile syntax is invalid!", color = discord.Color.blue())
         await mess.channel.send(embed=user_profile)
 
-    if msg == ";invite":
+    elif msg == ";invite":
         invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274877910016&scope=bot", colour = discord.Colour.blue())
         await mess.channel.send(embed = invite)
     
-    if msg == ";support":
+    elif msg == ";support":
         support = discord.Embed(title = "Join the official minesweeper bot support server!", description = "Use this link to join the server: https://discord.gg/3jCG74D3RK", colour = discord.Colour.blue())
         await mess.channel.send(embed = support)
     
-    if msg == ";vote":
+    elif msg == ";vote":
         vote = discord.Embed(title = "Vote for me!", description = '''Enjoyed using the bot?
 Vote for us on top.gg: https://top.gg/bot/902498109270134794/vote
 Vote for us on discordbotlist: https://discordbotlist.com/bots/minesweeper-bot/upvote''', colour = discord.Colour.blue())
         await mess.channel.send(embed = vote)
     
-    if msg == ";strength" and mess.author.id == 706855396828250153:
+    elif msg == ";strength" and mess.author.id == 706855396828250153:
         await mess.channel.send("I'm in "+str(len(bot.guilds))+" servers!")
 
-    if msg == ";help":
+    elif msg == ";help":
         help = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
         help.add_field(name = "Rules: ", value = 
         '''The basic rules of the game are:

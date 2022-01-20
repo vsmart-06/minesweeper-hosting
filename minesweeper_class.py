@@ -2,7 +2,7 @@ import random as rd
 import time
 from records import stats_update, score_check
 class minesweeper:
-    def __init__(self, num_rows = 8, num_cols = 8, num_bombs = 8, user_id = 0):
+    def __init__(self, num_rows = 8, num_cols = 8, num_bombs = 8, user_id = 0, multi = "no"):
         self.user_id = user_id
         self.time_start = time.time()
         self.flag_var = 0
@@ -25,6 +25,7 @@ class minesweeper:
         self.flag = "Off"
         self.bomb_list = []
         self.flag_pos = []
+        self.multi = multi
 
         for x in range(1, self.items_tot+1):
             self.row_brk.append("")
@@ -408,7 +409,7 @@ class minesweeper:
             self.game = 0
             stats_update(self.user_id, 0)
         elif self.game_won == 1:
-            if self.num_rows == 8 and self.num_cols == 8 and self.num_bombs == 8:
+            if self.num_rows == 8 and self.num_cols == 8 and self.num_bombs == 8 and self.multi == "no":
                 self.time_end = time.time()
                 self.tot_time = int(self.time_end-self.time_start)
                 self.mins = int(self.tot_time//60)
