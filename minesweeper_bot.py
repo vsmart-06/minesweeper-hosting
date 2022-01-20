@@ -564,7 +564,7 @@ async def on_message(mess):
             delete_record(u_id)
             record_d = discord.Embed(title = "Data deleted", description = "All of your stats with the bot have been deleted. Play again to create new stats.", colour = discord.Colour.blue())
         elif decision != "cancel":
-            record_d = discord.Embed(title = "Invalid syntax!", description = "The delete syntax is invalid!", colour = discord.Colour.blue())
+            record_d = discord.Embed(title = "Invalid option!", description = "Only enter confirm or cancel!", colour = discord.Colour.blue())
         await mess.channel.send(embed = record_d)
 
     elif msg == ";invite":
