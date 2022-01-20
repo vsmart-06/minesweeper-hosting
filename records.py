@@ -194,5 +194,21 @@ def privacy_change(id, priv):
         pass
     c.close()
     conn.close()
+
+def delete_record(id):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    try:
+        c.execute("DELETE FROM user_data WHERE user_id = "+str(id))
+    except db.errors.OperationalError:
+        pass
+    c.close()
+    conn.close()
+
 c.close()
 conn.close()

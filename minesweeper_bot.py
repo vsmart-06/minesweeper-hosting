@@ -1,7 +1,7 @@
 import discord
 import discord.ext.commands
 from minesweeper_class import minesweeper
-from records import global_leaderboard, server_leaderboard, profile, privacy_change
+from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record
 import os
 
 intents = discord.Intents.default()
@@ -555,6 +555,16 @@ async def on_message(mess):
             user_profile = discord.Embed(title = "Invalid syntax!", description = "The profile syntax is invalid!", color = discord.Color.blue())
         await mess.channel.send(embed=user_profile)
 
+    elif msg == ";delete":
+        await mess.channel.send("Are you sure you want to delete all of your data on this bot? (confirm/cancel)")
+        decision_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
+        decision = decision_msg.content().lower()
+        if decision == "confirm":
+            u_id = mess.author.id
+            delete_record(u_id)
+            record_d = discord.Embed(title = "Data deleted", description = "All of your stats with the bot have been deleted. Play again to create new stats.", colour = discord.Colour.blue())
+            await mess.channel.send(embed = record_d)
+
     elif msg == ";invite":
         invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274877910016&scope=bot", colour = discord.Colour.blue())
         await mess.channel.send(embed = invite)
@@ -595,6 +605,7 @@ Vote for us on discordbotlist: https://discordbotlist.com/bots/minesweeper-bot/u
 `;serverlb`: Alias of `;server leaderboard`.
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
 `;profile settings private/public`: Control who can view your profile. By default it is set to public.
+`;delete`: Delete all your data on the minesweeper bot.
 `;invite`: Get a link to invite this bot to a server.
 `;support`: Get a link to join the official minesweeper bot support server.
 `;vote`: Vote for the bot!''')
