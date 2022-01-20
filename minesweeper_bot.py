@@ -585,7 +585,7 @@ Vote for us on discordbotlist: https://discordbotlist.com/bots/minesweeper-bot/u
         help.add_field(name = "Commands: ", value = 
         '''
 `;help`: Open the guide.
-`;minesweeper`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone in your user to play a game against them!
+`;minesweeper`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone in your server to play a game against them!
 `;ms`: Alias of `;minesweeper`.
 `;minesweeper custom`: Start a custom minesweeper game.
 `;mscustom`: Alias of `;minesweeper custom`.
