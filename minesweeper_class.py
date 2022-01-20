@@ -407,7 +407,8 @@ class minesweeper:
         if self.game_over == 1:
             self.end_msg = "You lost 😢"
             self.game = 0
-            stats_update(self.user_id, 0)
+            if self.num_rows == 8 and self.num_cols == 8 and self.num_bombs == 8 and self.multi == "no":
+                stats_update(self.user_id, 0)
         elif self.game_won == 1:
             if self.num_rows == 8 and self.num_cols == 8 and self.num_bombs == 8 and self.multi == "no":
                 self.time_end = time.time()
