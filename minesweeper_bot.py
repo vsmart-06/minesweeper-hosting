@@ -563,7 +563,9 @@ async def on_message(mess):
             u_id = mess.author.id
             delete_record(u_id)
             record_d = discord.Embed(title = "Data deleted", description = "All of your stats with the bot have been deleted. Play again to create new stats.", colour = discord.Colour.blue())
-            await mess.channel.send(embed = record_d)
+        elif decision != "cancel":
+            record_d = discord.Embed(title = "Invalid syntax!", description = "The delete syntax is invalid!", colour = discord.Colour.blue())
+        await mess.channel.send(embed = record_d)
 
     elif msg == ";invite":
         invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274877910016&scope=bot", colour = discord.Colour.blue())
