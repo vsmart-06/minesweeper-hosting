@@ -47,6 +47,7 @@ async def on_message(mess):
                     except asyncio.TimeoutError:
                         play.end_msg = "You took too long to respond so the game has ended 😥"
                         message = "quit"
+                        play.game = 0
                         break
                     try:
                         message = pos_msg.content
@@ -167,6 +168,7 @@ async def on_message(mess):
                     except asyncio.TimeoutError:
                         play.end_msg = "You took too long to respond so the game has ended 😥"
                         message = "quit"
+                        play.game = 0
                         break
                     try:
                         message = pos_msg.content
