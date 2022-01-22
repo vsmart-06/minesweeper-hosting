@@ -245,6 +245,22 @@ async def on_message(mess):
                 valid_id = 1
             except ValueError:
                 pass
+        elif msg.startswith(";minesweeper <@") and msg.endswith(">"):
+            opp_id_temp = msg.replace(";minesweeper <@", "")
+            opp_id = opp_id_temp.replace(">", "")
+            try:
+                int(opp_id)
+                valid_id = 1
+            except ValueError:
+                pass
+        elif msg.startswith(";ms <@") and msg.endswith(">"):
+            opp_id_temp = msg.replace(";ms <@", "")
+            opp_id = opp_id_temp.replace(">", "")
+            try:
+                int(opp_id)
+                valid_id = 1
+            except ValueError:
+                pass
         if valid_id == 1:
             opp_id = int(opp_id)
             try:
@@ -548,6 +564,14 @@ async def on_message(mess):
                 inv_setting = 1
         elif msg.startswith(";profile <@!") and msg.endswith(">"):
             user_id_temp = msg.replace(";profile <@!", "")
+            user_id = user_id_temp.replace(">", "")
+            try:
+                int(user_id)
+                valid_id = 1
+            except ValueError:
+                pass
+        elif msg.startswith(";profile <@") and msg.endswith(">"):
+            user_id_temp = msg.replace(";profile <@", "")
             user_id = user_id_temp.replace(">", "")
             try:
                 int(user_id)
