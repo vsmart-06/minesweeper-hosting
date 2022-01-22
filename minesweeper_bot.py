@@ -3,6 +3,7 @@ import discord.ext.commands
 from minesweeper_class import minesweeper
 from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record
 import os
+import asyncio
 
 intents = discord.Intents.default()
 intents.members = True
@@ -41,7 +42,12 @@ async def on_message(mess):
             while True:
                 while True:
                     await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                    pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
+                    try:
+                        pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel, timeout = 30.0)
+                    except asyncio.TimeoutError:
+                        play.end_msg = "You took too long to respond so the game has ended 😥"
+                        message = "quit"
+                        break
                     try:
                         message = pos_msg.content
                         r, c = map(int, message.split())
@@ -156,7 +162,12 @@ async def on_message(mess):
             while True:
                 while True:
                     await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                    pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
+                    try:
+                        pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel, timeout = 30.0)
+                    except asyncio.TimeoutError:
+                        play.end_msg = "You took too long to respond so the game has ended 😥"
+                        message = "quit"
+                        break
                     try:
                         message = pos_msg.content
                         r, c = map(int, message.split())
@@ -258,7 +269,12 @@ async def on_message(mess):
                             while True:
                                 while True:
                                     await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                                    pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel)
+                                    try:
+                                        pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 30.0)
+                                    except asyncio.TimeoutError:
+                                        player_1.end_msg = "You took too long to respond so the game has ended 😥"
+                                        message = "quit"
+                                        break
                                     try:
                                         message = pos_msg.content
                                         r, c = map(int, message.split())
@@ -314,6 +330,9 @@ async def on_message(mess):
                                 '''
                                 + player_1.str_row, color=discord.Color.blue())
                                 await mess.channel.send(embed=game_real)
+                            else:
+                                player_1.game = 0
+                                player_1.game_over = 1
                             turn = 1
 
                         else:
@@ -326,7 +345,12 @@ async def on_message(mess):
                             while True:
                                 while True:
                                     await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                                    pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == opp_id and m.channel == mess.channel)
+                                    try:
+                                        pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 30.0)
+                                    except asyncio.TimeoutError:
+                                        player_2.end_msg = "You took too long to respond so the game has ended 😥"
+                                        message = "quit"
+                                        break
                                     try:
                                         message = pos_msg.content
                                         r, c = map(int, message.split())
@@ -382,6 +406,9 @@ async def on_message(mess):
                                 '''
                                 + player_2.str_row, color=discord.Color.blue())
                                 await mess.channel.send(embed=game_real)
+                            else:
+                                player_2.game = 0
+                                player_2.game_over = 1
                             turn = 0
 
                     if player_1.game_over == 1:
