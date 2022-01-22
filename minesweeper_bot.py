@@ -266,7 +266,7 @@ async def on_message(mess):
                     except asyncio.TimeoutError:
                         await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                     else:
-                        if reaction == "✅":
+                        if str(reaction.emoji) == "✅":
                             player_1 = minesweeper(8, 8, 8, a_id, "yes")
                             player_2 = minesweeper(8, 8, 8, opp_id, "yes")
                             turn = 0
