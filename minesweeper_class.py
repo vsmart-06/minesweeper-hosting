@@ -405,7 +405,7 @@ class minesweeper:
 
     def game_end(self):
         if self.game_over == 1:
-            self.end_msg = "You lost 😢"
+            self.end_msg = "You blew up 😢"
             self.game = 0
             if self.num_rows == 8 and self.num_cols == 8 and self.num_bombs == 8 and self.multi == "no":
                 stats_update(self.user_id, 0)
@@ -417,12 +417,12 @@ class minesweeper:
                 self.secs = int(self.tot_time%60)
                 stats_update(self.user_id, 1)
                 if score_check(self.user_id, self.tot_time) not in ["new high", "new record"]:
-                    self.end_msg = '''You won 🥳
+                    self.end_msg = '''You deactivated all the mines 🥳
 Time taken: '''+str(self.mins)+"m and "+str(self.secs)+"s"
                 else:
-                    self.end_msg = '''You won 🥳
+                    self.end_msg = '''You deactivated all the mines 🥳
 Time taken: '''+str(self.mins)+"m and "+str(self.secs)+"s"+'''
 You made a new record!'''
             else:
-                self.end_msg = "You won 🥳"
+                self.end_msg = "You deactivated all the mines 🥳"
             self.game = 0
