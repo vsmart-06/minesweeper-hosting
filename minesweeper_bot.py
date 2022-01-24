@@ -273,7 +273,7 @@ async def on_message(mess):
                 for m in guild.members:
                     members.append(m)
                 if opponent in members:
-                    want_play_embed = discord.Embed(title = "React to play!", description = f"{opponent.name}, {me.name} has challenged you to a game of minesweeper! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                    want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of minesweeper! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                     want_play = await mess.channel.send(embed = want_play_embed)
                     await want_play.add_reaction("✅")
                     await want_play.add_reaction("❌")
