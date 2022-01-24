@@ -625,14 +625,19 @@ async def on_message(mess):
         delete_data = await mess.channel.send("Are you sure you want to delete all of your data on this bot? React to confirm!")
         await delete_data.add_reaction("✅")
         await delete_data.add_reaction("❌")
-        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["✅", "❌"] and p.id == mess.author.id and r.message.id == delete_data.id, timeout = 30.0)
-        if str(reaction.emoji) == "✅":
-            u_id = mess.author.id
-            delete_record(u_id)
-            record_d = discord.Embed(title = "Data deleted", description = "All of your stats with the bot have been deleted. Play again to create new stats.", colour = discord.Colour.blue())
+        try:
+            reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["✅", "❌"] and p.id == mess.author.id and r.message.id == delete_data.id, timeout = 30.0)
+        except asyncio.TimeoutError:
+            record_d = discord.Embed(title = "Operation cancelled!", description = "You took too long to respond so the data deletion has been cancelled!", colour = discord.Colour.blue())
+            await mess.channel.send(embed = record_d)
         else:
-            record_d = discord.Embed(title = "Operation cancelled!", description = "Data deletion has been cancelled!", colour = discord.Colour.blue())
-        await mess.channel.send(embed = record_d)
+            if str(reaction.emoji) == "✅":
+                u_id = mess.author.id
+                delete_record(u_id)
+                record_d = discord.Embed(title = "Data deleted", description = "All of your stats with the bot have been deleted. Play again to create new stats.", colour = discord.Colour.blue())
+            else:
+                record_d = discord.Embed(title = "Operation cancelled!", description = "Data deletion has been cancelled!", colour = discord.Colour.blue())
+            await mess.channel.send(embed = record_d)
 
     elif msg == ";invite":
         invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878172160&scope=bot", colour = discord.Colour.blue())
