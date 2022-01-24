@@ -278,7 +278,7 @@ async def on_message(mess):
                     await want_play.add_reaction("✅")
                     await want_play.add_reaction("❌")
                     try:
-                        reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"], timeout = 30.0)
+                        reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 30.0)
                     except asyncio.TimeoutError:
                         await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                     else:
@@ -622,15 +622,16 @@ async def on_message(mess):
         await mess.channel.send(embed=user_profile)
 
     elif msg == ";delete":
-        await mess.channel.send("Are you sure you want to delete all of your data on this bot? (confirm/cancel)")
-        decision_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
-        decision = decision_msg.content.lower()
-        if decision == "confirm":
+        delete_data = await mess.channel.send("Are you sure you want to delete all of your data on this bot? React to confirm!")
+        await delete_data.add_reaction("✅")
+        await delete_data.add_reaction("❌")
+        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["✅", "❌"] and p.id == mess.author.id and r.message.id == delete_data.id, timeout = 30.0)
+        if str(reaction.emoji) == "✅":
             u_id = mess.author.id
             delete_record(u_id)
             record_d = discord.Embed(title = "Data deleted", description = "All of your stats with the bot have been deleted. Play again to create new stats.", colour = discord.Colour.blue())
-        elif decision != "cancel":
-            record_d = discord.Embed(title = "Invalid option!", description = "Only enter confirm or cancel!", colour = discord.Colour.blue())
+        else:
+            record_d = discord.Embed(title = "Operation cancelled!", description = "Data deletion has been cancelled!", colour = discord.Colour.blue())
         await mess.channel.send(embed = record_d)
 
     elif msg == ";invite":
