@@ -633,8 +633,7 @@ async def on_message(mess):
             await mess.channel.send(embed = record_d)
         else:
             if str(reaction.emoji) == "✅":
-                u_id = mess.author.id
-                delete_record(u_id)
+                delete_record(aut_id)
                 record_d = discord.Embed(title = "Data deleted", description = "All of your stats with the bot have been deleted. Play again to create new stats.", colour = discord.Colour.blue())
             else:
                 record_d = discord.Embed(title = "Operation cancelled!", description = "Data deletion has been cancelled!", colour = discord.Colour.blue())
