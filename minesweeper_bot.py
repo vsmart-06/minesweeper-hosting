@@ -622,11 +622,12 @@ async def on_message(mess):
         await mess.channel.send(embed=user_profile)
 
     elif msg == ";delete":
+        aut_id = mess.author.id
         delete_data = await mess.channel.send("Are you sure you want to delete all of your data on this bot? React to confirm!")
         await delete_data.add_reaction("✅")
         await delete_data.add_reaction("❌")
         try:
-            reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["✅", "❌"] and p.id == mess.author.id and r.message.id == delete_data.id, timeout = 30.0)
+            reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["✅", "❌"] and p.id == aut_id and r.message.id == delete_data.id, timeout = 30.0)
         except asyncio.TimeoutError:
             record_d = discord.Embed(title = "Operation cancelled!", description = "You took too long to respond so the data deletion has been cancelled!", colour = discord.Colour.blue())
             await mess.channel.send(embed = record_d)
