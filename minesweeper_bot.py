@@ -129,7 +129,7 @@ async def on_message(mess):
                     num_cols = int(num_cols_msg.content)
                     if num_cols <= 1:
                         await mess.channel.send("You have too less columns")
-                    elif num_cols > 27:
+                    elif num_cols+len(str(num_rows))+1 > 27:
                         await mess.channel.send("You have too many columns")
                     else:
                         break
