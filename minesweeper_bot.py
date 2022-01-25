@@ -468,15 +468,16 @@ async def on_message(mess):
 
     elif msg == ";tournament":
         host_id = mess.author.id
-        thumb = bot.get_emoji(935122402176819220)
+        thumb = bot.get_emoji(935120796358152212)
+        check = bot.get_emoji(935455988516028486)
         tourney_members = [host_id]
-        tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! (Once you join, you will not be allowed to leave the tournament) (Host react with ✅ to start the game)", colour = discord.Colour.blue())
+        tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! (Once you join, you will not be allowed to leave the tournament) (Host react with {check} to start the game)", colour = discord.Colour.blue())
         tourney_init = await mess.channel.send(embed = tourney_init_embed)
         await tourney_init.add_reaction(str(thumb))
-        await tourney_init.add_reaction("✅")
+        await tourney_init.add_reaction(str(check))
         while True:
             try:
-                reaction, user = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), "✅"] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0)
+                reaction, user = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0)
             except asyncio.TimeoutError:
                 break
             else:
@@ -484,7 +485,7 @@ async def on_message(mess):
                 if reaction_e == str(thumb) and user.id != host_id:
                     await mess.channel.send(f"<@!{user.id}> has joined the tournament!")
                     tourney_members.append(user.id)
-                elif reaction_e == "✅" and user.id == host_id:
+                elif reaction_e == str(check) and user.id == host_id:
                     break
         tourney_members = list(set(tourney_members))
         mem_str = "Tournament participants:"
