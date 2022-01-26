@@ -46,7 +46,7 @@ async def on_message(mess):
                     try:
                         pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel, timeout = 30.0)
                     except asyncio.TimeoutError:
-                        play.end_msg = "You took too long to respond so the game has ended 😥"
+                        play.end_msg = "You took too long to respond so the game has ended 😢"
                         message = "quit"
                         play.game = 0
                         break
@@ -167,7 +167,7 @@ async def on_message(mess):
                     try:
                         pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel, timeout = 30.0)
                     except asyncio.TimeoutError:
-                        play.end_msg = "You took too long to respond so the game has ended 😥"
+                        play.end_msg = "You took too long to respond so the game has ended 😢"
                         message = "quit"
                         play.game = 0
                         break
@@ -301,7 +301,7 @@ async def on_message(mess):
                                             try:
                                                 pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 30.0)
                                             except asyncio.TimeoutError:
-                                                player_1.end_msg = "You took too long to respond so the game has ended 😥"
+                                                player_1.end_msg = "You took too long to respond so the game has ended 😢"
                                                 message = "quit"
                                                 break
                                             try:
@@ -377,7 +377,7 @@ async def on_message(mess):
                                             try:
                                                 pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 30.0)
                                             except asyncio.TimeoutError:
-                                                player_2.end_msg = "You took too long to respond so the game has ended 😥"
+                                                player_2.end_msg = "You took too long to respond so the game has ended 😢"
                                                 message = "quit"
                                                 break
                                             try:
@@ -562,7 +562,7 @@ async def on_message(mess):
                                     try:
                                         pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 60.0)
                                     except asyncio.TimeoutError:
-                                        player_1.end_msg = "You took too long to respond so the game has ended 😥"
+                                        player_1.end_msg = "You took too long to respond so the game has ended 😢"
                                         message = "quit"
                                         break
                                     try:
@@ -638,7 +638,7 @@ async def on_message(mess):
                                     try:
                                         pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 60.0)
                                     except asyncio.TimeoutError:
-                                        player_2.end_msg = "You took too long to respond so the game has ended 😥"
+                                        player_2.end_msg = "You took too long to respond so the game has ended 😢"
                                         message = "quit"
                                         break
                                     try:
