@@ -480,7 +480,7 @@ async def on_message(mess):
         await tourney_init.add_reaction(str(check))
         while True:
             try:
-                reaction, user = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0)
+                reaction, user = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(bye), str(check)] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0)
             except asyncio.TimeoutError:
                 break
             else:
