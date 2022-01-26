@@ -471,10 +471,12 @@ async def on_message(mess):
         thumb = bot.get_emoji(935120796358152212)
         check = bot.get_emoji(935455988516028486)
         winner = bot.get_emoji(935794255543275541)
+        bye = bot.get_emoji(935868215169540146)
         tourney_members = [host_id]
-        tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! (Once you join, you will not be allowed to leave the tournament) (Host react with {check} to start the game)", colour = discord.Colour.blue())
+        tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! React with {bye} to leave. Host react with {check} to start the game", colour = discord.Colour.blue())
         tourney_init = await mess.channel.send(embed = tourney_init_embed)
         await tourney_init.add_reaction(str(thumb))
+        await tourney_init.add_reaction(str(bye))
         await tourney_init.add_reaction(str(check))
         while True:
             try:
@@ -484,8 +486,11 @@ async def on_message(mess):
             else:
                 reaction_e = str(reaction.emoji)
                 if reaction_e == str(thumb) and user.id != host_id and user.id not in tourney_members:
-                    await mess.channel.send(f"<@!{user.id}> has joined the tournament!")
+                    await mess.channel.send(f"<@!{user.id}> has joined the tournament 🎉")
                     tourney_members.append(user.id)
+                elif reaction_e == str(bye) and user.id != host_id and user.id in tourney_members:
+                    await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
+                    tourney_members.remove(user.id)
                 elif reaction_e == str(check) and user.id == host_id:
                     break
         tourney_members = list(set(tourney_members))
