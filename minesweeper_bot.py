@@ -483,7 +483,7 @@ async def on_message(mess):
                 break
             else:
                 reaction_e = str(reaction.emoji)
-                if reaction_e == str(thumb) and user.id != host_id:
+                if reaction_e == str(thumb) and user.id != host_id and user.id not in tourney_members:
                     await mess.channel.send(f"<@!{user.id}> has joined the tournament!")
                     tourney_members.append(user.id)
                 elif reaction_e == str(check) and user.id == host_id:
