@@ -470,6 +470,7 @@ async def on_message(mess):
         host_id = mess.author.id
         thumb = bot.get_emoji(935120796358152212)
         check = bot.get_emoji(935455988516028486)
+        winner = bot.get_emoji(935794255543275541)
         tourney_members = [host_id]
         tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! (Once you join, you will not be allowed to leave the tournament) (Host react with {check} to start the game)", colour = discord.Colour.blue())
         tourney_init = await mess.channel.send(embed = tourney_init_embed)
@@ -722,7 +723,7 @@ async def on_message(mess):
                     match = 1
             round += 1
             match = 1
-        await mess.channel.send(f"<@!{tourney_members[0]}> is the winner of the tournament!")
+        await mess.channel.send(f"<@!{tourney_members[0]}> is the winner of the tournament! {winner}")
 
     elif msg == ";leaderboard" or msg == ";lb":
         leaders = global_leaderboard()
