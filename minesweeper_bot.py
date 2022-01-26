@@ -473,7 +473,7 @@ async def on_message(mess):
         winner = bot.get_emoji(935794255543275541)
         bye = bot.get_emoji(935868215169540146)
         tourney_members = [host_id]
-        tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! React with {bye} to leave. <@!{host_id}> react with {check} to start the game", colour = discord.Colour.blue())
+        tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! React with {bye} to leave. React again to join/leave! <@!{host_id}> react with {check} to start the game", colour = discord.Colour.blue())
         tourney_init = await mess.channel.send(embed = tourney_init_embed)
         await tourney_init.add_reaction(str(thumb))
         await tourney_init.add_reaction(str(bye))
