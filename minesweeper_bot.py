@@ -873,6 +873,7 @@ async def on_message(mess):
                         user_profile.add_field(name = "Games lost:", value = prof[3], inline = True)
                         user_profile.add_field(name = "Total games played:", value = prof[4], inline = True)
                         user_profile.add_field(name = "Win percentage:", value = prof[5], inline = True)
+                        user_profile.add_field(name = "Win streak:", value = prof[10], inline = True)
                         user_profile.add_field(name = "Profile type:", value = prof[8].capitalize(), inline = True)
                     else:
                         user_profile = discord.Embed(title = "Private profile!", description = "This profile is private so you cannot view it!", color = discord.Color.blue())

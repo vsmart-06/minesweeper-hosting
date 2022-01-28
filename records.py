@@ -27,7 +27,8 @@ try:
         tot_time INT,
         avg_time INT,
         privacy VARCHAR,
-        initial_supporter VARCHAR
+        initial_supporter VARCHAR,
+        win_streak INT
         )''')
 except db.errors.ProgrammingError:
     pass
@@ -47,14 +48,14 @@ def stats_update(id, win):
     try:
         if win == 1:
             c.execute('''INSERT INTO user_data 
-            (user_id, games_won, games_lost, total_games, win_percent) 
-            VALUES ('''+str(id)+", 1, 0, 1, 100)")
+            (user_id, games_won, games_lost, total_games, win_percent, win_streak) 
+            VALUES ('''+str(id)+", 1, 0, 1, 100, 1)")
             if length > 100:
                 c.execute("UPDATE user_data SET initial_supporter = 'no' WHERE user_id = "+str(id))
         else:
             c.execute('''INSERT INTO user_data 
-            (user_id, games_won, games_lost, total_games, win_percent) 
-            VALUES ('''+str(id)+", 0, 1, 1, 0)")
+            (user_id, games_won, games_lost, total_games, win_percent, win_streak) 
+            VALUES ('''+str(id)+", 0, 1, 1, 0, 0)")
             if length > 100:
                 c.execute("UPDATE user_data SET initial_supporter = 'no' WHERE user_id = "+str(id))
         conn.commit()
@@ -64,13 +65,14 @@ def stats_update(id, win):
         if win == 1:
             new_wins = record[2]+1
             new_total = record[4]+1
+            new_streak = record[10]+1
             new_percent = (new_wins/new_total)*100
-            c.execute("UPDATE user_data SET games_won = "+str(new_wins)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+" WHERE user_id = "+str(id))
+            c.execute("UPDATE user_data SET games_won = "+str(new_wins)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+", win_streak = "+str(new_streak)+" WHERE user_id = "+str(id))
         else:
             new_lost = record[3]+1
             new_total = record[4]+1
             new_percent = (record[2]/new_total)*100
-            c.execute("UPDATE user_data SET games_lost = "+str(new_lost)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+" WHERE user_id = "+str(id))
+            c.execute("UPDATE user_data SET games_lost = "+str(new_lost)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+", win_streak = 0 WHERE user_id = "+str(id))
         conn.commit()
     c.close()
     conn.close()
