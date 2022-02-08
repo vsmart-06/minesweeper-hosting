@@ -547,11 +547,11 @@ async def on_message(mess):
                             except asyncio.TimeoutError:
                                 break
                             else:
-                                if user.id == pairings[match-1][0] and not(p1_ready):
+                                if user.id == pairings[match-1][0]:
                                     p1_ready = True
                                     await mess.channel.send(f"<@!{pairings[match-1][0]}> is ready!")
                                     pairing_temp.remove(pairings[match-1][0])
-                                elif user.id == pairings[match-1][1] and not(p2_ready):
+                                elif user.id == pairings[match-1][1]:
                                     p2_ready = True
                                     await mess.channel.send(f"<@!{pairings[match-1][1]}> is ready!")
                                     pairing_temp.remove(pairings[match-1][1])
