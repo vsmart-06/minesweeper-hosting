@@ -873,6 +873,7 @@ async def on_message(mess):
                         else:
                             p_title = user_name+"'s profile"
                         user_profile = discord.Embed(title = p_title, description = "All stats about this user on the minesweeper bot!", color = discord.Color.blue())
+                        user_profile.set_thumbnail(url = u.avatar_url)
                         user_profile.add_field(name = "Discord handle:", value = "||"+user_handle+"||", inline = True)
                         if prof[1] != None:
                             user_profile.add_field(name = "Best time:", value = str(time_mins)+"m "+str(time_secs)+"s", inline = True)
