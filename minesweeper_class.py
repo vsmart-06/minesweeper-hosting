@@ -174,7 +174,8 @@ class minesweeper:
                     self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "✅"
             for flag_p in self.flag_pos:
                 if flag_p not in self.bomb_list:
-                    self.items_g[flag_p[0]-1][flag_p[1]-1] = "❌"
+                    if self.items_stat[flag_p[0]-1][flag_p[1]-1] == "alive":
+                        self.items_g[flag_p[0]-1][flag_p[1]-1] = "❌"
         elif self.game_won == 1:
             for bomb_pos in self.bomb_list:
                 self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] = "✅"
