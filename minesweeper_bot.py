@@ -872,6 +872,9 @@ async def on_message(mess):
                             p_title = user_name+"'s profile "+str(initialsupporter)
                         else:
                             p_title = user_name+"'s profile"
+                        if prof[4] >= 100:
+                            hun_club = bot.get_emoji(946733351195254814)
+                            p_title += " "+str(hun_club)
                         user_profile = discord.Embed(title = p_title, description = "All stats about this user on the minesweeper bot!", color = discord.Color.blue())
                         user_profile.set_thumbnail(url = u.avatar_url)
                         user_profile.add_field(name = "Discord handle:", value = "||"+user_handle+"||", inline = True)
