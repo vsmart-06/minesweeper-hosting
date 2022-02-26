@@ -728,9 +728,11 @@ async def on_message(mess):
                             tourney_members.remove(a_id)
                             await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
                         match += 1
+                        await asyncio.sleep(5)
                     
                     else:
                         match = 1
+                        await asyncio.sleep(5)
                 round += 1
                 match = 1
             await mess.channel.send(f"<@!{tourney_members[0]}> is the winner of the tournament! {winner}")
