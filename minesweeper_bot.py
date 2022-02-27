@@ -931,7 +931,7 @@ async def on_message(mess):
         await t_mem.add_roles(role)
 
     elif msg == ";invite":
-        invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878172224&scope=bot", colour = discord.Colour.blue())
+        invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: [https://discord.com/minesweeper](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878172224&scope=bot)", colour = discord.Colour.blue())
         await mess.channel.send(embed = invite)
     
     elif msg == ";support":
