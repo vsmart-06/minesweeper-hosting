@@ -19,11 +19,22 @@ async def on_ready():
     print("Ready for takeoff!")
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send("I'm in "+str(len(bot.guilds))+" servers!")
+    bot_count = bot.get_channel(948144061305479198)
+    await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
 @bot.event
 async def on_guild_join(guild):
+    bot_count = bot.get_channel(948144061305479198)
+    await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send("New server: "+str(guild))
+
+@bot.event
+async def on_guild_remove(guild):
+    bot_count = bot.get_channel(948144061305479198)
+    await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
+    my_user = await bot.fetch_user(706855396828250153)
+    await my_user.send("Removed from: "+str(guild))
 
 @bot.event
 async def on_message(mess):
