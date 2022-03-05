@@ -6,12 +6,19 @@ import os
 import asyncio
 import random as rd
 from discord.utils import get
+import topgg
+import discordspy
 
 intents = discord.Intents.default()
 intents.members = True
 intents.guilds = True
 bot = discord.Client(intents = intents)
 token = os.getenv("DISCORD_TOKEN")
+topgg_token = os.getenv("TOPGG_TOKEN")
+discords_token = os.getenv("DISCORDS_TOKEN")
+topgg_client = topgg.DBLClient(bot, topgg_token, autopost = True)
+discords_client = discordspy.Client(bot, discords_token, post = discordspy.Post.auto())
+
 
 @bot.event
 async def on_ready():
@@ -952,7 +959,8 @@ async def on_message(mess):
     elif msg == ";vote":
         vote = discord.Embed(title = "Vote for me!", description = '''Enjoyed using the bot?
 Vote for us on top.gg: https://top.gg/bot/902498109270134794/vote
-Vote for us on discordbotlist: https://discordbotlist.com/bots/minesweeper-bot/upvote''', colour = discord.Colour.blue())
+Vote for us on discordbotlist.com: https://discordbotlist.com/bots/minesweeper-bot/upvote
+Vote for us on discords.com: https://discords.com/bots/bot/902498109270134794/vote''', colour = discord.Colour.blue())
         await mess.channel.send(embed = vote)
     
     elif msg == ";strength" and mess.author.id == 706855396828250153:

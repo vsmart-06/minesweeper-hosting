@@ -1,2 +1,4 @@
 discord
 mysql-connector
+topggpy
+discordspy
