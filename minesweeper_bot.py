@@ -7,7 +7,7 @@ import asyncio
 import random as rd
 from discord.utils import get
 import topgg
-#import discordspy
+import discordspy
 
 intents = discord.Intents.default()
 intents.members = True
@@ -17,7 +17,7 @@ token = os.getenv("DISCORD_TOKEN")
 topgg_token = os.getenv("TOPGG_TOKEN")
 discords_token = os.getenv("DISCORDS_TOKEN")
 topgg_client = topgg.DBLClient(bot, topgg_token, autopost = True)
-#discords_client = discordspy.Client(bot, discords_token, post = discordspy.Post.auto())
+discords_client = discordspy.Client(bot, discords_token, post = discordspy.Post.intervals(0, 30, 0))
 
 
 @bot.event
