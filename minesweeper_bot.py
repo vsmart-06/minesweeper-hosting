@@ -942,11 +942,11 @@ async def on_message(mess):
         await t_mem.add_roles(role)
 
     elif msg == ";invite":
-        invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: [https://discord.com/minesweeper](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878172224&scope=bot)", colour = discord.Colour.blue())
+        invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: [https://discord.com/bot/minesweeper](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878172224&scope=bot)", colour = discord.Colour.blue())
         await mess.channel.send(embed = invite)
     
     elif msg == ";support":
-        support = discord.Embed(title = "Join the official minesweeper bot support server!", description = "Use this link to join the server: https://discord.gg/3jCG74D3RK", colour = discord.Colour.blue())
+        support = discord.Embed(title = "Join the official minesweeper bot support server!", description = "Use this link to join the server: [https://discord.gg/minesweeper](https://discord.gg/3jCG74D3RK)", colour = discord.Colour.blue())
         await mess.channel.send(embed = support)
     
     elif msg == ";vote":
