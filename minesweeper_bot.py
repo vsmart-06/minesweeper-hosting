@@ -8,6 +8,7 @@ import random as rd
 from discord.utils import get
 import topgg
 import discordspy
+import statcord
 
 intents = discord.Intents.default()
 intents.members = True
@@ -16,9 +17,11 @@ bot = discord.Client(intents = intents)
 token = os.getenv("DISCORD_TOKEN")
 topgg_token = os.getenv("TOPGG_TOKEN")
 discords_token = os.getenv("DISCORDS_TOKEN")
+statcord_token = os.getenv("STATCORD_TOKEN")
 topgg_client = topgg.DBLClient(bot, topgg_token, autopost = True)
 discords_client = discordspy.Client(bot, discords_token, post = discordspy.Post.intervals(0, 30, 0))
-
+statcord_client = statcord.Client(bot, statcord_token)
+statcord_client.start_loop()
 
 @bot.event
 async def on_ready():

@@ -2,3 +2,4 @@ discord
 mysql-connector
 topggpy
 discordspy
+statcord.py
