@@ -128,6 +128,14 @@ async def on_message(mess):
                 + play.str_row, color=discord.Color.blue())
                 await mess.channel.send(embed=game_real)
         await mess.channel.send(play.end_msg)
+        tournament_invite = discord.Embed(title = "REGISTRATION FOR THE MINESWEEPER SUPER LEAGUE HAS BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+1st place - 10M DMC (Dank Memer Currency)
+2nd place - 7M DMC
+3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+        await mess.channel.send(embed = tournament_invite)
 
     elif msg == ";minesweeper custom" or msg == ";mscustom":
         author_id = mess.author.id
@@ -249,6 +257,14 @@ async def on_message(mess):
                 + play.str_row, color=discord.Color.blue())
                 await mess.channel.send(embed=game_real)
         await mess.channel.send(play.end_msg)
+        tournament_invite = discord.Embed(title = "REGISTRATION FOR THE MINESWEEPER SUPER LEAGUE HAS BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+1st place - 10M DMC (Dank Memer Currency)
+2nd place - 7M DMC
+3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+        await mess.channel.send(embed = tournament_invite)
     
     elif msg.startswith(";minesweeper") or msg.startswith(";ms"):
         if not(isinstance(mess.channel, discord.DMChannel)):
