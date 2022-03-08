@@ -25,7 +25,7 @@ statcord_client.start_loop()
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity = discord.Activity(type = discord.ActivityType.watching, name = ";help"))
+    await bot.change_presence(activity = discord.Game(name = "Minesweeper | ;help"))
     print("Ready for takeoff!")
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send("I'm in "+str(len(bot.guilds))+" servers!")
