@@ -866,7 +866,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send(embed = tournament_invite)
 
     elif msg == ";leaderboard" or msg == ";lb":
-        leaders = global_leaderboard()
+        leaders = global_leaderboard("best_time")
         leaders_str = ""
         for user in leaders:
             if user[1] != None:
@@ -916,7 +916,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             members = []
             for m in guild.members:
                 members.append(m.id)
-            server_leaders = server_leaderboard(members)
+            server_leaders = server_leaderboard(members, "best_time")
             sleaders_str = ""
             for member in server_leaders:
                 if member[1] != None:

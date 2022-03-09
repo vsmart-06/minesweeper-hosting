@@ -114,7 +114,7 @@ def score_check(id, time):
     return "no change"
     
     
-def global_leaderboard():
+def global_leaderboard(stat):
     conn = db.connect(
     host = h,
     user = u,
@@ -123,20 +123,19 @@ def global_leaderboard():
     )
 
     c = conn.cursor()
-    c.execute('''
-                SELECT user_id, best_time
-                FROM user_data
-                ORDER BY best_time''')
+    c.execute(f'''SELECT user_id, {stat} FROM user_data ORDER BY {stat}''')
     leaders = c.fetchall()
     leaders_new = list(leaders)
     for record in leaders:
-        if record[1] == None:
+        if record[1] == 0 or None:
             leaders_new.remove(record)
     c.close()
     conn.close()
+    if stat == "max_streak":
+        leaders_new.sort(reverse = True)
     return leaders_new[0:10]
 
-def server_leaderboard(members):
+def server_leaderboard(members, stat):
     conn = db.connect(
     host = h,
     user = u,
@@ -148,7 +147,7 @@ def server_leaderboard(members):
     server_leaders = []
     for x in members:
         try:
-            c.execute("SELECT user_id, best_time FROM user_data WHERE user_id = "+str(x))
+            c.execute(f"SELECT user_id, {stat} FROM user_data WHERE user_id = "+str(x))
             server_leaders.append(c.fetchone())
         except db.errors.OperationalError:
             pass
@@ -159,11 +158,13 @@ def server_leaderboard(members):
             break
     server_leaders_new = list(server_leaders)
     for y in server_leaders:
-        if y[1] == None:
+        if y[1] == 0 or None:
             server_leaders_new.remove(y)
     server_leaders_new.sort(key = lambda a: a[1])
     c.close()
     conn.close()
+    if stat == "max_streak":
+        server_leaders_new.sort(reverse = True)
     return server_leaders_new[0:10]
 
 def profile(id):
