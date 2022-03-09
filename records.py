@@ -126,7 +126,7 @@ def global_leaderboard(stat):
     c.execute(f'''SELECT user_id, {stat} FROM user_data ORDER BY {stat}''')
     leaders = c.fetchall()
     leaders_new = list(leaders)
-    for record in leaders_new:
+    for record in leaders:
         if record[1] == 0 or None:
             leaders_new.remove(record)
     c.close()
