@@ -127,8 +127,12 @@ def global_leaderboard(stat):
     leaders = c.fetchall()
     leaders_new = list(leaders)
     for record in leaders:
-        if record[1] == 0 or None:
-            leaders_new.remove(record)
+        if stat == "max_streak":
+            if record[1] == 0:
+                leaders_new.remove(record)
+        else:
+            if record[1] == None:
+                leaders_new.remove(record)
     c.close()
     conn.close()
     if stat == "max_streak":
@@ -158,8 +162,12 @@ def server_leaderboard(members, stat):
             break
     server_leaders_new = list(server_leaders)
     for y in server_leaders:
-        if y[1] == 0 or None:
-            server_leaders_new.remove(y)
+        if stat == "max_streak":
+            if y[1] == 0:
+                server_leaders_new.remove(y)
+        else:
+            if y[1] == None:
+                server_leaders_new.remove(y)
     server_leaders_new.sort(key = lambda a: a[1])
     c.close()
     conn.close()
