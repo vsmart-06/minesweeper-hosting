@@ -130,7 +130,7 @@ async def on_message(mess):
         await mess.channel.send(play.end_msg)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -259,7 +259,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
         await mess.channel.send(play.end_msg)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -484,7 +484,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                     await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
                                     tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -495,7 +495,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                     await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
                                     tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -506,7 +506,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                     await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
                                     tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -517,7 +517,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                     await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
                                     tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -528,7 +528,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
                                 tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -540,7 +540,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         await mess.channel.send(embed = dual_game)
                         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -551,7 +551,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     await mess.channel.send(embed = dual_game)
                     tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -562,7 +562,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                 await mess.channel.send(embed = dual_game)
                 tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -572,7 +572,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send("You cant play a match against someone in a DM!")
             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -847,7 +847,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send(f"<@!{tourney_members[0]}> is the winner of the tournament! {winner}")
             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -858,7 +858,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send("You can't start a tournament in a DM!")
             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -902,7 +902,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
         await mess.channel.send(embed=global_lb)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -952,7 +952,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send(embed=server_lb)
             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -962,7 +962,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send("This is not a server!")
             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -1039,7 +1039,8 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         user_profile.add_field(name = "Games lost:", value = prof[3], inline = True)
                         user_profile.add_field(name = "Total games played:", value = prof[4], inline = True)
                         user_profile.add_field(name = "Win percentage:", value = prof[5], inline = True)
-                        user_profile.add_field(name = "Win streak:", value = prof[10], inline = True)
+                        user_profile.add_field(name = "Current win streak:", value = prof[10], inline = True)
+                        user_profile.add_field(name = "Maximum win streak:", value = prof[11], inline = True)
                         user_profile.add_field(name = "Profile type:", value = prof[8].capitalize(), inline = True)
                     else:
                         user_profile = discord.Embed(title = "Private profile!", description = "This profile is private so you cannot view it!", color = discord.Color.blue())
@@ -1054,7 +1055,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
         await mess.channel.send(embed=user_profile)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -1073,7 +1074,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send(embed = record_d)
             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -1088,7 +1089,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send(embed = record_d)
             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -1108,7 +1109,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
         await mess.channel.send(embed = invite)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -1120,7 +1121,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
         await mess.channel.send(embed = support)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -1135,7 +1136,7 @@ Vote for us on discords.com: https://discords.com/bots/bot/902498109270134794/vo
         await mess.channel.send(embed = vote)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
@@ -1177,7 +1178,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
         await mess.channel.send(embed = help)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
-🥇 1st place - 10M DMC (Dank Memer Currency)
+🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 

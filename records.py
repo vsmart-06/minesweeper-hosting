@@ -28,7 +28,8 @@ try:
         avg_time INT,
         privacy VARCHAR,
         initial_supporter VARCHAR,
-        win_streak INT
+        win_streak INT,
+        max_streak INT
         )''')
 except db.errors.ProgrammingError:
     pass
@@ -48,14 +49,14 @@ def stats_update(id, win):
     try:
         if win == 1:
             c.execute('''INSERT INTO user_data 
-            (user_id, games_won, games_lost, total_games, win_percent, win_streak) 
-            VALUES ('''+str(id)+", 1, 0, 1, 100, 1)")
+            (user_id, games_won, games_lost, total_games, win_percent, win_streak, max_streak) 
+            VALUES ('''+str(id)+", 1, 0, 1, 100, 1, 1)")
             if length > 100:
                 c.execute("UPDATE user_data SET initial_supporter = 'no' WHERE user_id = "+str(id))
         else:
             c.execute('''INSERT INTO user_data 
-            (user_id, games_won, games_lost, total_games, win_percent, win_streak) 
-            VALUES ('''+str(id)+", 0, 1, 1, 0, 0)")
+            (user_id, games_won, games_lost, total_games, win_percent, win_streak, max_streak) 
+            VALUES ('''+str(id)+", 0, 1, 1, 0, 0, 0)")
             if length > 100:
                 c.execute("UPDATE user_data SET initial_supporter = 'no' WHERE user_id = "+str(id))
         conn.commit()
@@ -68,6 +69,8 @@ def stats_update(id, win):
             new_streak = record[10]+1
             new_percent = (new_wins/new_total)*100
             c.execute("UPDATE user_data SET games_won = "+str(new_wins)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+", win_streak = "+str(new_streak)+" WHERE user_id = "+str(id))
+            if new_streak > record[11]:
+                c.execute("UPDATE user_data SET max_streak = "+str(new_streak)+" WHERE user_id = "+str(id))
         else:
             new_lost = record[3]+1
             new_total = record[4]+1
