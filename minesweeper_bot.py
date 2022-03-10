@@ -867,7 +867,6 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
 
     elif msg == ";leaderboard" or msg == ";lb":
         page = 1
-        lb_author = mess.author.id
         while True:
             if page == 1:
                 leaders = global_leaderboard("best_time")
@@ -910,7 +909,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                 lb = await mess.channel.send(embed=global_lb)
                 await lb.add_reaction("▶")
                 try:
-                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and r.message.id == lb.id, timeout = 30.0)
                 except asyncio.TimeoutError:
                     break
                 else:
@@ -955,7 +954,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                 await lb.add_reaction("◀")
                 await lb.add_reaction("▶")
                 try:
-                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and r.message.id == lb.id, timeout = 30.0)
                 except asyncio.TimeoutError:
                     break
                 else:
@@ -1000,7 +999,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                 lb = await mess.channel.send(embed=global_lb)
                 await lb.add_reaction("◀")
                 try:
-                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and r.message.id == lb.id, timeout = 30.0)
                 except asyncio.TimeoutError:
                     break
                 else:
@@ -1023,7 +1022,6 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             for m in guild.members:
                 members.append(m.id)
             page = 1
-            lb_author = mess.author.id
             while True:
                 if page == 1:
                     server_leaders = server_leaderboard(members, "best_time")
@@ -1066,7 +1064,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     lb = await mess.channel.send(embed=server_lb)
                     await lb.add_reaction("▶")
                     try:
-                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and r.message.id == lb.id, timeout = 30.0)
                     except asyncio.TimeoutError:
                         break
                     else:
@@ -1108,10 +1106,10 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     server_lb = discord.Embed(title="Best average times in the server", description = sleaders_str, colour=discord.Color.blue())
                     await lb.delete()
                     lb = await mess.channel.send(embed=server_lb)
-                    await lb.add_reaction("▶")
                     await lb.add_reaction("◀")
+                    await lb.add_reaction("▶")
                     try:
-                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and r.message.id == lb.id, timeout = 30.0)
                     except asyncio.TimeoutError:
                         break
                     else:
@@ -1156,7 +1154,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     lb = await mess.channel.send(embed=server_lb)
                     await lb.add_reaction("◀")
                     try:
-                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and r.message.id == lb.id, timeout = 30.0)
                     except asyncio.TimeoutError:
                         break
                     else:
