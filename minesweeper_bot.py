@@ -585,28 +585,56 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             thumb = bot.get_emoji(935120796358152212)
             check = bot.get_emoji(935455988516028486)
             winner = bot.get_emoji(935794255543275541)
-            bye = bot.get_emoji(935868215169540146)
             tourney_members = [host_id]
-            tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! React with {bye} to leave. React again to join/leave! <@!{host_id}> react with {check} to start the tournament!", colour = discord.Colour.blue())
+            tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! <@!{host_id}> react with {check} to start the tournament!", colour = discord.Colour.blue())
             tourney_init = await mess.channel.send(embed = tourney_init_embed)
             await tourney_init.add_reaction(str(thumb))
-            await tourney_init.add_reaction(str(bye))
             await tourney_init.add_reaction(str(check))
             while True:
+                decisions = [asyncio.create_task(bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "radd"), asyncio.create_task(bot.wait_for("reaction_remove", check = lambda r, p: str(r.emoji) == str(thumb) and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "rrem"), asyncio.create_task(bot.wait_for("message", check = lambda m: m.channel == mess.channel, timeout = 60.0), name = "msgd")]
+
+                completed, pending = await asyncio.wait(decisions, return_when = asyncio.FIRST_COMPLETED)
+                
+                finished_task: asyncio.Task = list(completed)[0]
+                
+                for unfinished in pending:
+                    try:
+                        unfinished.cancel()
+                    except asyncio.CancelledError:
+                        pass
+
+                action = finished_task.get_name()
                 try:
-                    reaction, user = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(bye), str(check)] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0)
+                    result = finished_task.result()
                 except asyncio.TimeoutError:
                     break
+
                 else:
-                    reaction_e = str(reaction.emoji)
-                    if reaction_e == str(thumb) and user.id != host_id and user.id not in tourney_members:
-                        await mess.channel.send(f"<@!{user.id}> has joined the tournament 🎉")
-                        tourney_members.append(user.id)
-                    elif reaction_e == str(bye) and user.id != host_id and user.id in tourney_members:
-                        await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
-                        tourney_members.remove(user.id)
-                    elif reaction_e == str(check) and user.id == host_id:
-                        break
+                    if action == "radd":
+                        reaction, user = result
+                        reaction_e = str(reaction.emoji)
+                        if reaction_e == str(thumb) and user.id != host_id and user.id not in tourney_members:
+                            await mess.channel.send(f"<@!{user.id}> has joined the tournament 🎉")
+                            tourney_members.append(user.id)
+                        elif reaction_e == str(check) and user.id == host_id:
+                            break
+                    elif action == "rrem":
+                        reaction, user = result
+                        reaction_e = str(reaction.emoji)
+                        if reaction_e == str(thumb) and user.id != host_id and user.id in tourney_members:
+                            await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
+                            tourney_members.remove(user.id)
+                    elif action == "msgd":
+                        jl_msg = str(result.content)
+                        user = result.author
+                        if jl_msg == ";join" and user.id not in tourney_members and user.id != host_id:
+                            await mess.channel.send(f"<@!{user.id}> has joined the tournament 🎉")
+                            tourney_members.append(user.id)
+                        elif jl_msg == ";leave" and user.id in tourney_members and user.id != host_id:
+                            await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
+                            tourney_members.remove(user.id)
+                        elif jl_msg == ";start" and user.id == host_id:
+                            break
             tourney_members = list(set(tourney_members))
             mem_str = "Tournament participants:"
             for mem in tourney_members:
