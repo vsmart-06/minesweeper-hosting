@@ -902,6 +902,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         leaders_str += '''
 '''
                 global_lb = discord.Embed(title="Fastest times", description = leaders_str, colour=discord.Color.blue())
+                global_lb.set_footer(text = "Global leaderboard 1/3")
                 try:
                     await lb.delete()
                 except UnboundLocalError:
@@ -949,6 +950,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         leaders_str += '''
 '''
                 global_lb = discord.Embed(title="Best average times", description = leaders_str, colour=discord.Color.blue())
+                global_lb.set_footer(text = "Global leaderboard 2/3")
                 await lb.delete()
                 lb = await mess.channel.send(embed=global_lb)
                 await lb.add_reaction("◀")
@@ -995,6 +997,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         leaders_str += '''
 '''
                 global_lb = discord.Embed(title="Highest streaks", description = leaders_str, colour=discord.Color.blue())
+                global_lb.set_footer(text = "Global leaderboard 3/3")
                 await lb.delete()
                 lb = await mess.channel.send(embed=global_lb)
                 await lb.add_reaction("◀")
@@ -1057,6 +1060,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                             sleaders_str += '''
 '''
                     server_lb = discord.Embed(title="Fastest times in the server", description = sleaders_str, colour=discord.Color.blue())
+                    server_lb.set_footer(text = "Server leaderboard 1/3")
                     try:
                         await lb.delete()
                     except UnboundLocalError:
@@ -1104,6 +1108,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                             sleaders_str += '''
 '''
                     server_lb = discord.Embed(title="Best average times in the server", description = sleaders_str, colour=discord.Color.blue())
+                    server_lb.set_footer(text = "Server leaderboard 2/3")
                     await lb.delete()
                     lb = await mess.channel.send(embed=server_lb)
                     await lb.add_reaction("◀")
@@ -1150,6 +1155,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                             sleaders_str += '''
 '''
                     server_lb = discord.Embed(title="Highest streaks in the server", description = sleaders_str, colour=discord.Color.blue())
+                    server_lb.set_footer(text = "Server leaderboard 3/3")
                     await lb.delete()
                     lb = await mess.channel.send(embed=server_lb)
                     await lb.add_reaction("◀")
