@@ -48,34 +48,34 @@ def stats_update(id, win):
     length = len(all_recs)
     try:
         if win == 1:
-            c.execute('''INSERT INTO user_data 
+            c.execute(f'''INSERT INTO user_data 
             (user_id, games_won, games_lost, total_games, win_percent, win_streak, max_streak) 
-            VALUES ('''+str(id)+", 1, 0, 1, 100, 1, 1)")
+            VALUES ({id}, 1, 0, 1, 100, 1, 1''')
             if length > 100:
-                c.execute("UPDATE user_data SET initial_supporter = 'no' WHERE user_id = "+str(id))
+                c.execute(f"UPDATE user_data SET initial_supporter = 'no' WHERE user_id = {id}")
         else:
-            c.execute('''INSERT INTO user_data 
+            c.execute(f'''INSERT INTO user_data 
             (user_id, games_won, games_lost, total_games, win_percent, win_streak, max_streak) 
-            VALUES ('''+str(id)+", 0, 1, 1, 0, 0, 0)")
+            VALUES ({id}, 0, 1, 1, 0, 0, 0)''')
             if length > 100:
-                c.execute("UPDATE user_data SET initial_supporter = 'no' WHERE user_id = "+str(id))
+                c.execute(f"UPDATE user_data SET initial_supporter = 'no' WHERE user_id = {id}")
         conn.commit()
     except db.errors.IntegrityError:
-        c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
+        c.execute(f"SELECT * FROM user_data WHERE user_id = {id}")
         record = c.fetchone()
         if win == 1:
             new_wins = record[2]+1
             new_total = record[4]+1
             new_streak = record[10]+1
             new_percent = (new_wins/new_total)*100
-            c.execute("UPDATE user_data SET games_won = "+str(new_wins)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+", win_streak = "+str(new_streak)+" WHERE user_id = "+str(id))
+            c.execute(f"UPDATE user_data SET games_won = {new_wins}, total_games = {new_total}, win_percent = {new_percent}, win_streak = {new_streak} WHERE user_id = {id}")
             if new_streak > record[11]:
-                c.execute("UPDATE user_data SET max_streak = "+str(new_streak)+" WHERE user_id = "+str(id))
+                c.execute(f"UPDATE user_data SET max_streak = {new_streak} WHERE user_id = {id}")
         else:
             new_lost = record[3]+1
             new_total = record[4]+1
             new_percent = (record[2]/new_total)*100
-            c.execute("UPDATE user_data SET games_lost = "+str(new_lost)+", total_games = "+str(new_total)+", win_percent = "+str(new_percent)+", win_streak = 0 WHERE user_id = "+str(id))
+            c.execute(f"UPDATE user_data SET games_lost = {new_lost}, total_games = {new_total}, win_percent = {new_percent}, win_streak = 0 WHERE user_id = {id}")
         conn.commit()
     c.close()
     conn.close()
@@ -89,10 +89,10 @@ def score_check(id, time):
     )
 
     c = conn.cursor()
-    c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
+    c.execute(f"SELECT * FROM user_data WHERE user_id = {id}")
     record = c.fetchone()
     if record[1] == None:
-        c.execute("UPDATE user_data SET best_time = "+str(time)+", tot_time = "+str(time)+", avg_time = "+str(time)+" WHERE user_id = "+str(id))
+        c.execute(f"UPDATE user_data SET best_time = {time}, tot_time = {time}, avg_time = {time} WHERE user_id = {id}")
         conn.commit()
         c.close()
         conn.close()
@@ -101,9 +101,9 @@ def score_check(id, time):
         old_tot_time = record[6]
         new_tot_time = old_tot_time+time
         new_avg_time = int(new_tot_time/record[2])
-        c.execute("UPDATE user_data SET tot_time = "+str(new_tot_time)+", avg_time = "+str(new_avg_time)+" WHERE user_id = "+str(id))
+        c.execute(f"UPDATE user_data SET tot_time = {new_tot_time}, avg_time = {new_avg_time} WHERE user_id = {id}")
         if time < record[1]:
-            c.execute("UPDATE user_data SET best_time = "+str(time)+" WHERE user_id = "+str(id))
+            c.execute(f"UPDATE user_data SET best_time = {time} WHERE user_id = {id}")
             conn.commit()
             c.close()
             conn.close()
@@ -151,7 +151,7 @@ def server_leaderboard(members, stat):
     server_leaders = []
     for x in members:
         try:
-            c.execute(f"SELECT user_id, {stat} FROM user_data WHERE user_id = "+str(x))
+            c.execute(f"SELECT user_id, {stat} FROM user_data WHERE user_id = {x}")
             server_leaders.append(c.fetchone())
         except db.errors.OperationalError:
             pass
@@ -185,7 +185,7 @@ def profile(id):
 
     c = conn.cursor()
     try:
-        c.execute("SELECT * FROM user_data WHERE user_id = "+str(id))
+        c.execute(f"SELECT * FROM user_data WHERE user_id = {id}")
         return c.fetchone()
     except db.errors.OperationalError:
         pass
@@ -202,7 +202,7 @@ def privacy_change(id, priv):
 
     c = conn.cursor()
     try:
-        c.execute("UPDATE user_data SET privacy = '"+str(priv)+"' WHERE user_id = "+str(id))
+        c.execute(f"UPDATE user_data SET privacy = '{priv}' WHERE user_id = {id}")
         conn.commit()
     except db.errors.OperationalError:
         pass
@@ -218,7 +218,7 @@ def delete_record(id):
     )
     c = conn.cursor()
     try:
-        c.execute("DELETE FROM user_data WHERE user_id = "+str(id))
+        c.execute(f"DELETE FROM user_data WHERE user_id = {id}")
         conn.commit()
     except db.errors.OperationalError:
         pass
