@@ -866,40 +866,146 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send(embed = tournament_invite)
 
     elif msg == ";leaderboard" or msg == ";lb":
-        leaders = global_leaderboard("best_time")
-        leaders_str = ""
-        for user in leaders:
-            if user[1] != None:
-                time_mins = int(user[1]//60)
-                time_secs = int(user[1]%60)
-                if user == leaders[0]:
-                    leaders_str += "🥇"
-                elif user == leaders[1]:
-                    if user[1] == leaders[0][1]:
-                        leaders_str += "🥇"
-                    else:
-                        leaders_str += "🥈"
-                elif user == leaders[2]:
-                    if user[1] == leaders[0][1]:
-                        leaders_str += "🥇"
-                    elif user[1] == leaders[1][1]:
-                        leaders_str += "🥈"
-                    else:
-                        leaders_str += "🥉"
-                else:
-                    if user[1] == leaders[0][1]:
-                        leaders_str += "🥇"
-                    elif user[1] == leaders[1][1]:
-                        leaders_str += "🥈"
-                    elif user[1] == leaders[2][1]:
-                        leaders_str += "🥉"
-                    else:
-                        leaders_str += "👏"
-                leaders_str += "<@!"+str(user[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
-                leaders_str += '''
+        page = 1
+        lb_author = mess.author.id
+        while True:
+            if page == 1:
+                leaders = global_leaderboard("best_time")
+                leaders_str = ""
+                for user in leaders:
+                    if user[1] != None:
+                        time_mins = int(user[1]//60)
+                        time_secs = int(user[1]%60)
+                        if user == leaders[0]:
+                            leaders_str += "🥇"
+                        elif user == leaders[1]:
+                            if user[1] == leaders[0][1]:
+                                leaders_str += "🥇"
+                            else:
+                                leaders_str += "🥈"
+                        elif user == leaders[2]:
+                            if user[1] == leaders[0][1]:
+                                leaders_str += "🥇"
+                            elif user[1] == leaders[1][1]:
+                                leaders_str += "🥈"
+                            else:
+                                leaders_str += "🥉"
+                        else:
+                            if user[1] == leaders[0][1]:
+                                leaders_str += "🥇"
+                            elif user[1] == leaders[1][1]:
+                                leaders_str += "🥈"
+                            elif user[1] == leaders[2][1]:
+                                leaders_str += "🥉"
+                            else:
+                                leaders_str += "👏"
+                        leaders_str += "<@!"+str(user[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
+                        leaders_str += '''
 '''
-        global_lb = discord.Embed(title="Global leaderboard", description = leaders_str, colour=discord.Color.blue())
-        await mess.channel.send(embed=global_lb)
+                global_lb = discord.Embed(title="Fastest times", description = leaders_str, colour=discord.Color.blue())
+                try:
+                    await lb.delete()
+                except UnboundLocalError:
+                    pass
+                lb = await mess.channel.send(embed=global_lb)
+                await lb.add_reaction("▶")
+                try:
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                except asyncio.TimeoutError:
+                    break
+                else:
+                    page = 2
+
+            elif page == 2:
+                leaders = global_leaderboard("avg_time")
+                leaders_str = ""
+                for user in leaders:
+                    if user[1] != None:
+                        time_mins = int(user[1]//60)
+                        time_secs = int(user[1]%60)
+                        if user == leaders[0]:
+                            leaders_str += "🥇"
+                        elif user == leaders[1]:
+                            if user[1] == leaders[0][1]:
+                                leaders_str += "🥇"
+                            else:
+                                leaders_str += "🥈"
+                        elif user == leaders[2]:
+                            if user[1] == leaders[0][1]:
+                                leaders_str += "🥇"
+                            elif user[1] == leaders[1][1]:
+                                leaders_str += "🥈"
+                            else:
+                                leaders_str += "🥉"
+                        else:
+                            if user[1] == leaders[0][1]:
+                                leaders_str += "🥇"
+                            elif user[1] == leaders[1][1]:
+                                leaders_str += "🥈"
+                            elif user[1] == leaders[2][1]:
+                                leaders_str += "🥉"
+                            else:
+                                leaders_str += "👏"
+                        leaders_str += "<@!"+str(user[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
+                        leaders_str += '''
+'''
+                global_lb = discord.Embed(title="Best average times", description = leaders_str, colour=discord.Color.blue())
+                await lb.delete()
+                lb = await mess.channel.send(embed=global_lb)
+                await lb.add_reaction("◀")
+                await lb.add_reaction("▶")
+                try:
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                except asyncio.TimeoutError:
+                    break
+                else:
+                    if str(reaction.emoji) == "◀":
+                        page = 1
+                    else:
+                        page = 3
+            
+            elif page == 3:
+                leaders = global_leaderboard("max_streak")
+                leaders_str = ""
+                for user in leaders:
+                    if user[1] != None:
+                        if user == leaders[0]:
+                            leaders_str += "🥇"
+                        elif user == leaders[1]:
+                            if user[1] == leaders[0][1]:
+                                leaders_str += "🥇"
+                            else:
+                                leaders_str += "🥈"
+                        elif user == leaders[2]:
+                            if user[1] == leaders[0][1]:
+                                leaders_str += "🥇"
+                            elif user[1] == leaders[1][1]:
+                                leaders_str += "🥈"
+                            else:
+                                leaders_str += "🥉"
+                        else:
+                            if user[1] == leaders[0][1]:
+                                leaders_str += "🥇"
+                            elif user[1] == leaders[1][1]:
+                                leaders_str += "🥈"
+                            elif user[1] == leaders[2][1]:
+                                leaders_str += "🥉"
+                            else:
+                                leaders_str += "👏"
+                        leaders_str += "<@!"+str(user[0])+"> : "+str(user[1])
+                        leaders_str += '''
+'''
+                global_lb = discord.Embed(title="Highest streaks", description = leaders_str, colour=discord.Color.blue())
+                await lb.delete()
+                lb = await mess.channel.send(embed=global_lb)
+                await lb.add_reaction("◀")
+                try:
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                except asyncio.TimeoutError:
+                    break
+                else:
+                    page = 2
+
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
 🥇 1st place - 10M DMC (Dank Memer Coins)
@@ -916,40 +1022,146 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             members = []
             for m in guild.members:
                 members.append(m.id)
-            server_leaders = server_leaderboard(members, "best_time")
-            sleaders_str = ""
-            for member in server_leaders:
-                if member[1] != None:
-                    time_mins = int(member[1]//60)
-                    time_secs = int(member[1]%60)
-                    if member == server_leaders[0]:
-                        sleaders_str += "🥇"
-                    elif member == server_leaders[1]:
-                        if member[1] == server_leaders[0][1]:
-                            sleaders_str += "🥇"
-                        else:
-                            sleaders_str += "🥈"
-                    elif member == server_leaders[2]:
-                        if member[1] == server_leaders[0][1]:
-                            sleaders_str += "🥇"
-                        elif member[1] == server_leaders[1][1]:
-                            sleaders_str += "🥈"
-                        else:
-                            sleaders_str += "🥉"
-                    else:
-                        if member[1] == server_leaders[0][1]:
-                            sleaders_str += "🥇"
-                        elif member[1] == server_leaders[1][1]:
-                            sleaders_str += "🥈"
-                        elif member[1] == server_leaders[2][1]:
-                            sleaders_str += "🥉"
-                        else:
-                            sleaders_str += "👏"
-                    sleaders_str += "<@!"+str(member[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
-                    sleaders_str += '''
+            page = 1
+            lb_author = mess.author.id
+            while True:
+                if page == 1:
+                    server_leaders = server_leaderboard(members, "best_time")
+                    sleaders_str = ""
+                    for member in server_leaders:
+                        if member[1] != None:
+                            time_mins = int(member[1]//60)
+                            time_secs = int(member[1]%60)
+                            if member == server_leaders[0]:
+                                sleaders_str += "🥇"
+                            elif member == server_leaders[1]:
+                                if member[1] == server_leaders[0][1]:
+                                    sleaders_str += "🥇"
+                                else:
+                                    sleaders_str += "🥈"
+                            elif member == server_leaders[2]:
+                                if member[1] == server_leaders[0][1]:
+                                    sleaders_str += "🥇"
+                                elif member[1] == server_leaders[1][1]:
+                                    sleaders_str += "🥈"
+                                else:
+                                    sleaders_str += "🥉"
+                            else:
+                                if member[1] == server_leaders[0][1]:
+                                    sleaders_str += "🥇"
+                                elif member[1] == server_leaders[1][1]:
+                                    sleaders_str += "🥈"
+                                elif member[1] == server_leaders[2][1]:
+                                    sleaders_str += "🥉"
+                                else:
+                                    sleaders_str += "👏"
+                            sleaders_str += "<@!"+str(member[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
+                            sleaders_str += '''
 '''
-            server_lb = discord.Embed(title="Server leaderboard", description = sleaders_str, colour=discord.Color.blue())
-            await mess.channel.send(embed=server_lb)
+                    server_lb = discord.Embed(title="Fastest times in the server", description = sleaders_str, colour=discord.Color.blue())
+                    try:
+                        await lb.delete()
+                    except UnboundLocalError:
+                        pass
+                    lb = await mess.channel.send(embed=server_lb)
+                    await lb.add_reaction("▶")
+                    try:
+                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                    except asyncio.TimeoutError:
+                        break
+                    else:
+                        page = 2
+
+                elif page == 2:
+                    server_leaders = server_leaderboard(members, "avg_time")
+                    sleaders_str = ""
+                    for member in server_leaders:
+                        if member[1] != None:
+                            time_mins = int(member[1]//60)
+                            time_secs = int(member[1]%60)
+                            if member == server_leaders[0]:
+                                sleaders_str += "🥇"
+                            elif member == server_leaders[1]:
+                                if member[1] == server_leaders[0][1]:
+                                    sleaders_str += "🥇"
+                                else:
+                                    sleaders_str += "🥈"
+                            elif member == server_leaders[2]:
+                                if member[1] == server_leaders[0][1]:
+                                    sleaders_str += "🥇"
+                                elif member[1] == server_leaders[1][1]:
+                                    sleaders_str += "🥈"
+                                else:
+                                    sleaders_str += "🥉"
+                            else:
+                                if member[1] == server_leaders[0][1]:
+                                    sleaders_str += "🥇"
+                                elif member[1] == server_leaders[1][1]:
+                                    sleaders_str += "🥈"
+                                elif member[1] == server_leaders[2][1]:
+                                    sleaders_str += "🥉"
+                                else:
+                                    sleaders_str += "👏"
+                            sleaders_str += "<@!"+str(member[0])+"> : "+str(time_mins)+"m and "+str(time_secs)+"s"
+                            sleaders_str += '''
+'''
+                    server_lb = discord.Embed(title="Best average times in the server", description = sleaders_str, colour=discord.Color.blue())
+                    await lb.delete()
+                    lb = await mess.channel.send(embed=server_lb)
+                    await lb.add_reaction("▶")
+                    await lb.add_reaction("◀")
+                    try:
+                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                    except asyncio.TimeoutError:
+                        break
+                    else:
+                        if str(reaction.emoji) == "◀":
+                            page = 1
+                        else:
+                            page = 3
+                
+                elif page == 3:
+                    server_leaders = server_leaderboard(members, "max_streak")
+                    sleaders_str = ""
+                    for member in server_leaders:
+                        if member[1] != None:
+                            if member == server_leaders[0]:
+                                sleaders_str += "🥇"
+                            elif member == server_leaders[1]:
+                                if member[1] == server_leaders[0][1]:
+                                    sleaders_str += "🥇"
+                                else:
+                                    sleaders_str += "🥈"
+                            elif member == server_leaders[2]:
+                                if member[1] == server_leaders[0][1]:
+                                    sleaders_str += "🥇"
+                                elif member[1] == server_leaders[1][1]:
+                                    sleaders_str += "🥈"
+                                else:
+                                    sleaders_str += "🥉"
+                            else:
+                                if member[1] == server_leaders[0][1]:
+                                    sleaders_str += "🥇"
+                                elif member[1] == server_leaders[1][1]:
+                                    sleaders_str += "🥈"
+                                elif member[1] == server_leaders[2][1]:
+                                    sleaders_str += "🥉"
+                                else:
+                                    sleaders_str += "👏"
+                            sleaders_str += "<@!"+str(member[0])+"> : "+str(member[1])
+                            sleaders_str += '''
+'''
+                    server_lb = discord.Embed(title="Highest streaks in the server", description = sleaders_str, colour=discord.Color.blue())
+                    await lb.delete()
+                    lb = await mess.channel.send(embed=server_lb)
+                    await lb.add_reaction("◀")
+                    try:
+                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id == lb_author and r.message.id == lb.id, timeout = 30.0)
+                    except asyncio.TimeoutError:
+                        break
+                    else:
+                        page = 2
+
             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
 🥇 1st place - 10M DMC (Dank Memer Coins)

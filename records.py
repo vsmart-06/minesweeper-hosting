@@ -136,7 +136,7 @@ def global_leaderboard(stat):
     c.close()
     conn.close()
     if stat == "max_streak":
-        leaders_new.sort(reverse = True)
+        leaders_new.sort(key = lambda a: a[1], reverse = True)
     return leaders_new[0:10]
 
 def server_leaderboard(members, stat):
@@ -172,7 +172,7 @@ def server_leaderboard(members, stat):
     c.close()
     conn.close()
     if stat == "max_streak":
-        server_leaders_new.sort(reverse = True)
+        server_leaders_new.sort(key = lambda a: a[1], reverse = True)
     return server_leaders_new[0:10]
 
 def profile(id):
