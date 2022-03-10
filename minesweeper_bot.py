@@ -909,7 +909,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                 lb = await mess.channel.send(embed=global_lb)
                 await lb.add_reaction("▶")
                 try:
-                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and r.message.id == lb.id, timeout = 30.0)
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and p.id != bot.user.id and r.message.id == lb.id, timeout = 30.0)
                 except asyncio.TimeoutError:
                     break
                 else:
@@ -954,7 +954,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                 await lb.add_reaction("◀")
                 await lb.add_reaction("▶")
                 try:
-                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and r.message.id == lb.id, timeout = 30.0)
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id != bot.user.id and r.message.id == lb.id, timeout = 30.0)
                 except asyncio.TimeoutError:
                     break
                 else:
@@ -999,7 +999,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                 lb = await mess.channel.send(embed=global_lb)
                 await lb.add_reaction("◀")
                 try:
-                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and r.message.id == lb.id, timeout = 30.0)
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id != bot.user.id and r.message.id == lb.id, timeout = 30.0)
                 except asyncio.TimeoutError:
                     break
                 else:
@@ -1064,7 +1064,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     lb = await mess.channel.send(embed=server_lb)
                     await lb.add_reaction("▶")
                     try:
-                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and r.message.id == lb.id, timeout = 30.0)
+                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and p.id != bot.user.id and r.message.id == lb.id, timeout = 30.0)
                     except asyncio.TimeoutError:
                         break
                     else:
@@ -1109,7 +1109,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     await lb.add_reaction("◀")
                     await lb.add_reaction("▶")
                     try:
-                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and r.message.id == lb.id, timeout = 30.0)
+                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id != bot.user.id and r.message.id == lb.id, timeout = 30.0)
                     except asyncio.TimeoutError:
                         break
                     else:
@@ -1154,7 +1154,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     lb = await mess.channel.send(embed=server_lb)
                     await lb.add_reaction("◀")
                     try:
-                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and r.message.id == lb.id, timeout = 30.0)
+                        reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id != bot.user.id and r.message.id == lb.id, timeout = 30.0)
                     except asyncio.TimeoutError:
                         break
                     else:
