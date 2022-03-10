@@ -50,7 +50,7 @@ def stats_update(id, win):
         if win == 1:
             c.execute(f'''INSERT INTO user_data 
             (user_id, games_won, games_lost, total_games, win_percent, win_streak, max_streak) 
-            VALUES ({id}, 1, 0, 1, 100, 1, 1''')
+            VALUES ({id}, 1, 0, 1, 100, 1, 1)''')
             if length > 100:
                 c.execute(f"UPDATE user_data SET initial_supporter = 'no' WHERE user_id = {id}")
         else:
