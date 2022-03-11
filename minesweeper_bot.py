@@ -585,7 +585,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             thumb = bot.get_emoji(935120796358152212)
             check = bot.get_emoji(935455988516028486)
             winner = bot.get_emoji(935794255543275541)
-            yay = bot.get_emoji(925224354097299476)
+            yay = bot.get_emoji(951716865049247855)
             tourney_members = [host_id]
             tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below or type `;join` to join! Remove your reaction or type `;leave` to leave. <@!{host_id}> react with {check} or type `;start` to start the tournament!", colour = discord.Colour.blue())
             tourney_init = await mess.channel.send(embed = tourney_init_embed)
@@ -1342,7 +1342,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send(embed = tournament_invite)
 
     elif msg == ";register" and mess.channel.id == 936949262791606272:
-        yay = bot.get_emoji(925224354097299476)
+        yay = bot.get_emoji(951716865049247855)
         t_mem_id = mess.author.id
         t_mem = mess.author
         await mess.channel.send(f"<@!{t_mem_id}> has joined the tournament {yay}")
