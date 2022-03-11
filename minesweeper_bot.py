@@ -585,6 +585,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             thumb = bot.get_emoji(935120796358152212)
             check = bot.get_emoji(935455988516028486)
             winner = bot.get_emoji(935794255543275541)
+            yay = bot.get_emoji(925224354097299476)
             tourney_members = [host_id]
             tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below or type `;join` to join! Remove your reaction or type `;leave` to leave. <@!{host_id}> react with {check} or type `;start` to start the tournament!", colour = discord.Colour.blue())
             tourney_init = await mess.channel.send(embed = tourney_init_embed)
@@ -614,7 +615,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         reaction, user = result
                         reaction_e = str(reaction.emoji)
                         if reaction_e == str(thumb) and user.id != host_id and user.id not in tourney_members:
-                            await mess.channel.send(f"<@!{user.id}> has joined the tournament 🎉")
+                            await mess.channel.send(f"<@!{user.id}> has joined the tournament {yay}")
                             tourney_members.append(user.id)
                         elif reaction_e == str(check) and user.id == host_id:
                             break
@@ -628,7 +629,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         jl_msg = str(result.content)
                         user = result.author
                         if jl_msg == ";join" and user.id not in tourney_members and user.id != host_id:
-                            await mess.channel.send(f"<@!{user.id}> has joined the tournament 🎉")
+                            await mess.channel.send(f"<@!{user.id}> has joined the tournament {yay}")
                             tourney_members.append(user.id)
                         elif jl_msg == ";leave" and user.id in tourney_members and user.id != host_id:
                             await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
@@ -1341,9 +1342,10 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             await mess.channel.send(embed = tournament_invite)
 
     elif msg == ";register" and mess.channel.id == 936949262791606272:
+        yay = bot.get_emoji(925224354097299476)
         t_mem_id = mess.author.id
         t_mem = mess.author
-        await mess.channel.send(f"<@!{t_mem_id}> has joined the tournament 🎉")
+        await mess.channel.send(f"<@!{t_mem_id}> has joined the tournament {yay}")
         c_guild = bot.get_guild(915952924172091433)
         role = get(c_guild.roles, name="Tournament participants")
         await t_mem.add_roles(role)
