@@ -586,7 +586,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
             check = bot.get_emoji(935455988516028486)
             winner = bot.get_emoji(935794255543275541)
             tourney_members = [host_id]
-            tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below to join! <@!{host_id}> react with {check} to start the tournament!", colour = discord.Colour.blue())
+            tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below or type `;join` to join! Remove your reaction or type `;leave` to leave. <@!{host_id}> react with {check} or type `;start` to start the tournament!", colour = discord.Colour.blue())
             tourney_init = await mess.channel.send(embed = tourney_init_embed)
             await tourney_init.add_reaction(str(thumb))
             await tourney_init.add_reaction(str(check))
