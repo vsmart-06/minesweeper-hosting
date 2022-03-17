@@ -29,7 +29,10 @@ try:
         privacy VARCHAR,
         initial_supporter VARCHAR,
         win_streak INT,
-        max_streak INT
+        max_streak INT,
+        min_moves INT,
+        tot_moves INT,
+        avg_moves INT
         )''')
 except db.errors.ProgrammingError:
     pass
@@ -80,7 +83,7 @@ def stats_update(id, win):
     c.close()
     conn.close()
 
-def score_check(id, time):
+def score_check(id, time, moves):
     conn = db.connect(
     host = h,
     user = u,
@@ -92,22 +95,31 @@ def score_check(id, time):
     c.execute(f"SELECT * FROM user_data WHERE user_id = {id}")
     record = c.fetchone()
     if record[1] == None:
-        c.execute(f"UPDATE user_data SET best_time = {time}, tot_time = {time}, avg_time = {time} WHERE user_id = {id}")
+        c.execute(f"UPDATE user_data SET best_time = {time}, tot_time = {time}, avg_time = {time}, min_moves = {moves}, tot_moves = {moves}, avg_moves = {moves} WHERE user_id = {id}")
         conn.commit()
         c.close()
         conn.close()
         return "new high"
     else:
         old_tot_time = record[6]
+        old_tot_moves = record[13]
         new_tot_time = old_tot_time+time
         new_avg_time = int(new_tot_time/record[2])
-        c.execute(f"UPDATE user_data SET tot_time = {new_tot_time}, avg_time = {new_avg_time} WHERE user_id = {id}")
+        new_tot_moves = old_tot_moves+moves
+        new_avg_moves = int(new_tot_moves/record[2])
+        c.execute(f"UPDATE user_data SET tot_time = {new_tot_time}, avg_time = {new_avg_time}, tot_moves = {new_tot_moves}, avg_moves = {new_avg_moves} WHERE user_id = {id}")
         if time < record[1]:
             c.execute(f"UPDATE user_data SET best_time = {time} WHERE user_id = {id}")
             conn.commit()
             c.close()
             conn.close()
             return "new record"
+        if moves < record[12]:
+            c.execute(f"UPDATE user_data SET min_moves = {moves} WHERE user_id = {id}")
+            conn.commit()
+            c.close()
+            conn.close()
+            return "lesser moves"
     conn.commit()
     c.close()
     conn.close()

@@ -26,6 +26,7 @@ class minesweeper:
         self.bomb_list = []
         self.flag_pos = []
         self.multi = multi
+        self.moves = 0
 
         for x in range(1, self.items_tot+1):
             self.row_brk.append("")
@@ -417,7 +418,7 @@ class minesweeper:
                 self.mins = int(self.tot_time//60)
                 self.secs = int(self.tot_time%60)
                 stats_update(self.user_id, 1)
-                if score_check(self.user_id, self.tot_time) not in ["new high", "new record"]:
+                if score_check(self.user_id, self.tot_time, self.moves) not in ["new high", "new record"]:
                     self.end_msg = '''You deactivated all the mines 🥳
 Time taken: '''+str(self.mins)+"m and "+str(self.secs)+"s"
                 else:

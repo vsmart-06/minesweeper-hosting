@@ -113,9 +113,11 @@ async def on_message(mess):
 
                 try:
                     play.guess(r, c)
-                    break
                 except UnboundLocalError:
                     await mess.channel.send("That position is already occupied")
+                else:
+                    play.moves += 1
+                    break
             if message != "quit":
                 if play.flag_var == 1:
                     play.flag = "On"
@@ -1286,6 +1288,8 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         user_profile.add_field(name = "Win percentage:", value = prof[5], inline = True)
                         user_profile.add_field(name = "Current win streak:", value = prof[10], inline = True)
                         user_profile.add_field(name = "Maximum win streak:", value = prof[11], inline = True)
+                        user_profile.add_field(name = "Minimum moves:", value = prof[12], inline = True)
+                        user_profile.add_field(name = "Average moves:", value = prof[14], inline = True)
                         user_profile.add_field(name = "Profile type:", value = prof[8].capitalize(), inline = True)
                     else:
                         user_profile = discord.Embed(title = "Private profile!", description = "This profile is private so you cannot view it!", color = discord.Color.blue())
