@@ -114,7 +114,7 @@ def score_check(id, time, moves):
             c.close()
             conn.close()
             return "new record"
-        if moves < record[12]:
+        if moves < record[12] or record[12] == 0:
             c.execute(f"UPDATE user_data SET min_moves = {moves} WHERE user_id = {id}")
             conn.commit()
             c.close()
