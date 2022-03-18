@@ -1413,11 +1413,12 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                         while True:
                                             await mess.channel.send("Choose the column (1-7) in which you want to drop your coin!")
                                             try:
-                                                pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 30.0)
+                                                pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 120.0)
                                             except asyncio.TimeoutError:
                                                 await mess.channel.send("You took too long to respond so the game has ended 😢")
                                                 game.game_end = 1
                                                 game.winner = opp_id
+                                                break
                                             pos = pos_msg.content
                                             try:
                                                 pos = int(pos)
@@ -1432,9 +1433,10 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                     await mess.channel.send("Column is full")
                                                 except ValueError:
                                                     await mess.channel.send("Column number can only be an integer from 1 to 7")
-                                        game.columns[pos-1][game.columns[pos-1].index("")] = "Red"
-                                        game.turn = 1
-                                        game.left_pos -= 1
+                                        if game.game_end == 0:
+                                            game.columns[pos-1][game.columns[pos-1].index("")] = "Red"
+                                            game.turn = 1
+                                            game.left_pos -= 1
                                     else:
                                         await mess.channel.send(f"<@!{opp_id}> it's your turn")
                                         game.string_rows()
@@ -1443,11 +1445,12 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                         while True:
                                             await mess.channel.send("Choose the column (1-7) in which you want to drop your coin!")
                                             try:
-                                                pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 30.0)
+                                                pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 120.0)
                                             except asyncio.TimeoutError:
                                                 await mess.channel.send("You took too long to respond so the game has ended 😢")
                                                 game.game_end = 1
                                                 game.winner = a_id
+                                                break
                                             pos = pos_msg.content
                                             try:
                                                 pos = int(pos)
@@ -1462,13 +1465,14 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                     await mess.channel.send("Column is full")
                                                 except ValueError:
                                                     await mess.channel.send("Column number can only be an integer from 1 to 7")
-                                        game.columns[pos-1][game.columns[pos-1].index("")] = "Yellow"
-                                        game.turn = 0
-                                        game.left_pos -= 1
-                                    game.string_rows()
-                                    c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
-                                    await mess.channel.send(embed = c4_embed)
+                                        if game.game_end == 0:
+                                            game.columns[pos-1][game.columns[pos-1].index("")] = "Yellow"
+                                            game.turn = 0
+                                            game.left_pos -= 1
                                     if game.game_end == 0:
+                                        game.string_rows()
+                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                        await mess.channel.send(embed = c4_embed)
                                         game.game_over()
                                         if game.game_end == 1:
                                             await mess.channel.send(f"<@!{game.winner}> is the winner!")
