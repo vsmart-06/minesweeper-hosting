@@ -1418,6 +1418,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                 await mess.channel.send("You took too long to respond so the game has ended 😢")
                                                 game.game_end = 1
                                                 game.winner = opp_id
+                                                await mess.channel.send(f"<@!{game.winner}> is the winner!")
                                                 break
                                             pos = pos_msg.content
                                             try:
@@ -1450,6 +1451,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                 await mess.channel.send("You took too long to respond so the game has ended 😢")
                                                 game.game_end = 1
                                                 game.winner = a_id
+                                                await mess.channel.send(f"<@!{game.winner}> is the winner!")
                                                 break
                                             pos = pos_msg.content
                                             try:
