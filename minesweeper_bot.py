@@ -1538,6 +1538,7 @@ Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of t
 
 **Commands and aliases**: `;connect4`, `;c4` 
 ''', inline = False)
+        await mess.channel.send(embed = other_games)
         
 
     elif msg == ";register" and mess.channel.id == 936949262791606272:
