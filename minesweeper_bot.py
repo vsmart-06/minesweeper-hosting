@@ -1,6 +1,7 @@
 import discord
 import discord.ext.commands
 from minesweeper_class import minesweeper
+from connect4_class import connect4
 from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record
 import os
 import asyncio
@@ -342,7 +343,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                 try:
                                                     pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 30.0)
                                                 except asyncio.TimeoutError:
-                                                    player_1.end_msg = "You took too long to respond so the game has ended 😢"
+                                                    player_1.end_msg = "x"
                                                     message = "quit"
                                                     break
                                                 try:
@@ -538,7 +539,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 await mess.channel.send(embed = tournament_invite)
 
                     else:
-                        dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if he's not in the server!", color = discord.Color.blue())
+                        dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
                         await mess.channel.send(embed = dual_game)
                         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
@@ -560,7 +561,7 @@ Huge prizes for the winners - top 3 players can avail amazing rewards:
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
                     await mess.channel.send(embed = tournament_invite)
             else:
-                dual_game = discord.Embed(title = "Invalid syntax!", description = "The minesweeper syntax is invalid!", color = discord.Color.blue())
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The minesweeper syntax is invalid! The correct syntax is: ;minesweeper/;ms @user", color = discord.Color.blue())
                 await mess.channel.send(embed = dual_game)
                 tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
@@ -1300,7 +1301,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
         elif inv_setting == 0:
             user_profile = discord.Embed(title = "Profile settings changed!", description = "Your profile is now "+priv+"!", color = discord.Color.blue())
         else:
-            user_profile = discord.Embed(title = "Invalid syntax!", description = "The profile syntax is invalid!", color = discord.Color.blue())
+            user_profile = discord.Embed(title = "Invalid syntax!", description = "The profile syntax is invalid! The correct syntax is: ;profile @user", color = discord.Color.blue())
         await mess.channel.send(embed=user_profile)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
@@ -1344,6 +1345,200 @@ Huge prizes for the winners - top 3 players can avail amazing rewards:
 
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
             await mess.channel.send(embed = tournament_invite)
+
+    elif msg.startswith(";connect4") or msg.startswith(";c4"):
+        if not(isinstance(mess.channel, discord.DMChannel)):
+            valid_id = 0
+            if msg.startswith(";connect4 <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";connect4 <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";c4 <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";c4 <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";connect4 <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";connect4 <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";c4 <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";c4 <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            if valid_id == 1:
+                opp_id = int(opp_id)
+                try:
+                    a_id = mess.author.id
+                    me = await bot.fetch_user(a_id)
+                    opponent = await bot.fetch_user(opp_id)
+                    server_id = mess.guild.id
+                    guild = bot.get_guild(server_id)
+                    members = []
+                    for m in guild.members:
+                        members.append(m)
+                    if opponent in members:
+                        want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of connect 4! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                        want_play = await mess.channel.send(embed = want_play_embed)
+                        await want_play.add_reaction("✅")
+                        await want_play.add_reaction("❌")
+                        try:
+                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 30.0)
+                        except asyncio.TimeoutError:
+                            await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                        else:
+                            if str(reaction.emoji) == "✅":
+                                game = connect4(a_id, opp_id)
+                                while game.game_end == 0:
+                                    if game.turn == 0:
+                                        await mess.channel.send(f"<@!{a_id}> it's your turn")
+                                        game.string_rows()
+                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                        await mess.channel.send(embed = c4_embed)
+                                        while True:
+                                            await mess.channel.send("Choose the column (1-7) in which you want to drop your coin!")
+                                            try:
+                                                pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 30.0)
+                                            except asyncio.TimeoutError:
+                                                await mess.channel.send("You took too long to respond so the game has ended 😢")
+                                                game.game_end = 1
+                                                game.winner = opp_id
+                                            pos = pos_msg.content
+                                            try:
+                                                pos = int(pos)
+                                                if not(1 <= pos <= 7):
+                                                    await mess.channel.send("Column is out of range")
+                                                else:
+                                                    game.columns[game.columns[pos-1].index("")]
+                                                    break
+                                            except ValueError:
+                                                try:
+                                                    pos = int(pos)
+                                                    await mess.channel.send("Column is full")
+                                                except ValueError:
+                                                    await mess.channel.send("Column number can only be an integer from 1 to 7")
+                                        game.columns[pos-1][game.columns[pos-1].index("")] = "Red"
+                                        game.turn = 1
+                                        game.left_pos -= 1
+                                    else:
+                                        await mess.channel.send(f"<@!{opp_id}> it's your turn")
+                                        game.string_rows()
+                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                        await mess.channel.send(embed = c4_embed)
+                                        while True:
+                                            await mess.channel.send("Choose the column (1-7) in which you want to drop your coin!")
+                                            try:
+                                                pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 30.0)
+                                            except asyncio.TimeoutError:
+                                                await mess.channel.send("You took too long to respond so the game has ended 😢")
+                                                game.game_end = 1
+                                                game.winner = a_id
+                                            pos = pos_msg.content
+                                            try:
+                                                pos = int(pos)
+                                                if not(1 <= pos <= 7):
+                                                    await mess.channel.send("Column is out of range")
+                                                else:
+                                                    game.columns[game.columns[pos-1].index("")]
+                                                    break
+                                            except ValueError:
+                                                try:
+                                                    pos = int(pos)
+                                                    await mess.channel.send("Column is full")
+                                                except ValueError:
+                                                    await mess.channel.send("Column number can only be an integer from 1 to 7")
+                                        game.columns[pos-1][game.columns[pos-1].index("")] = "Yellow"
+                                        game.turn = 0
+                                        game.left_pos -= 1
+                                    game.string_rows()
+                                    c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                    await mess.channel.send(embed = c4_embed)
+                                    if game.game_end == 0:
+                                        game.game_over()
+                                        if game.game_end == 1:
+                                            await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                        elif game.left_pos == 0:
+                                            await mess.channel.send("It is a tie ¯\_(ツ)_/¯")
+                                            game.game_end = 1
+
+                            else:
+                                await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                                await mess.channel.send(embed = tournament_invite)
+
+                    else:
+                        dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                        await mess.channel.send(embed = dual_game)
+                        tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                        await mess.channel.send(embed = tournament_invite)
+                except discord.errors.NotFound:
+                    dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
+                    await mess.channel.send(embed = dual_game)
+                    tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                    await mess.channel.send(embed = tournament_invite)
+            else:
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The connect 4 syntax is invalid! The correct syntax is: ;connect4/;c4 @user", color = discord.Color.blue())
+                await mess.channel.send(embed = dual_game)
+                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                await mess.channel.send(embed = tournament_invite)
+        else:
+            await mess.channel.send("You cant play a match against someone in a DM!")
+            tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+            await mess.channel.send(embed = tournament_invite)
+
+    elif msg == ";other":
+        other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
+        other_games.add_field(name = "Connect 4", value = '''
+Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
+
+**Commands and aliases**: `;connect4`, `;c4` 
+''', inline = False)
+        
 
     elif msg == ";register" and mess.channel.id == 936949262791606272:
         yay = bot.get_emoji(951716865049247855)
@@ -1422,6 +1617,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
 `;profile settings private/public`: Control who can view your profile. By default it is set to public.
 `;delete`: Delete all your data on the minesweeper bot.
+`;other`: View other games that can be played on the bot!
 `;invite`: Get a link to invite this bot to a server.
 `;support`: Get a link to join the official minesweeper bot support server.
 `;vote`: Vote for the bot!''')
