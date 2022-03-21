@@ -1411,7 +1411,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                         c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
                                         await mess.channel.send(embed = c4_embed)
                                         while True:
-                                            await mess.channel.send("Choose the column (1-7) in which you want to drop your coin!")
+                                            await mess.channel.send("Choose the column (1-7) in which you want to drop your coin! (Type 'board' to see your current game; type 'quit' to end the game)")
                                             try:
                                                 pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 120.0)
                                             except asyncio.TimeoutError:
@@ -1433,7 +1433,17 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                     pos = int(pos)
                                                     await mess.channel.send("Column is full")
                                                 except ValueError:
-                                                    await mess.channel.send("Column number can only be an integer from 1 to 7")
+                                                    pos = str(pos).lower()
+                                                    if pos == "quit":
+                                                        game.game_end = 1
+                                                        game.winner = opp_id
+                                                        await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                        break
+                                                    elif pos == "board":
+                                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                                        await mess.channel.send(embed = c4_embed)
+                                                    else:
+                                                        await mess.channel.send("Column number can only be an integer from 1 to 7")
                                         if game.game_end == 0:
                                             game.columns[pos-1][game.columns[pos-1].index("")] = "Red"
                                             game.turn = 1
@@ -1444,7 +1454,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                         c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
                                         await mess.channel.send(embed = c4_embed)
                                         while True:
-                                            await mess.channel.send("Choose the column (1-7) in which you want to drop your coin!")
+                                            await mess.channel.send("Choose the column (1-7) in which you want to drop your coin! (Type 'board' to see your current game; type 'quit' to end the game)")
                                             try:
                                                 pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 120.0)
                                             except asyncio.TimeoutError:
@@ -1466,7 +1476,17 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                     pos = int(pos)
                                                     await mess.channel.send("Column is full")
                                                 except ValueError:
-                                                    await mess.channel.send("Column number can only be an integer from 1 to 7")
+                                                    pos = str(pos).lower()
+                                                    if pos == "quit":
+                                                        game.game_end = 1
+                                                        game.winner = opp_id
+                                                        await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                        break
+                                                    elif pos == "board":
+                                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                                        await mess.channel.send(embed = c4_embed)
+                                                    else:
+                                                        await mess.channel.send("Column number can only be an integer from 1 to 7")
                                         if game.game_end == 0:
                                             game.columns[pos-1][game.columns[pos-1].index("")] = "Yellow"
                                             game.turn = 0
@@ -1479,7 +1499,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                         if game.game_end == 1:
                                             await mess.channel.send(f"<@!{game.winner}> is the winner!")
                                         elif game.left_pos == 0:
-                                            await mess.channel.send("It is a tie ¯\_(ツ)_/¯")
+                                            await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
                                             game.game_end = 1
 
                             else:
