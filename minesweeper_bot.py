@@ -336,6 +336,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                         You do not have to use ; while playing
                                         '''
                                         + player_1.str_row, color=discord.Color.blue())
+                                        game_init_1.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                         await mess.channel.send(embed=game_init_1)
                                         while True:
                                             while True:
@@ -374,6 +375,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                         '''
                                                         '''
                                                         + player_1.str_row, color=discord.Color.blue())
+                                                        game_real.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                                         await mess.channel.send(embed=game_real)
                                                     elif message == "quit":
                                                         player_1.game = 0
@@ -400,6 +402,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                             '''
                                             '''
                                             + player_1.str_row, color=discord.Color.blue())
+                                            game_real.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                             await mess.channel.send(embed=game_real)
                                         else:
                                             player_1.game = 0
@@ -412,6 +415,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                         You do not have to use ; while playing
                                         '''
                                         + player_2.str_row, color=discord.Color.blue())
+                                        game_init_2.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                         await mess.channel.send(embed=game_init_2)
                                         while True:
                                             while True:
@@ -450,6 +454,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                         '''
                                                         '''
                                                         + player_2.str_row, color=discord.Color.blue())
+                                                        game_real.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                                         await mess.channel.send(embed=game_real)
                                                     elif message == "quit":
                                                         player_2.game = 0
@@ -476,6 +481,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                             '''
                                             '''
                                             + player_2.str_row, color=discord.Color.blue())
+                                            game_real.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                             await mess.channel.send(embed=game_real)
                                         else:
                                             player_2.game = 0
@@ -706,6 +712,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 You do not have to use ; while playing
                                 '''
                                 + player_1.str_row, color=discord.Color.blue())
+                                game_init_1.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                 await mess.channel.send(embed=game_init_1)
                                 while True:
                                     while True:
@@ -744,6 +751,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                 '''
                                                 '''
                                                 + player_1.str_row, color=discord.Color.blue())
+                                                game_real.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                                 await mess.channel.send(embed=game_real)
                                             elif message == "quit":
                                                 player_1.game = 0
@@ -770,6 +778,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                     '''
                                     '''
                                     + player_1.str_row, color=discord.Color.blue())
+                                    game_real.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                     await mess.channel.send(embed=game_real)
                                 else:
                                     player_1.game = 0
@@ -782,6 +791,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 You do not have to use ; while playing
                                 '''
                                 + player_2.str_row, color=discord.Color.blue())
+                                game_init_2.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                 await mess.channel.send(embed=game_init_2)
                                 while True:
                                     while True:
@@ -820,6 +830,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                 '''
                                                 '''
                                                 + player_2.str_row, color=discord.Color.blue())
+                                                game_real.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                                 await mess.channel.send(embed=game_real)
                                             elif message == "quit":
                                                 player_2.game = 0
@@ -846,6 +857,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                     '''
                                     '''
                                     + player_2.str_row, color=discord.Color.blue())
+                                    game_real.set_author(name = f"<@!{a_id}> VS <@!{opp_id}>")
                                     await mess.channel.send(embed=game_real)
                                 else:
                                     player_2.game = 0
@@ -1409,6 +1421,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                         await mess.channel.send(f"<@!{a_id}> it's your turn")
                                         game.string_rows()
                                         c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                        c4_embed.set_author(name = f"🔴: <@!{a_id}>; 🟡: <@!{opp_id}>")
                                         await mess.channel.send(embed = c4_embed)
                                         while True:
                                             await mess.channel.send("Choose the column (1-7) in which you want to drop your coin! (Type 'board' to see your current game; type 'quit' to end the game)")
@@ -1441,6 +1454,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                         break
                                                     elif pos == "board":
                                                         c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                                        c4_embed.set_author(name = f"🔴: <@!{a_id}>; 🟡: <@!{opp_id}>")
                                                         await mess.channel.send(embed = c4_embed)
                                                     else:
                                                         await mess.channel.send("Column number can only be an integer from 1 to 7")
@@ -1484,6 +1498,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                         break
                                                     elif pos == "board":
                                                         c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                                        c4_embed.set_author(name = f"🔴: <@!{a_id}>; 🟡: <@!{opp_id}>")
                                                         await mess.channel.send(embed = c4_embed)
                                                     else:
                                                         await mess.channel.send("Column number can only be an integer from 1 to 7")
