@@ -1479,7 +1479,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                     pos = str(pos).lower()
                                                     if pos == "quit":
                                                         game.game_end = 1
-                                                        game.winner = opp_id
+                                                        game.winner = a_id
                                                         await mess.channel.send(f"<@!{game.winner}> is the winner!")
                                                         break
                                                     elif pos == "board":
