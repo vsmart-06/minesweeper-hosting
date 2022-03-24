@@ -1592,7 +1592,7 @@ Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of t
         await t_mem.add_roles(role)
 
     elif msg == ";invite":
-        invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: [https://discord.com/bot/minesweeper](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878172224&scope=bot)", colour = discord.Colour.blue())
+        invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: [https://discord.com/bot/minesweeper](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot)", colour = discord.Colour.blue())
         await mess.channel.send(embed = invite)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
@@ -1666,7 +1666,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
 `;invite`: Get a link to invite this bot to a server.
 `;support`: Get a link to join the official minesweeper bot support server.
 `;vote`: Vote for the bot!''')
-        help.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878172224&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote)", inline = False)
+        help.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote)", inline = False)
         await mess.channel.send(embed = help)
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
