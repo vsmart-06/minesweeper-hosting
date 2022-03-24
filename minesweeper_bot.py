@@ -1635,7 +1635,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
         await mess.channel.send(f"I'm in {len(bot.guilds)} servers!")
         bot_count = bot.get_channel(948144061305479198)
         await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
-        await mess.channel.send(f"Updated server count in <#{948144061305479198}>")
+        await mess.channel.send("Updated server count in <#948144061305479198>")
 
     elif msg == ";help":
         help = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
