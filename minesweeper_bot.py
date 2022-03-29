@@ -1516,7 +1516,14 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                         elif game.left_pos == 0:
                                             await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
                                             game.game_end = 1
+                                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
 
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                                await mess.channel.send(embed = tournament_invite)
                             else:
                                 await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
                                 tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
