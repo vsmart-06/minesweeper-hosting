@@ -2,6 +2,7 @@ import discord
 import discord.ext.commands
 from minesweeper_class import minesweeper
 from connect4_class import connect4
+from othello_class import othello
 from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record
 import os
 import asyncio
@@ -321,7 +322,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         await want_play.add_reaction("✅")
                         await want_play.add_reaction("❌")
                         try:
-                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 30.0)
+                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                         except asyncio.TimeoutError:
                             await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                         else:
@@ -1410,7 +1411,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                         await want_play.add_reaction("✅")
                         await want_play.add_reaction("❌")
                         try:
-                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 30.0)
+                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                         except asyncio.TimeoutError:
                             await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                         else:
@@ -1579,12 +1580,252 @@ Huge prizes for the winners - top 3 players can avail amazing rewards:
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
             await mess.channel.send(embed = tournament_invite)
 
+    elif msg.startswith(";othello") or msg.startswith(";ot"):
+        if not(isinstance(mess.channel, discord.DMChannel)):
+            valid_id = 0
+            if msg.startswith(";othello <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";othello <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";ot <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";ot <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";othello <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";othello <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";ot <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";ot <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            if valid_id == 1:
+                opp_id = int(opp_id)
+                try:
+                    a_id = mess.author.id
+                    me = await bot.fetch_user(a_id)
+                    opponent = await bot.fetch_user(opp_id)
+                    server_id = mess.guild.id
+                    guild = bot.get_guild(server_id)
+                    members = []
+                    for m in guild.members:
+                        members.append(m)
+                    if opponent in members:
+                        want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of othello! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                        want_play = await mess.channel.send(embed = want_play_embed)
+                        await want_play.add_reaction("✅")
+                        await want_play.add_reaction("❌")
+                        try:
+                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                        except asyncio.TimeoutError:
+                            await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                        else:
+                            if str(reaction.emoji) == "✅":
+                                game = othello(a_id, opp_id)
+                                while (game.any_valid("black") or game.any_valid("white")) and game.game_end == 0:
+                                    if game.turn == 0:
+                                        if game.any_valid("black"):
+                                            await mess.channel.send(f"<@!{a_id}> it's your turn")
+                                            game.string_rows()
+                                            board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                            await mess.channel.send(embed = board)
+                                            while True:
+                                                await mess.channel.send("Enter the row and column where you would like to place your coin (ex: '3 4') (Type 'board' to see your current game; type 'quit' to end the game)")
+                                                try:
+                                                    rc_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 120.0)
+                                                except asyncio.TimeoutError:
+                                                    await mess.channel.send("You took too long to respond so the game has ended 😢")
+                                                    game.game_end = 1
+                                                    game.winner = opp_id
+                                                    await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                    break
+                                                message = rc_msg.content
+                                                try:
+                                                    r, c = map(int, message.split())
+                                                    if r <= 0 or r > 8:
+                                                        await mess.channel.send("Row is out of range")
+                                                    elif c <= 0 or c > 8:
+                                                        await mess.channel.send("Column is out of range")
+                                                    else:
+                                                        if game.items[r-1][c-1] != "":
+                                                            await mess.channel.send("That spot is already occupied")
+                                                        elif not game.is_valid_move(r, c, "black"):
+                                                            await mess.channel.send("Invalid move")
+                                                        else:
+                                                            break
+                                                except ValueError:
+                                                    if message == "board":
+                                                        game.string_rows()
+                                                        board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                                        await mess.channel.send(embed = board)
+                                                    elif message == "quit":
+                                                        game.game_end = 1
+                                                        game.winner = opp_id
+                                                        await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                        break
+                                                    else:
+                                                        await mess.channel.send("Invalid input")
+                                            if game.game_end == 0:
+                                                game.guess(r, c, "black")
+                                                game.string_rows()
+                                                board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                                await mess.channel.send(embed = board)
+                                        else:
+                                            await mess.channel.send("Black has no moves left so it is white's turn")
+                                            game.turn = 1
+                                    else:
+                                        if game.any_valid("white"):
+                                            await mess.channel.send(f"<@!{opp_id}> it's your turn")
+                                            game.string_rows()
+                                            board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                            await mess.channel.send(embed = board)
+                                            while True:
+                                                await mess.channel.send("Enter the row and column where you would like to place your coin (ex: '3 4') (Type 'board' to see your current game; type 'quit' to end the game)")
+                                                try:
+                                                    rc_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 120.0)
+                                                except asyncio.TimeoutError:
+                                                    await mess.channel.send("You took too long to respond so the game has ended 😢")
+                                                    game.game_end = 1
+                                                    game.winner = a_id
+                                                    await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                    break
+                                                message = rc_msg.content
+                                                try:
+                                                    r, c = map(int, message.split())
+                                                    if r <= 0 or r > 8:
+                                                        await mess.channel.send("Row is out of range")
+                                                    elif c <= 0 or c > 8:
+                                                        await mess.channel.send("Column is out of range")
+                                                    else:
+                                                        if game.items[r-1][c-1] != "":
+                                                            await mess.channel.send("That spot is already occupied")
+                                                        elif not game.is_valid_move(r, c, "white"):
+                                                            await mess.channel.send("Invalid move")
+                                                        else:
+                                                            break
+                                                except ValueError:
+                                                    message = message.lower()
+                                                    if message == "board":
+                                                        game.string_rows()
+                                                        board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                                        await mess.channel.send(embed = board)
+                                                    elif message == "quit":
+                                                        game.game_end = 1
+                                                        game.winner = a_id
+                                                        await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                        break
+                                                    else:
+                                                        await mess.channel.send("Invalid input")
+                                            if game.game_end == 0:
+                                                game.guess(r, c, "white")
+                                                game.string_rows()
+                                                board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                                await mess.channel.send(embed = board)
+                                        else:
+                                            await mess.channel.send("White has no moves left so it is black's turn")
+                                            game.turn = 0
+                                if game.game_end == 0:
+                                    game.find_winner()
+                                    if not game.tie:
+                                        await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                    else:
+                                        await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
+
+                                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                                await mess.channel.send(embed = tournament_invite)
+                                
+                            else:
+                                await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                                await mess.channel.send(embed = tournament_invite)
+
+                    else:
+                        dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                        await mess.channel.send(embed = dual_game)
+                        tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                        await mess.channel.send(embed = tournament_invite)
+                except discord.errors.NotFound:
+                    dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
+                    await mess.channel.send(embed = dual_game)
+                    tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                    await mess.channel.send(embed = tournament_invite)
+            else:
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The connect 4 syntax is invalid! The correct syntax is: ;othello @user", color = discord.Color.blue())
+                await mess.channel.send(embed = dual_game)
+                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                await mess.channel.send(embed = tournament_invite)
+        else:
+            await mess.channel.send("You cant play a match against someone in a DM!")
+            tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+            await mess.channel.send(embed = tournament_invite)
+
     elif msg == ";other":
         other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
         other_games.add_field(name = "Connect 4", value = '''
 Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
 
 **Commands and aliases**: `;connect4`, `;c4` 
+''', inline = False)
+        other_games.add_field(name = "Othello", value = '''
+Othello is now here on the minesweeper bot! There are 2 players who play this game, and they are given one of two colours: black and white. Black goes first. The rules are as follows:
+1. You can only place your coin in a position that 'outflanks' at least one of your opponent's coins. Outflanking means that the coin you place and another one of your placed coins must be at the two ends of your opponent's coins.
+2. After placing the coin, any of the opponent's coins that are outflanked by the coin you placed and another one of your coins, is turned over.
+3. If you cannot place a coin anywhere, the bot will automatically pass on the turn to the other player.
+4. The game ends when the board is full, or nobody else can place a coin in a valid position. Whoever has more of their coins on the board at this point wins!
+
+**Commands and aliases**: `;othello`, `;ot`
 ''', inline = False)
         await mess.channel.send(embed = other_games)
         
