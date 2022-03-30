@@ -1580,7 +1580,7 @@ Huge prizes for the winners - top 3 players can avail amazing rewards:
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
             await mess.channel.send(embed = tournament_invite)
 
-    elif msg.startswith(";othello") or msg.startswith(";ot"):
+    elif msg.startswith(";othello") or msg.startswith(";oto"):
         if not(isinstance(mess.channel, discord.DMChannel)):
             valid_id = 0
             if msg.startswith(";othello <@!") and msg.endswith(">"):
@@ -1591,8 +1591,8 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     valid_id = 1
                 except ValueError:
                     pass
-            elif msg.startswith(";ot <@!") and msg.endswith(">"):
-                opp_id_temp = msg.replace(";ot <@!", "")
+            elif msg.startswith(";oto <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";oto <@!", "")
                 opp_id = opp_id_temp.replace(">", "")
                 try:
                     int(opp_id)
@@ -1607,8 +1607,8 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     valid_id = 1
                 except ValueError:
                     pass
-            elif msg.startswith(";ot <@") and msg.endswith(">"):
-                opp_id_temp = msg.replace(";ot <@", "")
+            elif msg.startswith(";oto <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";oto <@", "")
                 opp_id = opp_id_temp.replace(">", "")
                 try:
                     int(opp_id)
@@ -1825,7 +1825,7 @@ Othello is now here on the minesweeper bot! There are 2 players who play this ga
 3. If you cannot place a coin anywhere, the bot will automatically pass on the turn to the other player.
 4. The game ends when the board is full, or nobody else can place a coin in a valid position. Whoever has more of their coins on the board at this point wins!
 
-**Commands and aliases**: `;othello`, `;ot`
+**Commands and aliases**: `;othello`, `;oto`
 ''', inline = False)
         await mess.channel.send(embed = other_games)
         
