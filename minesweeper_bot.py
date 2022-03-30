@@ -1817,7 +1817,6 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
 Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
 
 **Commands and aliases**: `;connect4`, `;c4` 
-
 ''', inline = False)
         other_games.add_field(name = "Othello", value = '''
 Othello is now here on the minesweeper bot! There are 2 players who play this game, and they are given one of two colours: black and white. Black goes first. The rules are as follows:
@@ -1827,7 +1826,6 @@ Othello is now here on the minesweeper bot! There are 2 players who play this ga
 4. The game ends when the board is full, or nobody else can place a coin in a valid position. Whoever has more of their coins on the board at this point wins!
 
 **Commands and aliases**: `;othello`, `;oto`
-
 ''', inline = False)
         await mess.channel.send(embed = other_games)
         
