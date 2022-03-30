@@ -1790,7 +1790,7 @@ Huge prizes for the winners - top 3 players can avail amazing rewards:
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
                     await mess.channel.send(embed = tournament_invite)
             else:
-                dual_game = discord.Embed(title = "Invalid syntax!", description = "The connect 4 syntax is invalid! The correct syntax is: ;othello @user", color = discord.Color.blue())
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The connect 4 syntax is invalid! The correct syntax is: ;othello/;oto @user", color = discord.Color.blue())
                 await mess.channel.send(embed = dual_game)
                 tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
