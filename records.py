@@ -264,7 +264,7 @@ def get_theme(id):
     c = conn.cursor()
     try:
         c.execute(f"SELECT theme FROM user_data WHERE user_id = {id}")
-        theme = c.fetchone()
+        theme = c.fetchone()[0]
     except db.errors.OperationalError:
         theme = "dark"
     c.close()
