@@ -1934,15 +1934,15 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
 `;leaderboard`/`;lb`: View the global leaderboard.
 `;server leaderboard`/`;serverlb`: View the server leaderboard.
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
-*****`;profile settings private/public`: Control who can view your profile. By default it is set to public.
-*****`;theme settings light/dark`: Change the theme the bot uses for your games. By default it is set to dark.
-*****`;delete`: Delete all your data on the minesweeper bot.
+*`;profile settings private/public`: Control who can view your profile. By default it is set to public.
+*`;theme settings light/dark`: Change the theme the bot uses for your games. By default it is set to dark.
+*`;delete`: Delete all your data on the minesweeper bot.
 `;other`: View other games that can be played on the bot!
 `;invite`: Get a link to invite this bot to a server.
 `;support`: Get a link to join the official minesweeper bot support server.
 `;vote`: Vote for the bot!
 ''', inline = False)
-                help_embed.add_field(name = "*", value = "These commands despite giving a confirmation message will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.", inline = False)
+                help_embed.add_field(name = "Note:", value = "*: These commands despite giving a confirmation message will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.", inline = False)
                 help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote)", inline = False)
                 help = await mess.channel.send(embed = help_embed)
                 await help.add_reaction("◀")
