@@ -1899,19 +1899,33 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
         bot_count = bot.get_channel(948144061305479198)
         await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
         await mess.channel.send("Updated server count in <#948144061305479198>")
-
+    
     elif msg == ";help":
-        help = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
-        help.add_field(name = "Rules: ", value = 
-        '''The basic rules of the game are:
+        page = 1
+        while True:
+            if page == 1:
+                help_embed = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
+                help_embed.add_field(name = "Rules: ", value = 
+                '''The basic rules of minesweeper are:
 1. Behind each circle is either a bomb, a number, or nothing.
 2. If you hit a bomb you lose the game.
 3. The number signifies how many bombs are there behind the circles adjacent to it (diagonals included).
 4. If you know the location of a bomb, you can place a flag over there for reference.
-5. Open up all the circles without the bombs to win the game!'''
-        , inline = False)
-        help.add_field(name = "Commands: ", value = 
-        '''
+5. Open up all the circles without the bombs to win the game!''', inline = False)
+                help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote)", inline = False)
+                help = await mess.channel.send(embed = help_embed)
+                await help.add_reaction("▶")
+                try:
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and p.id != bot.user.id and r.message.id == help.id, timeout = 30.0)
+                except asyncio.TimeoutError:
+                    break
+                else:
+                    page = 2
+
+            elif page == 2:
+                help_embed = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
+                help_embed.add_field(name = "Commands: ", value = 
+'''
 `;help`: Open the guide.
 `;minesweeper`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone in your server to play a game against them!
 `;ms`: Alias of `;minesweeper`.
@@ -1924,13 +1938,22 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
 `;serverlb`: Alias of `;server leaderboard`.
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
 `;profile settings private/public`: Control who can view your profile. By default it is set to public.
+`;theme settings light/dark`: Change the theme the bot uses for your games. By default it is set to dark.
 `;delete`: Delete all your data on the minesweeper bot.
 `;other`: View other games that can be played on the bot!
 `;invite`: Get a link to invite this bot to a server.
 `;support`: Get a link to join the official minesweeper bot support server.
-`;vote`: Vote for the bot!''')
-        help.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote)", inline = False)
-        await mess.channel.send(embed = help)
+`;vote`: Vote for the bot!''', inline = False)
+                help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote)", inline = False)
+                help = await mess.channel.send(embed = help_embed)
+                await help.add_reaction("◀")
+                try:
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id != bot.user.id and r.message.id == help.id, timeout = 30.0)
+                except asyncio.TimeoutError:
+                    break
+                else:
+                    page = 1
+        
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
 🥇 1st place - 10M DMC (Dank Memer Coins)
