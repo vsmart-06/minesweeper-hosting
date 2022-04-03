@@ -1921,6 +1921,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     break
                 else:
                     page = 2
+                    await help.delete()
 
             elif page == 2:
                 help_embed = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
@@ -1953,7 +1954,8 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     break
                 else:
                     page = 1
-        
+                    await help.delete()
+
         tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
 🥇 1st place - 10M DMC (Dank Memer Coins)
