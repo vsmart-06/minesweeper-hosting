@@ -1928,15 +1928,11 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                 help_embed.add_field(name = "Commands: ", value = 
 '''
 `;help`: Open the guide.
-`;minesweeper`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone in your server to play a game against them!
-`;ms`: Alias of `;minesweeper`.
-`;minesweeper custom`: Start a custom minesweeper game.
-`;mscustom`: Alias of `;minesweeper custom`.
+`;minesweeper`/`;ms`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone in your server to play a game against them!
+`;minesweeper custom`/`;mscustom`: Start a custom minesweeper game.
 `;tournament`: Start a minesweeper tournament in your server!
-`;leaderboard`: View the global leaderboard.
-`;lb`: Alias of `;leaderboard`.
-`;server leaderboard`: View the server leaderboard.
-`;serverlb`: Alias of `;server leaderboard`.
+`;leaderboard`/`;lb`: View the global leaderboard.
+`;server leaderboard`/`;serverlb`: View the server leaderboard.
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
 `;profile settings private/public`: Control who can view your profile. By default it is set to public.
 `;theme settings light/dark`: Change the theme the bot uses for your games. By default it is set to dark.
