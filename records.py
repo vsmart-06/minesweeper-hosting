@@ -265,7 +265,7 @@ def get_theme(id):
     try:
         c.execute(f"SELECT theme FROM user_data WHERE user_id = {id}")
         theme = c.fetchone()[0]
-    except db.errors.OperationalError:
+    except TypeError:
         theme = "dark"
     c.close()
     conn.close()
