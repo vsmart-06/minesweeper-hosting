@@ -47,9 +47,8 @@ def stats_update(id, win):
     )
 
     c = conn.cursor()
-    c.execute("SELECT * FROM user_data")
-    all_recs = c.fetchall()
-    length = len(all_recs)
+    c.execute("SELECT COUNT(*) FROM user_data")
+    length = c.fetchone()[0]
     try:
         if win == 1:
             c.execute(f'''INSERT INTO user_data 
