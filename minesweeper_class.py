@@ -2,7 +2,7 @@ import random as rd
 import time
 from records import stats_update, score_check
 class minesweeper:
-    def __init__(self, num_rows = 8, num_cols = 8, num_bombs = 8, user_id = 0, multi = "no"):
+    def __init__(self, num_rows = 8, num_cols = 8, num_bombs = 8, user_id = 0, multi = "no", theme = "dark"):
         self.user_id = user_id
         self.time_start = time.time()
         self.flag_var = 0
@@ -27,6 +27,7 @@ class minesweeper:
         self.flag_pos = []
         self.multi = multi
         self.moves = 0
+        self.theme = theme
 
         for x in range(1, self.items_tot+1):
             self.row_brk.append("")
@@ -167,6 +168,12 @@ class minesweeper:
 
 
     def string_rows(self):
+        if self.theme == "dark":
+            box = "⬛"
+            circle = "⚪"
+        else:
+            box = "⬜"
+            circle = "⚫"
         if self.game_over == 1:
             for bomb_pos in self.bomb_list:
                 if self.items_g[bomb_pos[0]-1][bomb_pos[1]-1] != "🚩":
@@ -183,7 +190,7 @@ class minesweeper:
         self.str_row = '''
 '''
         for i in range(len(str(self.num_cols))+1):
-            self.str_row += "⬛"*(len(str(self.num_rows))+1)
+            self.str_row += box*(len(str(self.num_rows))+1)
             for x in range(1, self.num_cols+1):
                 r = str(x)
                 if len(r) == 1:
@@ -191,7 +198,7 @@ class minesweeper:
                 if len(str(self.num_cols)) == 2:
                     r += " "
                 if r[i] == " ":
-                    self.str_row += "⬛"
+                    self.str_row += box
                 elif r[i] == "1":
                     self.str_row += "1️⃣"
                 elif r[i] == "2":
@@ -216,12 +223,12 @@ class minesweeper:
 '''
         row = 1
         self.str_row += "1️⃣"
-        self.str_row += "⬛"*len(str(self.num_rows))
+        self.str_row += box*len(str(self.num_rows))
         for ro in range(0, self.num_rows):
             for col in range(0, self.num_cols):
                 item = self.items_g[ro][col]
                 if item == "":
-                    item = "⚪"
+                    item = circle
                 elif item == 1:
                     item = "1️⃣"
                 elif item == 2:
@@ -251,7 +258,7 @@ class minesweeper:
                     r += " "
                 for i in r:
                     if i == " ":
-                        self.str_row += "⬛"
+                        self.str_row += box
                     elif i == "1":
                         self.str_row += "1️⃣"
                     elif i == "2":
@@ -273,7 +280,7 @@ class minesweeper:
                     elif i == "0":
                         self.str_row += "0️⃣"
 
-                self.str_row += "⬛"
+                self.str_row += box
 
 
     def guess(self, r, c):

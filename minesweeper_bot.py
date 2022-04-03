@@ -1,9 +1,10 @@
+from tkinter import E
 import discord
 import discord.ext.commands
 from minesweeper_class import minesweeper
 from connect4_class import connect4
 from othello_class import othello
-from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record
+from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record, theme_change, get_theme
 import os
 import asyncio
 import random as rd
@@ -57,7 +58,7 @@ async def on_message(mess):
 
     if msg == ";minesweeper" or msg == ";ms":
         author_id = mess.author.id
-        play = minesweeper(8, 8, 8, author_id, "no")
+        play = minesweeper(8, 8, 8, author_id, "no", get_theme(author_id))
         game_init = discord.Embed(title=author+"'s minesweeper game", description='''
         You do not have to use ; while playing
         '''
@@ -184,7 +185,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                 except ValueError:
                     await mess.channel.send("Invalid input")
 
-            play = minesweeper(num_rows, num_cols, num_bombs, author_id, "no")
+            play = minesweeper(num_rows, num_cols, num_bombs, author_id, "no", get_theme(author_id))
             if play.items_tot+((((len(str(num_rows))+1)*num_rows))+((len(str(num_cols))+1)*num_cols)+((len(str(num_rows))+1)*(len(str(num_cols))+1))) > 198:
                 await mess.channel.send("Your grid is too big (you can have only a max of 198 objects (row and column numbers included))")
             else:
@@ -327,8 +328,8 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                             await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                         else:
                             if str(reaction.emoji) == "✅":
-                                player_1 = minesweeper(8, 8, 8, a_id, "yes")
-                                player_2 = minesweeper(8, 8, 8, opp_id, "yes")
+                                player_1 = minesweeper(8, 8, 8, a_id, "yes", get_theme(a_id))
+                                player_2 = minesweeper(8, 8, 8, opp_id, "yes", get_theme(opp_id))
                                 turn = 0
                                 while player_1.game == 1 and player_2.game == 1:
                                     if turn == 0:
@@ -703,8 +704,8 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                     p2_ready = True
                                     await mess.channel.send(f"<@!{pairings[match-1][1]}> is ready!")
                                     pairing_temp.remove(pairings[match-1][1])
-                        player_1 = minesweeper(8, 8, 8, a_id, "yes")
-                        player_2 = minesweeper(8, 8, 8, opp_id, "yes")
+                        player_1 = minesweeper(8, 8, 8, a_id, "yes", get_theme(a_id))
+                        player_2 = minesweeper(8, 8, 8, opp_id, "yes", get_theme(opp_id))
                         turn = 0
                         while player_1.game == 1 and player_2.game == 1:
                             if turn == 0:
@@ -1359,6 +1360,16 @@ Huge prizes for the winners - top 3 players can avail amazing rewards:
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
             await mess.channel.send(embed = tournament_invite)
 
+    elif msg.startswith(";theme settings "):
+        theme = msg.replace(";theme settings ", "")
+        aut_id = mess.author.id
+        if theme in ["light", "dark"]:
+            theme_change(aut_id, theme)
+            theme_settings = discord.Embed(title = "Theme changed successfully!", description = f"Your game theme has been successfully changed to {theme} mode!", color = discord.Color.blue())
+        else:
+            theme_settings = discord.Embed(title = "Invalid syntax!", description = "The theme settings syntax is invalid! The correct syntax is: ;theme settings light/dark", color = discord.Color.blue())
+        await mess.channel.send(embed = theme_settings)
+
     elif msg.startswith(";connect4") or msg.startswith(";c4"):
         if not(isinstance(mess.channel, discord.DMChannel)):
             valid_id = 0
@@ -1416,7 +1427,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                             await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                         else:
                             if str(reaction.emoji) == "✅":
-                                game = connect4(a_id, opp_id)
+                                game = connect4(a_id, opp_id, get_theme(a_id), get_theme(opp_id))
                                 while game.game_end == 0:
                                     if game.turn == 0:
                                         await mess.channel.send(f"<@!{a_id}> it's your turn")
@@ -1637,7 +1648,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                             await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                         else:
                             if str(reaction.emoji) == "✅":
-                                game = othello(a_id, opp_id)
+                                game = othello(a_id, opp_id, get_theme(a_id), get_theme(opp_id))
                                 while (game.any_valid("black") or game.any_valid("white")) and game.game_end == 0:
                                     if game.turn == 0:
                                         if game.any_valid("black"):
@@ -1686,6 +1697,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                 game.string_rows()
                                                 board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
                                                 await mess.channel.send(embed = board)
+                                                game.turn = 1
                                         else:
                                             await mess.channel.send("Black has no moves left so it is white's turn")
                                             game.turn = 1
@@ -1737,6 +1749,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                 game.string_rows()
                                                 board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
                                                 await mess.channel.send(embed = board)
+                                                game.turn = 0
                                         else:
                                             await mess.channel.send("White has no moves left so it is black's turn")
                                             game.turn = 0
@@ -1909,6 +1922,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
 `;serverlb`: Alias of `;server leaderboard`.
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
 `;profile settings private/public`: Control who can view your profile. By default it is set to public.
+`;theme settings light/dark`: Change the theme the bot uses for your games. By default it is set to dark.
 `;delete`: Delete all your data on the minesweeper bot.
 `;other`: View other games that can be played on the bot!
 `;invite`: Get a link to invite this bot to a server.

@@ -1,5 +1,5 @@
 class othello:
-    def __init__(self, p1, p2):
+    def __init__(self, p1, p2, p1_theme = "dark", p2_theme = "dark"):
         self.items = []
         self.board = ""
         self.winner = None
@@ -8,6 +8,8 @@ class othello:
         self.p2 = p2
         self.game_end = 0
         self.turn = 0
+        self.p1_theme = p1_theme
+        self.p2_theme = p2_theme
         temp = []
         self.lines = []
         for x in range(1, 65):
@@ -21,9 +23,19 @@ class othello:
         self.items[4][4] = "black"
         
     def string_rows(self):
-        self.board = '''⬛⬛1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣
+        if self.turn == 0:
+            if self.p1_theme == "dark":
+                box = "⬛"
+            else:
+                box = "⬜"
+        else:
+            if self.p2_theme == "dark":
+                box = "⬛"
+            else:
+                box = "⬜"
+        self.board = f'''{box}{box}1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣
 '''
-        self.board += "⬛"*10
+        self.board += box*10
         self.board += '''
 '''
         for i in range(len(self.items)):
@@ -44,7 +56,7 @@ class othello:
                 self.board += "7️⃣"
             elif ind == 8:
                 self.board += "8️⃣"
-            self.board += "⬛"
+            self.board += box
             x = self.items[i]
             for y in x:
                 if y == "":
@@ -162,10 +174,6 @@ class othello:
                             self.items[pos[0]-1][pos[1]-1] = colour
                         else:
                             break
-            if self.turn == 0:
-                self.turn = 1
-            else:
-                self.turn = 0
     
     def find_winner(self):
         black_points = 0

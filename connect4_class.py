@@ -1,5 +1,5 @@
 class connect4:
-    def __init__(self, a_id, opp_id):
+    def __init__(self, a_id, opp_id, p1_theme = "dark", p2_theme = "dark"):
         self.columns = []
         self.temp = []
         self.turn = 0
@@ -9,6 +9,8 @@ class connect4:
         self.game_end = 0
         self.p1 = a_id
         self.p2 = opp_id
+        self.p1_theme = p1_theme
+        self.p2_theme = p2_theme
         for x in range(1, 43):
             self.temp.append("")
             if x%6 == 0:
@@ -16,11 +18,25 @@ class connect4:
                 self.temp = []
         
     def string_rows(self):
+        if self.turn == 0:
+            if self.p1_theme == "dark":
+                circle = "⚪"
+                box = "⬛"
+            else:
+                circle = "⚫"
+                box = "⬜"
+        else:
+            if self.p2_theme == "dark":
+                circle = "⚪"
+                box = "⬛"
+            else:
+                circle = "⚫"
+                box = "⬜"
         self.string_items = ""
         self.string_items += "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣"
         self.string_items += '''
 '''
-        self.string_items += "⬛"*7
+        self.string_items += box*7
         for x in range(6):
             self.string_items += '''
 '''
@@ -31,7 +47,7 @@ class connect4:
                 elif item == "Yellow":
                     self.string_items += "🟡"
                 else:
-                    self.string_items += "⚪"
+                    self.string_items += circle
     
     def game_over(self):
         for x in range(6):

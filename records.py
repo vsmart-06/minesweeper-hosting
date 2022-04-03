@@ -32,7 +32,8 @@ try:
         max_streak INT,
         min_moves INT,
         tot_moves INT,
-        avg_moves INT
+        avg_moves INT,
+        theme VARCHAR
         )''')
 except db.errors.ProgrammingError:
     pass
@@ -52,14 +53,14 @@ def stats_update(id, win):
     try:
         if win == 1:
             c.execute(f'''INSERT INTO user_data 
-            (user_id, games_won, games_lost, total_games, win_percent, win_streak, max_streak) 
-            VALUES ({id}, 1, 0, 1, 100, 1, 1)''')
+            (user_id, games_won, games_lost, total_games, win_percent, win_streak, max_streak, theme) 
+            VALUES ({id}, 1, 0, 1, 100, 1, 1, 'dark')''')
             if length > 100:
                 c.execute(f"UPDATE user_data SET initial_supporter = 'no' WHERE user_id = {id}")
         else:
             c.execute(f'''INSERT INTO user_data 
-            (user_id, games_won, games_lost, total_games, win_percent, win_streak, max_streak) 
-            VALUES ({id}, 0, 1, 1, 0, 0, 0)''')
+            (user_id, games_won, games_lost, total_games, win_percent, win_streak, max_streak, theme) 
+            VALUES ({id}, 0, 1, 1, 0, 0, 0, 'dark')''')
             if length > 100:
                 c.execute(f"UPDATE user_data SET initial_supporter = 'no' WHERE user_id = {id}")
         conn.commit()
@@ -236,6 +237,39 @@ def delete_record(id):
         pass
     c.close()
     conn.close()
+
+def theme_change(id, theme):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    try:
+        c.execute(f"UPDATE user_data SET theme = '{theme}' WHERE user_id = {id}")
+        conn.commit()
+    except db.errors.OperationalError:
+        pass
+    c.close()
+    conn.close()
+
+def get_theme(id):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    try:
+        c.execute(f"SELECT theme FROM user_data WHERE user_id = {id}")
+        theme = c.fetchone()
+    except db.errors.OperationalError:
+        theme = "dark"
+    c.close()
+    conn.close()
+    return theme
 
 c.close()
 conn.close()
