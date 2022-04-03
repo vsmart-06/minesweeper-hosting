@@ -1471,6 +1471,9 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                         await mess.channel.send("Column number can only be an integer from 1 to 7")
                                         if game.game_end == 0:
                                             game.columns[pos-1][game.columns[pos-1].index("")] = "Red"
+                                            game.string_rows()
+                                            c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                            await mess.channel.send(embed = c4_embed)
                                             game.turn = 1
                                             game.left_pos -= 1
                                     else:
@@ -1515,12 +1518,12 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                         await mess.channel.send("Column number can only be an integer from 1 to 7")
                                         if game.game_end == 0:
                                             game.columns[pos-1][game.columns[pos-1].index("")] = "Yellow"
+                                            game.string_rows()
+                                            c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                            await mess.channel.send(embed = c4_embed)
                                             game.turn = 0
                                             game.left_pos -= 1
                                     if game.game_end == 0:
-                                        game.string_rows()
-                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
-                                        await mess.channel.send(embed = c4_embed)
                                         game.game_over()
                                         if game.game_end == 1:
                                             await mess.channel.send(f"<@!{game.winner}> is the winner!")
