@@ -1921,7 +1921,6 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
 `;serverlb`: Alias of `;server leaderboard`.
 `;profile`: View your personal minesweeper bot profile. Tag someone else to view their profile as well!
 `;profile settings private/public`: Control who can view your profile. By default it is set to public.
-`;theme settings light/dark`: Change the theme the bot uses for your games. By default it is set to dark.
 `;delete`: Delete all your data on the minesweeper bot.
 `;other`: View other games that can be played on the bot!
 `;invite`: Get a link to invite this bot to a server.
