@@ -316,7 +316,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     members = []
                     for m in guild.members:
                         members.append(m)
-                    if opponent in members:
+                    if opponent in members and opponent != me:
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of minesweeper! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
@@ -546,16 +546,17 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 await mess.channel.send(embed = tournament_invite)
 
                     else:
-                        dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
-                        await mess.channel.send(embed = dual_game)
-                        tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+                        if opponent != me:
+                            dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                            await mess.channel.send(embed = dual_game)
+                            tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
 🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
-                        await mess.channel.send(embed = tournament_invite)
+                            await mess.channel.send(embed = tournament_invite)
                 except discord.errors.NotFound:
                     dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
                     await mess.channel.send(embed = dual_game)
@@ -1415,7 +1416,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     members = []
                     for m in guild.members:
                         members.append(m)
-                    if opponent in members:
+                    if opponent in members and opponent != me:
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of connect 4! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
@@ -1550,16 +1551,17 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 await mess.channel.send(embed = tournament_invite)
 
                     else:
-                        dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
-                        await mess.channel.send(embed = dual_game)
-                        tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+                        if opponent != me:
+                            dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                            await mess.channel.send(embed = dual_game)
+                            tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
 🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
-                        await mess.channel.send(embed = tournament_invite)
+                            await mess.channel.send(embed = tournament_invite)
                 except discord.errors.NotFound:
                     dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
                     await mess.channel.send(embed = dual_game)
@@ -1639,7 +1641,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     members = []
                     for m in guild.members:
                         members.append(m)
-                    if opponent in members:
+                    if opponent in members and opponent != me:
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of othello! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
@@ -1783,16 +1785,17 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 await mess.channel.send(embed = tournament_invite)
 
                     else:
-                        dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
-                        await mess.channel.send(embed = dual_game)
-                        tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+                        if opponent != me:
+                            dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                            await mess.channel.send(embed = dual_game)
+                            tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
 Huge prizes for the winners - top 3 players can avail amazing rewards:
 🥇 1st place - 10M DMC (Dank Memer Coins)
 🥈 2nd place - 7M DMC
 🥉 3rd place - 3M DMC
 
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
-                        await mess.channel.send(embed = tournament_invite)
+                            await mess.channel.send(embed = tournament_invite)
                 except discord.errors.NotFound:
                     dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
                     await mess.channel.send(embed = dual_game)
