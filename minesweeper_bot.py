@@ -2071,6 +2071,8 @@ Mastermind is now here on the minesweeper bot! 2 players play this game and they
 ☑️ - Correct colour in the wrong position
 ❌ - Wrong colour
 These icons will be given for each of the 4 guessed colour positions, but these icons will be given at random - they will not correspond to any particular position. Deduce the correct code to win the game!
+
+**Commands and aliases**: `;mastermind`, `;mm` 
 ''', inline = False)
         await mess.channel.send(embed = other_games)
         
