@@ -77,15 +77,15 @@ class mastermind:
     def guess(self, nums):
         self.colourify(nums, 0)
         self.pos = []
-        hcode_temp = self.hcode.copy()
-        for ind in range(len(self.gcode)):
-            colour = self.gcode[ind]
-            if colour == self.hcode[ind]:
+        gcode_temp = self.gcode.copy()
+        for ind in range(len(self.hcode)):
+            colour = self.hcode[ind]
+            if colour == self.gcode[ind]:
                 self.pos.append("Bull")
-                hcode_temp.remove(colour)
-            elif colour in hcode_temp:
+                gcode_temp.remove(colour)
+            elif colour in gcode_temp:
                 self.pos.append("Cow")
-                hcode_temp.remove(colour)
+                gcode_temp.remove(colour)
             else:
                 self.pos.append("Dead")
         rd.shuffle(self.pos)
