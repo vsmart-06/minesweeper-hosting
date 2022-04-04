@@ -3,6 +3,7 @@ import discord.ext.commands
 from minesweeper_class import minesweeper
 from connect4_class import connect4
 from othello_class import othello
+from mastermind_class import mastermind
 from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record, theme_change, get_theme
 import os
 import asyncio
@@ -1829,6 +1830,225 @@ Huge prizes for the winners - top 3 players can avail amazing rewards:
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
             await mess.channel.send(embed = tournament_invite)
 
+    elif msg.startswith(";mastermind") or msg.startswith(";mm"):
+        if not(isinstance(mess.channel, discord.DMChannel)):
+            valid_id = 0
+            channel_id = mess.channel.id
+            if msg.startswith(";mastermind <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";mastermind <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";mm <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";mm <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";mastermind <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";mastermind <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";mm <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";mm <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            if valid_id == 1:
+                opp_id = int(opp_id)
+                try:
+                    a_id = mess.author.id
+                    me = await bot.fetch_user(a_id)
+                    opponent = await bot.fetch_user(opp_id)
+                    server_id = mess.guild.id
+                    guild = bot.get_guild(server_id)
+                    members = []
+                    for m in guild.members:
+                        members.append(m)
+                    if opponent in members and opponent != me:
+                        want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of mastermind! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                        want_play = await mess.channel.send(embed = want_play_embed)
+                        await want_play.add_reaction("✅")
+                        await want_play.add_reaction("❌")
+                        try:
+                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                        except asyncio.TimeoutError:
+                            await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                        else:
+                            if str(reaction.emoji) == "✅":
+                                await mess.channel.send(f"<@!{a_id}> check your DMs for a message from me to enter your code!")
+                                game = mastermind(a_id, opp_id, get_theme(opp_id))
+                                p1 = await bot.fetch_user(a_id)
+                                while True:
+                                    await p1.send('''Enter the hidden code with the following numbers:
+🔴 - 1
+🟠 - 2
+🟡 - 3
+🟢 - 4
+🔵 - 5
+🟣 - 6
+🟤 - 7
+Ex: 1 2 3 4
+''')
+                                    try:
+                                        hcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.guild == None, timeout = 120.0)
+                                    except asyncio.TimeoutError:
+                                        await p1.send("You took too long to respond so the game has been cancelled")
+                                        break
+                                    else:
+                                        hc = hcode_msg.content
+                                        try:
+                                            invalid = 0
+                                            nums = list(map(int, hc.split()))
+                                            if len(nums) != 4:
+                                                await p1.send("You can only enter 4 numbers")
+                                                invalid = 1
+                                            else:
+                                                for x in nums:
+                                                    if not(1 <= x <= 7):
+                                                        await p1.send("You can only enter numbers from 1-7")
+                                                        invalid = 1
+                                                        break
+                                            if invalid == 0:
+                                                break
+                                        except ValueError:
+                                            await p1.send("You can only enter numbers from 1-7")
+                                game.colourify(nums, 1)
+                                hcode_str = ""
+                                for x in game.hcode:
+                                    hcode_str += x
+                                await p1.send(f"You have chosen the code {hcode_str}. Head back to <#{channel_id}> to watch the match!")
+                                channel = await bot.fetch_channel(channel_id)
+                                await channel.send(f"<@!{opp_id}> the code has been chosen! Get ready!" )
+                                while game.game == 0 and game.turns < 8:
+                                    game.string_rows()
+                                    grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
+                                    await channel.send(embed = grid_embed)
+                                    while True:
+                                        await channel.send('''Enter your guess with the following numbers:
+🔴 - 1
+🟠 - 2
+🟡 - 3
+🟢 - 4
+🔵 - 5
+🟣 - 6
+🟤 - 7
+Ex: 1 2 3 4
+
+Type 'board' to view the current board; type 'quit' to quit the game
+''')
+                                        try:
+                                            gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == channel, timeout = 120.0)
+                                        except asyncio.TimeoutError:
+                                            await channel.send("You took too long to respond so the game has been cancelled")
+                                            game.turns = None
+                                            break
+                                        else:
+                                            gc = gcode_msg.content
+                                            try:
+                                                invalid = 0
+                                                nums = list(map(int, gc.split()))
+                                                if len(nums) != 4:
+                                                    await channel.send("You can only enter 4 numbers")
+                                                    invalid = 1
+                                                else:
+                                                    for x in nums:
+                                                        if not(1 <= x <= 7):
+                                                            await channel.send("You can only enter numbers from 1-7")
+                                                            invalid = 1
+                                                            break
+                                                if invalid == 0:
+                                                    break
+                                            except ValueError:
+                                                gc = gc.lower()
+                                                if gc == "quit":
+                                                    game.turns = None
+                                                    game.winner = game.p1
+                                                    await channel.send(f"<@!{game.winner}> is the winner!")
+                                                    break
+                                                elif gc == "board":
+                                                    game.string_rows()
+                                                    grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
+                                                    await channel.send(embed = grid_embed)
+                                                else:
+                                                    await channel.send("You can only enter numbers from 1-7")
+                                    game.guess(nums)
+                                if game.turns != None:
+                                    game.string_rows()
+                                    grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
+                                    await channel.send(embed = grid_embed)
+                                    if game.turns == 8:
+                                        game.winner = game.p1
+                                    await channel.send(f"<@!{game.winner}> is the winner!")
+
+                            else:
+                                await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                                await mess.channel.send(embed = tournament_invite)
+
+                    else:
+                        if opponent != me:
+                            dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                            await mess.channel.send(embed = dual_game)
+                            tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                            await mess.channel.send(embed = tournament_invite)
+                except discord.errors.NotFound:
+                    dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
+                    await mess.channel.send(embed = dual_game)
+                    tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                    await mess.channel.send(embed = tournament_invite)
+            else:
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The mastermind syntax is invalid! The correct syntax is: ;mastermind/;mm @user", color = discord.Color.blue())
+                await mess.channel.send(embed = dual_game)
+                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                await mess.channel.send(embed = tournament_invite)
+        else:
+            await mess.channel.send("You cant play a match against someone in a DM!")
+            tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+            await mess.channel.send(embed = tournament_invite)
+
     elif msg == ";other":
         other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
         other_games.add_field(name = "Connect 4", value = '''
@@ -1844,6 +2064,13 @@ Othello is now here on the minesweeper bot! There are 2 players who play this ga
 4. The game ends when the board is full, or nobody else can place a coin in a valid position. Whoever has more of their coins on the board at this point wins!
 
 **Commands and aliases**: `;othello`, `;oto`
+''', inline = False)
+        other_games.add_field(name = "Mastermind", value = '''
+Mastermind is now here on the minesweeper bot! 2 players play this game and they are give one of two roles - the code setter, or the code guesser. The code setter will make a code following a prompt from the bot in their DMs. The code will consist of 4 colours, which can be repeated. The code guesser will then have to guess the code in a maximum of 8 turns. Following each turn, the code guesser will see how close their guess is to the actual word. This will be seen at the side of the grid in the following form:
+✅ - Correct colour in the correct position
+☑️ - Correct colour in the wrong position
+❌ - Wrong colour
+These icons will be given for each of the 4 guessed colour positions, but these icons will be given at random - they will not correspond to any particular position. Deduce the correct code to win the game!
 ''', inline = False)
         await mess.channel.send(embed = other_games)
         
