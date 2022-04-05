@@ -84,7 +84,7 @@ class mastermind:
             if colour == self.gcode[ind]:
                 self.pos.append("Bull")
                 gcode_temp.pop(ind - (4-len(gcode_temp)))
-                hcode_temp.pop(ind - (4-len(gcode_temp)))
+                hcode_temp.pop(ind - (4-len(hcode_temp)))
         for x in hcode_temp:
             if x in gcode_temp:
                 self.pos.append("Cow")
