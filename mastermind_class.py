@@ -88,7 +88,7 @@ class mastermind:
         for x in hcode_temp:
             if x in gcode_temp:
                 self.pos.append("Cow")
-                gcode_temp.remove(colour)
+                gcode_temp.remove(x)
             else:
                 self.pos.append("Dead")
         rd.shuffle(self.pos)
