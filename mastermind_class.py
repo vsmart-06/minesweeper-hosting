@@ -29,7 +29,7 @@ class mastermind:
             circle = "⚫"
 
         self.grid = ""
-        if self.game == 0:
+        if self.game == 0 and self.turns != 8:
             self.grid += button*4 + box*5
         else:
             self.grid += "||"
