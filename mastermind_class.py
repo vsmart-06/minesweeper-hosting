@@ -78,12 +78,15 @@ class mastermind:
         self.colourify(nums, 0)
         self.pos = []
         gcode_temp = self.gcode.copy()
+        hcode_temp = self.hcode.copy()
         for ind in range(len(self.hcode)):
             colour = self.hcode[ind]
             if colour == self.gcode[ind]:
                 self.pos.append("Bull")
-                gcode_temp.remove(colour)
-            elif colour in gcode_temp:
+                gcode_temp.pop(ind - (4-len(gcode_temp)))
+                hcode_temp.pop(ind - (4-len(gcode_temp)))
+        for x in hcode_temp:
+            if x in gcode_temp:
                 self.pos.append("Cow")
                 gcode_temp.remove(colour)
             else:
