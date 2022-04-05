@@ -1888,9 +1888,14 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                             await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                         else:
                             if str(reaction.emoji) == "✅":
-                                await mess.channel.send(f"<@!{a_id}> check your DMs for a message from me to enter your code!")
-                                game = mastermind(a_id, opp_id, get_theme(opp_id))
-                                p1 = await bot.fetch_user(a_id)
+                                p1_id = rd.choice([a_id, opp_id])
+                                if p1_id == a_id:
+                                    p2_id = opp_id
+                                else:
+                                    p2_id = a_id
+                                await mess.channel.send(f"<@!{p1_id}> check your DMs for a message from me to enter your code!")
+                                game = mastermind(p1_id, p2_id, get_theme(p2_id))
+                                p1 = await bot.fetch_user(p1_id)
                                 while True:
                                     await p1.send('''Enter the hidden code with the following numbers:
 🔴 - 1
@@ -1903,7 +1908,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
 Ex: 1 2 3 4
 ''')
                                     try:
-                                        hcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.guild == None, timeout = 120.0)
+                                        hcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p1_id and m.guild == None, timeout = 120.0)
                                     except asyncio.TimeoutError:
                                         await p1.send("You took too long to respond so the game has been cancelled")
                                         break
@@ -1931,7 +1936,7 @@ Ex: 1 2 3 4
                                     hcode_str += x
                                 await p1.send(f"You have chosen the code {hcode_str}. Head back to <#{channel_id}> to watch the match!")
                                 channel = await bot.fetch_channel(channel_id)
-                                await channel.send(f"<@!{opp_id}> the code has been chosen! Get ready!" )
+                                await channel.send(f"<@!{p2_id}> the code has been chosen! Get ready!" )
                                 while game.game == 0 and game.turns < 8:
                                     game.string_rows()
                                     grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
@@ -1950,7 +1955,7 @@ Ex: 1 2 3 4
 Type 'board' to view the current board; type 'quit' to quit the game
 ''')
                                         try:
-                                            gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == channel, timeout = 120.0)
+                                            gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel == channel, timeout = 120.0)
                                         except asyncio.TimeoutError:
                                             await channel.send("You took too long to respond so the game has been cancelled")
                                             game.turns = None
