@@ -1957,7 +1957,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                         try:
                                             gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel == channel, timeout = 120.0)
                                         except asyncio.TimeoutError:
-                                            await channel.send("You took too long to respond so the game has been cancelled")
+                                            await channel.send("You took too long to respond so the game has ended")
                                             game.winner = game.p1
                                             await channel.send(f"<@!{game.winner}> is the winner!")
                                             game.turns = None
