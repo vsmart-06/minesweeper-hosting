@@ -346,7 +346,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                                 try:
                                                     pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 30.0)
                                                 except asyncio.TimeoutError:
-                                                    player_1.end_msg = "x"
+                                                    player_1.end_msg = "You took too long to respond so the game has ended 😢"
                                                     message = "quit"
                                                     break
                                                 try:
@@ -1958,6 +1958,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                             gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel == channel, timeout = 120.0)
                                         except asyncio.TimeoutError:
                                             await channel.send("You took too long to respond so the game has been cancelled")
+                                            game.winner = game.p1
+                                            await channel.send(f"<@!{game.winner}> is the winner!")
                                             game.turns = None
                                             break
                                         else:
