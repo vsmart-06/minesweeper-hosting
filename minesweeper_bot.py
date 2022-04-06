@@ -1911,6 +1911,7 @@ Ex: 1 2 3 4
                                         hcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p1_id and m.guild == None, timeout = 120.0)
                                     except asyncio.TimeoutError:
                                         await p1.send("You took too long to respond so the game has been cancelled")
+                                        game.game = 1
                                         break
                                     else:
                                         hc = hcode_msg.content
@@ -1930,75 +1931,76 @@ Ex: 1 2 3 4
                                                 break
                                         except ValueError:
                                             await p1.send("You can only enter numbers from 1-7")
-                                game.colourify(nums, 1)
-                                hcode_str = ""
-                                for x in game.hcode:
-                                    hcode_str += x
-                                await p1.send(f"You have chosen the code {hcode_str}. Head back to <#{channel_id}> to watch the match!")
-                                channel = await bot.fetch_channel(channel_id)
-                                await channel.send(f"<@!{p2_id}> the code has been chosen! Get ready!" )
-                                while game.game == 0 and game.turns < 8:
-                                    game.string_rows()
-                                    grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
-                                    await channel.send(embed = grid_embed)
-                                    while True:
-                                        await channel.send('''Enter your guess with the following numbers:
-🔴 - 1
-🟠 - 2
-🟡 - 3
-🟢 - 4
-🔵 - 5
-🟣 - 6
-🟤 - 7
-Ex: 1 2 3 4
+                                if game.game == 0:
+                                    game.colourify(nums, 1)
+                                    hcode_str = ""
+                                    for x in game.hcode:
+                                        hcode_str += x
+                                    await p1.send(f"You have chosen the code {hcode_str}. Head back to <#{channel_id}> to watch the match!")
+                                    channel = await bot.fetch_channel(channel_id)
+                                    await channel.send(f"<@!{p2_id}> the code has been chosen! Get ready!" )
+                                    while game.game == 0 and game.turns < 8:
+                                        game.string_rows()
+                                        grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
+                                        await channel.send(embed = grid_embed)
+                                        while True:
+                                            await channel.send('''Enter your guess with the following numbers:
+    🔴 - 1
+    🟠 - 2
+    🟡 - 3
+    🟢 - 4
+    🔵 - 5
+    🟣 - 6
+    🟤 - 7
+    Ex: 1 2 3 4
 
-Type 'board' to view the current board; type 'quit' to quit the game
-''')
-                                        try:
-                                            gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel == channel, timeout = 120.0)
-                                        except asyncio.TimeoutError:
-                                            await channel.send("You took too long to respond so the game has ended")
-                                            game.winner = game.p1
-                                            await channel.send(f"<@!{game.winner}> is the winner!")
-                                            game.turns = None
-                                            break
-                                        else:
-                                            gc = gcode_msg.content
+    Type 'board' to view the current board; type 'quit' to quit the game
+    ''')
                                             try:
-                                                invalid = 0
-                                                nums = list(map(int, gc.split()))
-                                                if len(nums) != 4:
-                                                    await channel.send("You can only enter 4 numbers")
-                                                    invalid = 1
-                                                else:
-                                                    for x in nums:
-                                                        if not(1 <= x <= 7):
-                                                            await channel.send("You can only enter numbers from 1-7")
-                                                            invalid = 1
-                                                            break
-                                                if invalid == 0:
-                                                    break
-                                            except ValueError:
-                                                gc = gc.lower()
-                                                if gc == "quit":
-                                                    game.turns = None
-                                                    game.winner = game.p1
-                                                    await channel.send(f"<@!{game.winner}> is the winner!")
-                                                    break
-                                                elif gc == "board":
-                                                    game.string_rows()
-                                                    grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
-                                                    await channel.send(embed = grid_embed)
-                                                else:
-                                                    await channel.send("You can only enter numbers from 1-7")
-                                    game.guess(nums)
-                                if game.turns != None:
-                                    game.string_rows()
-                                    grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
-                                    await channel.send(embed = grid_embed)
-                                    if game.turns == 8:
-                                        game.winner = game.p1
-                                    await channel.send(f"<@!{game.winner}> is the winner!")
+                                                gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel == channel, timeout = 120.0)
+                                            except asyncio.TimeoutError:
+                                                await channel.send("You took too long to respond so the game has ended")
+                                                game.winner = game.p1
+                                                await channel.send(f"<@!{game.winner}> is the winner!")
+                                                game.turns = None
+                                                break
+                                            else:
+                                                gc = gcode_msg.content
+                                                try:
+                                                    invalid = 0
+                                                    nums = list(map(int, gc.split()))
+                                                    if len(nums) != 4:
+                                                        await channel.send("You can only enter 4 numbers")
+                                                        invalid = 1
+                                                    else:
+                                                        for x in nums:
+                                                            if not(1 <= x <= 7):
+                                                                await channel.send("You can only enter numbers from 1-7")
+                                                                invalid = 1
+                                                                break
+                                                    if invalid == 0:
+                                                        break
+                                                except ValueError:
+                                                    gc = gc.lower()
+                                                    if gc == "quit":
+                                                        game.turns = None
+                                                        game.winner = game.p1
+                                                        await channel.send(f"<@!{game.winner}> is the winner!")
+                                                        break
+                                                    elif gc == "board":
+                                                        game.string_rows()
+                                                        grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
+                                                        await channel.send(embed = grid_embed)
+                                                    else:
+                                                        await channel.send("You can only enter numbers from 1-7")
+                                        game.guess(nums)
+                                    if game.turns != None:
+                                        game.string_rows()
+                                        grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
+                                        await channel.send(embed = grid_embed)
+                                        if game.turns == 8:
+                                            game.winner = game.p1
+                                        await channel.send(f"<@!{game.winner}> is the winner!")
 
                             else:
                                 await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
