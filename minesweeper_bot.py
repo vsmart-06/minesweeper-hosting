@@ -1945,19 +1945,19 @@ Ex: 1 2 3 4
                                         await channel.send(embed = grid_embed)
                                         while True:
                                             await channel.send('''Enter your guess with the following numbers:
-    🔴 - 1
-    🟠 - 2
-    🟡 - 3
-    🟢 - 4
-    🔵 - 5
-    🟣 - 6
-    🟤 - 7
-    Ex: 1 2 3 4
+🔴 - 1
+🟠 - 2
+🟡 - 3
+🟢 - 4
+🔵 - 5
+🟣 - 6
+🟤 - 7
+Ex: 1 2 3 4
 
-    Type 'board' to view the current board; type 'quit' to quit the game
-    ''')
+Type 'board' to view the current board; type 'quit' to quit the game
+''')
                                             try:
-                                                gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel == channel, timeout = 120.0)
+                                                gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel == channel, timeout = 300.0)
                                             except asyncio.TimeoutError:
                                                 await channel.send("You took too long to respond so the game has ended")
                                                 game.winner = game.p1
