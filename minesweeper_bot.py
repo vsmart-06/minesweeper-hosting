@@ -1995,6 +1995,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                         await channel.send("You can only enter numbers from 1-7")
                                         if game.turns != None:
                                             game.guess(nums)
+                                        else:
+                                            break
                                     if game.turns != None:
                                         game.string_rows()
                                         grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
