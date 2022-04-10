@@ -317,7 +317,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     members = []
                     for m in guild.members:
                         members.append(m)
-                    if opponent in members and opponent != me:
+                    if opponent in members and opponent != me and not(opponent.bot):
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of minesweeper! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
@@ -547,7 +547,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 await mess.channel.send(embed = tournament_invite)
 
                     else:
-                        if opponent != me:
+                        if opponent != me and not(opponent.bot):
                             dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
                             await mess.channel.send(embed = dual_game)
                             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
@@ -1417,7 +1417,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     members = []
                     for m in guild.members:
                         members.append(m)
-                    if opponent in members and opponent != me:
+                    if opponent in members and opponent != me and not(opponent.bot):
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of connect 4! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
@@ -1552,7 +1552,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 await mess.channel.send(embed = tournament_invite)
 
                     else:
-                        if opponent != me:
+                        if opponent != me and not(opponent.bot):
                             dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
                             await mess.channel.send(embed = dual_game)
                             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
@@ -1642,7 +1642,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     members = []
                     for m in guild.members:
                         members.append(m)
-                    if opponent in members and opponent != me:
+                    if opponent in members and opponent != me and not(opponent.bot):
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of othello! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
@@ -1786,7 +1786,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 await mess.channel.send(embed = tournament_invite)
 
                     else:
-                        if opponent != me:
+                        if opponent != me and not(opponent.bot):
                             dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
                             await mess.channel.send(embed = dual_game)
                             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
@@ -1877,7 +1877,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                     members = []
                     for m in guild.members:
                         members.append(m)
-                    if opponent in members and opponent != me:
+                    if opponent in members and opponent != me and not(opponent.bot):
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of mastermind! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
@@ -2017,7 +2017,7 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                                 await mess.channel.send(embed = tournament_invite)
 
                     else:
-                        if opponent != me:
+                        if opponent != me and not(opponent.bot):
                             dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
                             await mess.channel.send(embed = dual_game)
                             tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
