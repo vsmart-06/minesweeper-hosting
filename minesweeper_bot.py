@@ -1888,23 +1888,24 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                             await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                         else:
                             if str(reaction.emoji) == "✅":
+                                red = str(bot.get_emoji(962686453157068880))
+                                orange = str(bot.get_emoji(962686453320679454))
+                                yellow = str(bot.get_emoji(962686452918009858))
+                                green = str(bot.get_emoji(962686453123534858))
+                                blue = str(bot.get_emoji(962686453123543050))
+                                purple = str(bot.get_emoji(962686453438095360))
+                                brown = str(bot.get_emoji(962686453157085275))
                                 p1_id = rd.choice([a_id, opp_id])
                                 if p1_id == a_id:
                                     p2_id = opp_id
                                 else:
                                     p2_id = a_id
                                 await mess.channel.send(f"<@!{p1_id}> check your DMs for a message from me to enter your code!")
-                                game = mastermind(p1_id, p2_id, get_theme(p2_id))
+                                game = mastermind(p1_id, p2_id, get_theme(p2_id), red, orange, yellow, green, blue, purple, brown)
                                 p1 = await bot.fetch_user(p1_id)
                                 while True:
-                                    await p1.send('''Enter the hidden code with the following numbers:
-🔴 - 1
-🟠 - 2
-🟡 - 3
-🟢 - 4
-🔵 - 5
-🟣 - 6
-🟤 - 7
+                                    await p1.send(f'''Enter the hidden code with the following numbers:
+{red}, {orange}, {yellow}, {green}, {blue}, {purple}, {brown}
 Ex: 1 2 3 4
 ''')
                                     try:
@@ -1944,14 +1945,8 @@ Ex: 1 2 3 4
                                         grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
                                         await channel.send(embed = grid_embed)
                                         while True:
-                                            await channel.send('''Enter your guess with the following numbers:
-🔴 - 1
-🟠 - 2
-🟡 - 3
-🟢 - 4
-🔵 - 5
-🟣 - 6
-🟤 - 7
+                                            await channel.send(f'''Enter your guess with the following numbers:
+{red}, {orange}, {yellow}, {green}, {blue}, {purple}, {brown}
 Ex: 1 2 3 4
 
 Type 'board' to view the current board; type 'quit' to quit the game

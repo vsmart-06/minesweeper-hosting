@@ -1,11 +1,11 @@
 import random as rd
 
 class mastermind:
-    def __init__(self, p1, p2, p2_theme):
+    def __init__(self, p1, p2, p2_theme, red, orange, yellow, green, blue, purple, brown):
         self.hcode = []
         self.gcode = []
         self.gcodes = []
-        self.colour_list = {1: "🔴", 2: "🟠", 3: "🟡", 4: "🟢", 5: "🔵", 6: "🟣", 7: "🟤"}
+        self.colour_list = {1: red, 2: orange, 3: yellow, 4: green, 5: blue, 6: purple, 7: brown}
         self.pos = []
         self.positions = []
         self.game = 0
