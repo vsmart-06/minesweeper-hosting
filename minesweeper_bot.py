@@ -4,6 +4,7 @@ from minesweeper_class import minesweeper
 from connect4_class import connect4
 from othello_class import othello
 from mastermind_class import mastermind
+from yahtzee_class import yahtzee
 from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record, theme_change, get_theme
 import os
 import asyncio
@@ -2056,11 +2057,424 @@ Huge prizes for the winners - top 3 players can avail amazing rewards:
 Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
             await mess.channel.send(embed = tournament_invite)
 
+    elif msg.startswith(";yahtzee") or msg.startswith(";yz"):
+        if not(isinstance(mess.channel, discord.DMChannel)):
+            valid_id = 0
+            channel_id = mess.channel.id
+            if msg.startswith(";yahtzee <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";yahtzee <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";yz <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";yz <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";yahtzee <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";yahtzee <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";yz <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";yz <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            if valid_id == 1:
+                opp_id = int(opp_id)
+                try:
+                    a_id = mess.author.id
+                    me = await bot.fetch_user(a_id)
+                    opponent = await bot.fetch_user(opp_id)
+                    server_id = mess.guild.id
+                    guild = bot.get_guild(server_id)
+                    members = []
+                    for m in guild.members:
+                        members.append(m)
+                    if opponent in members and opponent != me and not(opponent.bot):
+                        want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of yahtzee! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                        want_play = await mess.channel.send(embed = want_play_embed)
+                        await want_play.add_reaction("✅")
+                        await want_play.add_reaction("❌")
+                        try:
+                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                        except asyncio.TimeoutError:
+                            await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                        else:
+                            if str(reaction.emoji) == "✅":
+                                d1 = str(bot.get_emoji(961927292752375868))
+                                d2 = str(bot.get_emoji(961927292358111254))
+                                d3 = str(bot.get_emoji(961927292811087892))
+                                d4 = str(bot.get_emoji(961927292748197908))
+                                d5 = str(bot.get_emoji(961927292693655563))
+                                d6 = str(bot.get_emoji(961927292681072680))
+                                p1_game = yahtzee(a_id, d1, d2, d3, d4, d5, d6)
+                                p2_game = yahtzee(opp_id, d1, d2, d3, d4, d5, d6)
+                                turn = 0
+                                while (p1_game.game == 0 or p2_game.game == 0) and p1_game.quit == 0 and p2_game.quit == 0:
+                                    if turn == 0:
+                                        if p1_game.empty_pos > 0:
+                                            await mess.channel.send(f"<@!{p1_game.user_id}> it's your turn")
+                                            p1_game.string_rows()
+                                            p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
+                                            p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
+                                            p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
+                                            p1_card.add_field(name = "Scores", value = p1_game.right)
+                                            await mess.channel.send(embed = p1_card)
+                                            inp = ""
+                                            while p1_game.rolls > 0 and inp != "stop" and p1_game.quit == 0:
+                                                p1_game.roll()
+                                                p1_game.string_dice()
+                                                dice_string = ""
+                                                for x in p1_game.sdice:
+                                                    dice_string += x+" "
+                                                roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                await mess.channel.send(embed = roll)
+                                                if p1_game.rolls > 0:
+                                                    while True:
+                                                        await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'quit' to quit the game)")
+                                                        try:
+                                                            inp = await bot.wait_for("message", check = lambda m: m.author.id == p1_game.user_id and m.channel == mess.channel, timeout = 120.0)
+                                                        except asyncio.TimeoutError:
+                                                            await mess.channel.send("You took too long to respond so the game has ended")
+                                                            p1_game.quit = 1
+                                                            await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
+                                                            break
+                                                        else:
+                                                            inp = inp.content
+                                                            inp = inp.lower()
+                                                            if inp != "stop":
+                                                                try:
+                                                                    invalid = 0
+                                                                    nums = list(map(int, inp.split()))
+                                                                    if len(nums) > 5:
+                                                                        await mess.channel.send("You cant hold more than 5 dice")
+                                                                        invalid = 1
+                                                                    elif len(nums) == 1 and nums[0] == 0:
+                                                                        nums = []
+                                                                    else:
+                                                                        for x in nums:
+                                                                            if not(1 <= x <= 6):
+                                                                                await mess.channel.send("You can only hold dice with numbers from 1-6")
+                                                                                invalid = 1
+                                                                                break
+                                                                            elif x not in p1_game.dice or nums.count(x) > p1_game.counts[x]:
+                                                                                await mess.channel.send("You can only hold dice that have been rolled")
+                                                                                invalid = 1
+                                                                                break
+                                                                    if invalid == 0:
+                                                                        break
+                                                                except ValueError:
+                                                                    if inp == "quit":
+                                                                        p1_game.quit = 1
+                                                                        await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
+                                                                        break
+                                                                    elif inp == "dice":
+                                                                        p1_game.string_dice()
+                                                                        dice_string = ""
+                                                                        for x in p1_game.sdice:
+                                                                            dice_string += x+" "
+                                                                        roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                                        await mess.channel.send(embed = roll)
+                                                                    else:
+                                                                        await mess.channel.send("You can only enter integral values")
+                                                            else:
+                                                                break
+                                                    if inp != "stop" and p1_game.quit == 0:
+                                                        p1_game.store(nums)
+                                            if p1_game.quit == 0:
+                                                p1_game.string_rows()
+                                                p1_game.string_dice()
+                                                dice_string = ""
+                                                for x in p1_game.sdice:
+                                                    dice_string += x+" "
+                                                p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                p1_card.add_field(name = "Final dice", value = dice_string, inline = False)
+                                                p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
+                                                p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
+                                                p1_card.add_field(name = "Scores", value = p1_game.right)
+                                                await mess.channel.send(embed = p1_card)
+                                                while True:
+                                                    await mess.channel.send("Which field would you like to place your roll in. Ex: L1 (Enter 'card' to view the card)")
+                                                    try:
+                                                        loc = await bot.wait_for("message", check = lambda m: m.author.id == p1_game.user_id and m.channel == mess.channel, timeout = 120.0)
+                                                    except asyncio.TimeoutError:
+                                                        await mess.channel.send("You took too long to repond so the game has ended")
+                                                        p1_game.quit = 1
+                                                        await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
+                                                        break
+                                                    else:
+                                                        loc = loc.content
+                                                        loc = str(loc).upper()
+                                                        if loc[0] in ["U", "L"]:
+                                                            try:
+                                                                invalid = 0
+                                                                if loc[0] == "U":
+                                                                    if not(1 <= int(loc[1:]) <= 6):
+                                                                        await mess.channel.send("Invalid field")
+                                                                        invalid = 1
+                                                                else:
+                                                                    if not(1 <= int(loc[1:]) <= 7):
+                                                                        await mess.channel.send("Invalid field")
+                                                                        invalid = 1
+                                                                if invalid == 0:
+                                                                    p1_game.points(loc)
+                                                                    if p1_game.invalid == 0:
+                                                                        break
+                                                                    else:
+                                                                        await mess.channel.send("That field is already occupied")
+                                                            except ValueError:
+                                                                await mess.channel.send("Invalid input")
+                                                        else:
+                                                            if loc == "CARD":
+                                                                p1_game.string_rows()
+                                                                p1_game.string_dice()
+                                                                dice_string = ""
+                                                                for x in p1_game.sdice:
+                                                                    dice_string += x+" "
+                                                                p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                                p1_card.add_field(name = "Final dice", value = dice_string, inline = False)
+                                                                p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
+                                                                p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
+                                                                p1_card.add_field(name = "Scores", value = p1_game.right)
+                                                                await mess.channel.send(embed = p1_card)
+                                                            else:
+                                                                await mess.channel.send("Invalid input")
+                                                if p1_game.quit == 0:
+                                                    p1_game.string_rows()
+                                                    p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                    p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
+                                                    p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
+                                                    p1_card.add_field(name = "Scores", value = p1_game.right)
+                                                    await mess.channel.send(embed = p1_card)
+                                        else:
+                                            p1_game.game = 1
+                                        turn = 1
+                                    else:
+                                        if p2_game.empty_pos > 0:
+                                            await mess.channel.send(f"<@!{p2_game.user_id}> it's your turn")
+                                            p2_game.string_rows()
+                                            p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
+                                            p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
+                                            p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
+                                            p2_card.add_field(name = "Scores", value = p2_game.right)
+                                            await mess.channel.send(embed = p2_card)
+                                            inp = ""
+                                            while p2_game.rolls > 0 and inp != "stop" and p2_game.quit == 0:
+                                                p2_game.roll()
+                                                p2_game.string_dice()
+                                                dice_string = ""
+                                                for x in p2_game.sdice:
+                                                    dice_string += x+" "
+                                                roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                await mess.channel.send(embed = roll)
+                                                if p2_game.rolls > 0:
+                                                    while True:
+                                                        await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'quit' to quit the game)")
+                                                        try:
+                                                            inp = await bot.wait_for("message", check = lambda m: m.author.id == p2_game.user_id and m.channel == mess.channel, timeout = 120.0)
+                                                        except asyncio.TimeoutError:
+                                                            await mess.channel.send("You took too long to respond so the game has ended")
+                                                            p2_game.quit = 1
+                                                            await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
+                                                            break
+                                                        else:
+                                                            inp = inp.content
+                                                            inp = inp.lower()
+                                                            if inp != "stop":
+                                                                try:
+                                                                    invalid = 0
+                                                                    nums = list(map(int, inp.split()))
+                                                                    if len(nums) > 5:
+                                                                        await mess.channel.send("You cant hold more than 5 dice")
+                                                                        invalid = 1
+                                                                    elif len(nums) == 1 and nums[0] == 0:
+                                                                        nums = []
+                                                                    else:
+                                                                        for x in nums:
+                                                                            if not(1 <= x <= 6):
+                                                                                await mess.channel.send("You can only hold dice with numbers from 1-6")
+                                                                                invalid = 1
+                                                                                break
+                                                                            elif x not in p2_game.dice or nums.count(x) > p2_game.counts[x]:
+                                                                                await mess.channel.send("You can only hold dice that have been rolled")
+                                                                                invalid = 1
+                                                                                break
+                                                                    if invalid == 0:
+                                                                        break
+                                                                except ValueError:
+                                                                    if inp == "quit":
+                                                                        p2_game.quit = 1
+                                                                        await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
+                                                                        break
+                                                                    elif inp == "dice":
+                                                                        p2_game.string_dice()
+                                                                        dice_string = ""
+                                                                        for x in p2_game.sdice:
+                                                                            dice_string += x+" "
+                                                                        roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                                        await mess.channel.send(embed = roll)
+                                                                    else:
+                                                                        await mess.channel.send("You can only enter integral values")
+                                                            else:
+                                                                break
+                                                    if inp != "stop" and p2_game.quit == 0:
+                                                        p2_game.store(nums)
+                                            if p2_game.quit == 0:
+                                                p2_game.string_rows()
+                                                p2_game.string_dice()
+                                                dice_string = ""
+                                                for x in p2_game.sdice:
+                                                    dice_string += x+" "
+                                                p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                p2_card.add_field(name = "Final dice", value = dice_string, inline = False)
+                                                p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
+                                                p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
+                                                p2_card.add_field(name = "Scores", value = p2_game.right)
+                                                await mess.channel.send(embed = p2_card)
+                                                while True:
+                                                    await mess.channel.send("Which field would you like to place your roll in. Ex: L1 (Enter 'card' to view the card)")
+                                                    try:
+                                                        loc = await bot.wait_for("message", check = lambda m: m.author.id == p2_game.user_id and m.channel == mess.channel, timeout = 120.0)
+                                                    except asyncio.TimeoutError:
+                                                        await mess.channel.send("You took too long to repond so the game has ended")
+                                                        p2_game.quit = 1
+                                                        await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
+                                                        break
+                                                    else:
+                                                        loc = loc.content
+                                                        loc = str(loc).upper()
+                                                        if loc[0] in ["U", "L"]:
+                                                            try:
+                                                                invalid = 0
+                                                                if loc[0] == "U":
+                                                                    if not(1 <= int(loc[1:]) <= 6):
+                                                                        await mess.channel.send("Invalid field")
+                                                                        invalid = 1
+                                                                else:
+                                                                    if not(1 <= int(loc[1:]) <= 7):
+                                                                        await mess.channel.send("Invalid field")
+                                                                        invalid = 1
+                                                                if invalid == 0:
+                                                                    p2_game.points(loc)
+                                                                    if p2_game.invalid == 0:
+                                                                        break
+                                                                    else:
+                                                                        await mess.channel.send("That field is already occupied")
+                                                            except ValueError:
+                                                                await mess.channel.send("Invalid input")
+                                                        else:
+                                                            if loc == "CARD":
+                                                                p2_game.string_rows()
+                                                                p2_game.string_dice()
+                                                                dice_string = ""
+                                                                for x in p2_game.sdice:
+                                                                    dice_string += x+" "
+                                                                p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                                p2_card.add_field(name = "Final dice", value = dice_string, inline = False)
+                                                                p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
+                                                                p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
+                                                                p2_card.add_field(name = "Scores", value = p2_game.right)
+                                                                await mess.channel.send(embed = p2_card)
+                                                            else:
+                                                                await mess.channel.send("Invalid input")
+                                                if p2_game.quit == 0:
+                                                    p2_game.string_rows()
+                                                    p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                    p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
+                                                    p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
+                                                    p2_card.add_field(name = "Scores", value = p2_game.right)
+                                                    await mess.channel.send(embed = p2_card)
+                                        else:
+                                            p2_game.game = 1
+                                        turn = 0
+                                if p1_game.quit == 0 and p2_game.quit == 0:
+                                    await mess.channel.send(f'''
+{me.name}'s total: {p1_game.total}
+{opponent.name}'s total: {p2_game.total}
+''')
+                                    if p1_game.total > p2_game.total:
+                                        await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
+                                    elif p2_game.total > p1_game.total:
+                                        await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
+                                    else:
+                                        await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
+
+                            else:
+                                await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                                await mess.channel.send(embed = tournament_invite)
+
+                    else:
+                        if opponent != me and not(opponent.bot):
+                            dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                            await mess.channel.send(embed = dual_game)
+                            tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                            await mess.channel.send(embed = tournament_invite)
+                except discord.errors.NotFound:
+                    dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
+                    await mess.channel.send(embed = dual_game)
+                    tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                    await mess.channel.send(embed = tournament_invite)
+            else:
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The mastermind syntax is invalid! The correct syntax is: ;yahtzee/;yz @user", color = discord.Color.blue())
+                await mess.channel.send(embed = dual_game)
+                tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+                await mess.channel.send(embed = tournament_invite)
+        else:
+            await mess.channel.send("You cant play a match against someone in a DM!")
+            tournament_invite = discord.Embed(title = "REGISTRATIONS FOR THE MINESWEEPER SUPER LEAGUE HAVE BEGUN 🥳", description = '''
+Huge prizes for the winners - top 3 players can avail amazing rewards:
+🥇 1st place - 10M DMC (Dank Memer Coins)
+🥈 2nd place - 7M DMC
+🥉 3rd place - 3M DMC
+
+Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tournament and play the matches!''', colour = discord.Color.blue())
+            await mess.channel.send(embed = tournament_invite)
+
     elif msg == ";other":
         other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
         other_games.add_field(name = "Connect 4", value = '''
 Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
 
+**Complete rules**: https://www.ultraboardgames.com/connect4/game-rules.php
 **Commands and aliases**: `;connect4`, `;c4` 
 ''', inline = False)
         other_games.add_field(name = "Othello", value = '''
@@ -2070,6 +2484,7 @@ Othello is now here on the minesweeper bot! There are 2 players who play this ga
 3. If you cannot place a coin anywhere, the bot will automatically pass on the turn to the other player.
 4. The game ends when the board is full, or nobody else can place a coin in a valid position. Whoever has more of their coins on the board at this point wins!
 
+**Complete rules**: https://www.ultraboardgames.com/othello/game-rules.php
 **Commands and aliases**: `;othello`, `;oto`
 ''', inline = False)
         other_games.add_field(name = "Mastermind", value = '''
@@ -2079,8 +2494,15 @@ Mastermind is now here on the minesweeper bot! 2 players play this game and they
 ❌ - Wrong colour
 These icons will be given for each of the 4 guessed colour positions, but these icons will be given at random - they will not correspond to any particular position. Deduce the correct code to win the game!
 
+**Complete rules**: https://www.ultraboardgames.com/mastermind/game-rules.php
 **Commands and aliases**: `;mastermind`, `;mm` 
 ''', inline = False)
+        other_games.add_field(name = "Yahtzee", value = '''
+Yahtzee is now here on the minesweeper bot! This game is played with 2 players who play completely indivual games. both players will have their own cards which they have to fill in by the end of the game. The game requires the players to roll 5 dice in a total of 3 rolls. After each roll, the players can choose to hold a few of the dice to prevent them from being rolled the next time. This is essential in completing the cards that the players have. The cards have different fields that have to be filled: *Aces, Twos, Threes, Fours, Fives, and Sixes* in the Upper section, and *3 in a row, 4 in a row, Full house, Small straight, Large straight, Yahtzee, and Chance* in the Lower section. Each of these fields have specific criteria that have to be met to place your points in the fields. These criteria can be found in the link given below. Complete your cards to obtain a final score. The player with the highest final score wins the game!
+
+**Complete rules**: https://www.ultraboardgames.com/yahtzee/game-rules.php
+**Commands and aliases**: `yahtzee`, `yz`
+''')
         await mess.channel.send(embed = other_games)
         
 
