@@ -2214,7 +2214,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                     
                     
             else:
-                dual_game = discord.Embed(title = "Invalid syntax!", description = "The mastermind syntax is invalid! The correct syntax is: ;yahtzee/;yz @user", color = discord.Color.blue())
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The yahtzee syntax is invalid! The correct syntax is: ;yahtzee/;yz @user", color = discord.Color.blue())
                 await mess.channel.send(embed = dual_game)
                 
                 
