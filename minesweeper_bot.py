@@ -2115,12 +2115,12 @@ Join our [support server](https://discord.gg/3jCG74D3RK) to register for the tou
                             await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                         else:
                             if str(reaction.emoji) == "✅":
-                                d1 = str(bot.get_emoji(961927292752375868))
-                                d2 = str(bot.get_emoji(961927292358111254))
-                                d3 = str(bot.get_emoji(961927292811087892))
-                                d4 = str(bot.get_emoji(961927292748197908))
-                                d5 = str(bot.get_emoji(961927292693655563))
-                                d6 = str(bot.get_emoji(961927292681072680))
+                                d1 = str(bot.get_emoji(963012018066055188))
+                                d2 = str(bot.get_emoji(963012017558540309))
+                                d3 = str(bot.get_emoji(963012018045063248))
+                                d4 = str(bot.get_emoji(963012017982173254))
+                                d5 = str(bot.get_emoji(963012017894084638))
+                                d6 = str(bot.get_emoji(963012017671774259))
                                 p1_game = yahtzee(a_id, d1, d2, d3, d4, d5, d6)
                                 p2_game = yahtzee(opp_id, d1, d2, d3, d4, d5, d6)
                                 turn = 0
