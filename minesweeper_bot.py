@@ -2006,7 +2006,10 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                         if loc[0] in ["U", "L"]:
                                                             try:
                                                                 invalid = 0
-                                                                if loc[0] == "U":
+                                                                if len(loc) != 2:
+                                                                    await mess.channel.send("Invalid input")
+                                                                    invalid = 1
+                                                                elif loc[0] == "U":
                                                                     if not(1 <= int(loc[1:]) <= 6):
                                                                         await mess.channel.send("Invalid field")
                                                                         invalid = 1
@@ -2144,7 +2147,10 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                         if loc[0] in ["U", "L"]:
                                                             try:
                                                                 invalid = 0
-                                                                if loc[0] == "U":
+                                                                if len(loc) != 2:
+                                                                    await mess.channel.send("Invalid input")
+                                                                    invalid = 1
+                                                                elif loc[0] == "U":
                                                                     if not(1 <= int(loc[1:]) <= 6):
                                                                         await mess.channel.send("Invalid field")
                                                                         invalid = 1
