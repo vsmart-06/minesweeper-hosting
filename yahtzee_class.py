@@ -82,12 +82,12 @@ class yahtzee:
                 self.left += '''
 '''
             elif x == "L1":
-                self.middle += "`L1`. *3 in a row*: "
+                self.middle += "`L1`. *3 of a kind*: "
                 self.middle += f"**{self.scores[x]}**"
                 self.middle += '''
 '''
             elif x == "L2":
-                self.middle += "`L2`. *4 in a row*: "
+                self.middle += "`L2`. *4 of a kind*: "
                 self.middle += f"**{self.scores[x]}**"
                 self.middle += '''
 '''
