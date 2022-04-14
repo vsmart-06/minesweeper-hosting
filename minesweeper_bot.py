@@ -1980,6 +1980,12 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                                         p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
                                                                         p1_card.add_field(name = "Scores", value = p1_game.right)
                                                                         await mess.channel.send(embed = p1_card)
+                                                                        p1_game.string_dice()
+                                                                        dice_string = ""
+                                                                        for x in p1_game.sdice:
+                                                                            dice_string += x+" "
+                                                                        roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                                        await mess.channel.send(embed = roll)
                                                                     else:
                                                                         await mess.channel.send("You can only enter integral values")
                                                             else:
@@ -2128,6 +2134,12 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                                         p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
                                                                         p2_card.add_field(name = "Scores", value = p2_game.right)
                                                                         await mess.channel.send(embed = p2_card)
+                                                                        p2_game.string_dice()
+                                                                        dice_string = ""
+                                                                        for x in p2_game.sdice:
+                                                                            dice_string += x+" "
+                                                                        roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                                        await mess.channel.send(embed = roll)
                                                                     else:
                                                                         await mess.channel.send("You can only enter integral values")
                                                             else:
