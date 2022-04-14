@@ -1929,7 +1929,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                 await mess.channel.send(embed = roll)
                                                 if p1_game.rolls > 0:
                                                     while True:
-                                                        await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'quit' to quit the game)")
+                                                        await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'card' to view the card; enter 'quit' to quit the game)")
                                                         try:
                                                             inp = await bot.wait_for("message", check = lambda m: m.author.id == p1_game.user_id and m.channel == mess.channel, timeout = 120.0)
                                                         except asyncio.TimeoutError:
@@ -1973,6 +1973,13 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                                             dice_string += x+" "
                                                                         roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
                                                                         await mess.channel.send(embed = roll)
+                                                                    elif inp == "card":
+                                                                        p1_game.string_rows()
+                                                                        p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                                        p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
+                                                                        p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
+                                                                        p1_card.add_field(name = "Scores", value = p1_game.right)
+                                                                        await mess.channel.send(embed = p1_card)
                                                                     else:
                                                                         await mess.channel.send("You can only enter integral values")
                                                             else:
@@ -2070,7 +2077,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                 await mess.channel.send(embed = roll)
                                                 if p2_game.rolls > 0:
                                                     while True:
-                                                        await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'quit' to quit the game)")
+                                                        await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'card' to view the card; enter 'quit' to quit the game)")
                                                         try:
                                                             inp = await bot.wait_for("message", check = lambda m: m.author.id == p2_game.user_id and m.channel == mess.channel, timeout = 120.0)
                                                         except asyncio.TimeoutError:
@@ -2114,6 +2121,13 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                                             dice_string += x+" "
                                                                         roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
                                                                         await mess.channel.send(embed = roll)
+                                                                    elif inp == "card":
+                                                                        p2_game.string_rows()
+                                                                        p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                                        p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
+                                                                        p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
+                                                                        p2_card.add_field(name = "Scores", value = p2_game.right)
+                                                                        await mess.channel.send(embed = p2_card)
                                                                     else:
                                                                         await mess.channel.send("You can only enter integral values")
                                                             else:
