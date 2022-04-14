@@ -5,7 +5,7 @@ class mastermind:
         self.hcode = []
         self.gcode = []
         self.gcodes = []
-        self.colour_list = {1: red, 2: orange, 3: yellow, 4: green, 5: blue, 6: purple, 7: brown}
+        self.colour_list = [red, orange, yellow, green, blue, purple, brown]
         self.pos = []
         self.positions = []
         self.game = 0
@@ -68,11 +68,11 @@ class mastermind:
         self.gcode = []
         if h == 0:
             for num in nums:
-                self.gcode.append(self.colour_list[num])
+                self.gcode.append(self.colour_list[num-1])
             self.gcodes.append(self.gcode)
         else:
             for num in nums:
-                self.hcode.append(self.colour_list[num])
+                self.hcode.append(self.colour_list[num-1])
 
     def guess(self, nums):
         self.colourify(nums, 0)
