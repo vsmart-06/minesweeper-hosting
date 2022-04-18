@@ -2256,14 +2256,18 @@ Type 'board' to view the current board; type 'quit' to quit the game
             
 
     elif msg == ";other":
-        other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-        other_games.add_field(name = "Connect 4", value = '''
+        page = 1
+        while True:
+            if page == 1:
+                other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
+                other_games.set_footer(text = "Other Games Page 1/2")
+                other_games.add_field(name = "Connect 4", value = '''
 Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
 
 **Complete rules**: https://www.ultraboardgames.com/connect4/game-rules.php
 **Commands and aliases**: `;connect4`, `;c4` 
 ''', inline = False)
-        other_games.add_field(name = "Othello", value = '''
+                other_games.add_field(name = "Othello", value = '''
 Othello is now here on the minesweeper bot! There are 2 players who play this game, and they are given one of two colours: black and white. Black goes first. The rules are as follows:
 1. You can only place your coin in a position that 'outflanks' at least one of your opponent's coins. Outflanking means that the coin you place and another one of your placed coins must be at the two ends of your opponent's coins.
 2. After placing the coin, any of the opponent's coins that are outflanked by the coin you placed and another one of your coins, is turned over.
@@ -2273,7 +2277,20 @@ Othello is now here on the minesweeper bot! There are 2 players who play this ga
 **Complete rules**: https://www.ultraboardgames.com/othello/game-rules.php
 **Commands and aliases**: `;othello`, `;oto`
 ''', inline = False)
-        other_games.add_field(name = "Mastermind", value = '''
+                o_games = await mess.channel.send(embed = other_games)
+                await o_games.add_reaction("▶")
+                try:
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "▶" and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
+                except asyncio.TimeoutError:
+                    break
+                else:
+                    page = 2
+                    await o_games.delete()
+
+            elif page == 2:
+                other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
+                other_games.set_footer(text = "Other Games Page 2/2")
+                other_games.add_field(name = "Mastermind", value = '''
 Mastermind is now here on the minesweeper bot! 2 players play this game and they are give one of two roles - the code setter, or the code guesser. The code setter will make a code following a prompt from the bot in their DMs. The code will consist of 4 colours, which can be repeated. The code guesser will then have to guess the code in a maximum of 8 turns. Following each turn, the code guesser will see how close their guess is to the actual word. This will be seen at the side of the grid in the following form:
 ✅ - Correct colour in the correct position
 ☑️ - Correct colour in the wrong position
@@ -2283,13 +2300,21 @@ These icons will be given for each of the 4 guessed colour positions, but these 
 **Complete rules**: https://www.ultraboardgames.com/mastermind/game-rules.php
 **Commands and aliases**: `;mastermind`, `;mm` 
 ''', inline = False)
-        other_games.add_field(name = "Yahtzee", value = '''
+                other_games.add_field(name = "Yahtzee", value = '''
 Yahtzee is now here on the minesweeper bot! This game is played with 2 players who play completely indivual games. The game requires the players to roll 5 dice in a total of 3 rolls. After each roll, the players can choose to hold a few of the dice to prevent them from being rolled the next time. This is essential in completing the cards that the players have. The cards have different fields that have to be filled: *Aces, Twos, Threes, Fours, Fives, and Sixes* in the Upper section, and *3 of a kind, 4 of a kind, Full house, Small straight, Large straight, Yahtzee, and Chance* in the Lower section. Each of these fields have specific criteria that have to be met to place your points in the fields. These criteria can be found in the link given below. Complete your cards to obtain a final score. The player with the highest final score wins the game!
 
 **Complete rules**: https://www.ultraboardgames.com/yahtzee/game-rules.php
 **Commands and aliases**: `yahtzee`, `yz`
-''')
-        await mess.channel.send(embed = other_games)
+''', inline = False)
+                o_games = await mess.channel.send(embed = other_games)
+                await help.add_reaction("◀")
+                try:
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
+                except asyncio.TimeoutError:
+                    break
+                else:
+                    page = 1
+                    await o_games.delete()
         
 
     #elif msg == ";register" and mess.channel.id == 936949262791606272:
@@ -2334,6 +2359,7 @@ Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/90249810
         while True:
             if page == 1:
                 help_embed = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
+                help_embed.set_footer(text = "Help Page 1/2")
                 help_embed.add_field(name = "Rules: ", value = 
                 '''The basic rules of minesweeper are:
 1. Behind each circle is either a bomb, a number, or nothing.
@@ -2354,6 +2380,7 @@ Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/90249810
 
             elif page == 2:
                 help_embed = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
+                help_embed.set_footer(text = "Help Page 2/2")
                 help_embed.add_field(name = "Commands: ", value = 
 '''
 `;help`: Open the guide.
@@ -2382,8 +2409,5 @@ Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/90249810
                 else:
                     page = 1
                     await help.delete()
-
-        
-        
 
 bot.run(token)
