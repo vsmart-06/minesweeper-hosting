@@ -3,8 +3,10 @@ The official repository where I will store the files for the stable version of m
 
 [![Discord Bots](https://top.gg/api/widget/902498109270134794.svg)](https://top.gg/bot/902498109270134794)
 [![Discord Bots](https://discords.com/bots/api/bot/902498109270134794/widget)](https://discords.com/bots/bots/902498109270134794)
+[![Discord Bots](https://discordbotlist.com/api/v1/bots/902498109270134794/widget)](https://discordbotlist.com/bots/902498109270134794)
+<iframe src="https://discord.com/widget?id=915952924172091433&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
 
-### Commands
+## 📜 Commands
 `;help`: Open the guide.
 
 `;minesweeper`/`;ms`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone in your server to play a game against them!
@@ -33,7 +35,7 @@ The official repository where I will store the files for the stable version of m
 
 `;vote`: Vote for the bot!
 
-### Games list
+## 🎮 Games list
 - Minesweeper
 - Connect Four
 - Othello
