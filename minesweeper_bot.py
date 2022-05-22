@@ -2307,7 +2307,7 @@ Yahtzee is now here on the minesweeper bot! This game is played with 2 players w
 **Commands and aliases**: `yahtzee`, `yz`
 ''', inline = False)
                 o_games = await mess.channel.send(embed = other_games)
-                await help.add_reaction("◀")
+                await o_games.add_reaction("◀")
                 try:
                     reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
                 except asyncio.TimeoutError:
