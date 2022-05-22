@@ -5,7 +5,7 @@ from connect4_class import connect4
 from othello_class import othello
 from mastermind_class import mastermind
 from yahtzee_class import yahtzee
-from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record, theme_change, get_theme
+from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record, theme_change, get_theme, member_count
 import os
 import asyncio
 import random as rd
@@ -2353,6 +2353,9 @@ Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/90249810
         bot_count = bot.get_channel(948144061305479198)
         await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
         await mess.channel.send("Updated server count in <#948144061305479198>")
+    
+    elif msg == ";count" and mess.author.id == 706855396828250153:
+        await mess.channel.send(f"We have {member_count()} users!")
     
     elif msg == ";help":
         page = 1

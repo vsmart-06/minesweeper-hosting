@@ -270,5 +270,19 @@ def get_theme(id):
     conn.close()
     return theme
 
+def member_count():
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM user_data")
+    count = c.fetchone()[0]
+    c.close()
+    conn.close()
+    return count
+
 c.close()
 conn.close()
