@@ -2304,7 +2304,7 @@ These icons will be given for each of the 4 guessed colour positions, but these 
 Yahtzee is now here on the minesweeper bot! This game is played with 2 players who play completely indivual games. The game requires the players to roll 5 dice in a total of 3 rolls. After each roll, the players can choose to hold a few of the dice to prevent them from being rolled the next time. This is essential in completing the cards that the players have. The cards have different fields that have to be filled: *Aces, Twos, Threes, Fours, Fives, and Sixes* in the Upper section, and *3 of a kind, 4 of a kind, Full house, Small straight, Large straight, Yahtzee, and Chance* in the Lower section. Each of these fields have specific criteria that have to be met to place your points in the fields. These criteria can be found in the link given below. Complete your cards to obtain a final score. The player with the highest final score wins the game!
 
 **Complete rules**: https://www.ultraboardgames.com/yahtzee/game-rules.php
-**Commands and aliases**: `yahtzee`, `yz`
+**Commands and aliases**: `;yahtzee`, `;yz`
 ''', inline = False)
                 o_games = await mess.channel.send(embed = other_games)
                 await o_games.add_reaction("◀")
