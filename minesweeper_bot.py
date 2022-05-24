@@ -27,6 +27,8 @@ discords_client = discordspy.Client(bot, discords_token, post = discordspy.Post.
 statcord_client = statcord.Client(bot, statcord_token)
 statcord_client.start_loop()
 
+in_game = []
+
 @bot.event
 async def on_ready():
     await bot.change_presence(activity = discord.Game(name = "Minesweeper | ;help"))
@@ -52,6 +54,7 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_message(mess):
+    global in_game
     msg = mess.content.lower()
     author = mess.author.name
     if mess.author == bot.user or mess.author.bot:
@@ -59,204 +62,214 @@ async def on_message(mess):
 
     if msg == ";minesweeper" or msg == ";ms":
         author_id = mess.author.id
-        play = minesweeper(8, 8, 8, author_id, "no", get_theme(author_id))
-        game_init = discord.Embed(title=author+"'s minesweeper game", description='''
-        You do not have to use ; while playing
-        '''
-        + play.str_row, color=discord.Color.blue())
-        await mess.channel.send(embed=game_init)
-        while play.game == 1:
-            while True:
+        if author_id not in in_game:
+            in_game.append(author_id)
+            play = minesweeper(8, 8, 8, author_id, "no", get_theme(author_id))
+            game_init = discord.Embed(title=author+"'s minesweeper game", description='''
+            You do not have to use ; while playing
+            '''
+            + play.str_row, color=discord.Color.blue())
+            await mess.channel.send(embed=game_init)
+            while play.game == 1:
                 while True:
-                    await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                    try:
-                        pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel, timeout = 30.0)
-                    except asyncio.TimeoutError:
-                        play.end_msg = "You took too long to respond so the game has ended 😢"
-                        message = "quit"
-                        play.game = 0
-                        break
-                    try:
-                        message = pos_msg.content
-                        r, c = map(int, message.split())
-                        if r <= 0 or r > play.num_rows:
-                            await mess.channel.send("Row is out of range")
-                        elif c <= 0 or c > play.num_cols:
-                            await mess.channel.send("Column is out of range")
-                        else:
-                            break
-                    except ValueError:
-                        message = str(pos_msg.content).lower()
-                        if message == "flag":
-                            if play.flag_var == 0:
-                                await mess.channel.send("Flag mode on")
-                                play.flag_var = 1
-                            else:
-                                await mess.channel.send("Flag mode off")
-                                play.flag_var = 0
-                        elif message == "board":
-                            if play.flag_var == 1:
-                                play.flag = "On"
-                            else:
-                                play.flag = "Off"
-
-                            game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag+
-                            '''
-                            '''
-                            + play.str_row, color=discord.Color.blue())
-                            await mess.channel.send(embed=game_real)
-                        elif message == "quit":
+                    while True:
+                        await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                        try:
+                            pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel, timeout = 30.0)
+                        except asyncio.TimeoutError:
+                            play.end_msg = "You took too long to respond so the game has ended 😢"
+                            message = "quit"
                             play.game = 0
-                            play.end_msg = "I'm sorry to see you leave 😢"
                             break
-                        else:
-                            await mess.channel.send("Invalid input")
+                        try:
+                            message = pos_msg.content
+                            r, c = map(int, message.split())
+                            if r <= 0 or r > play.num_rows:
+                                await mess.channel.send("Row is out of range")
+                            elif c <= 0 or c > play.num_cols:
+                                await mess.channel.send("Column is out of range")
+                            else:
+                                break
+                        except ValueError:
+                            message = str(pos_msg.content).lower()
+                            if message == "flag":
+                                if play.flag_var == 0:
+                                    await mess.channel.send("Flag mode on")
+                                    play.flag_var = 1
+                                else:
+                                    await mess.channel.send("Flag mode off")
+                                    play.flag_var = 0
+                            elif message == "board":
+                                if play.flag_var == 1:
+                                    play.flag = "On"
+                                else:
+                                    play.flag = "Off"
 
-                if message == "quit":
-                    break
+                                game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag+
+                                '''
+                                '''
+                                + play.str_row, color=discord.Color.blue())
+                                await mess.channel.send(embed=game_real)
+                            elif message == "quit":
+                                play.game = 0
+                                play.end_msg = "I'm sorry to see you leave 😢"
+                                break
+                            else:
+                                await mess.channel.send("Invalid input")
 
-                try:
-                    play.guess(r, c)
-                except UnboundLocalError:
-                    await mess.channel.send("That position is already occupied")
-                else:
-                    play.moves += 1
-                    break
-            if message != "quit":
-                if play.flag_var == 1:
-                    play.flag = "On"
-                else:
-                    play.flag = "Off"
+                    if message == "quit":
+                        break
 
-                game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag +
-                '''
-                '''
-                + play.str_row, color=discord.Color.blue())
-                await mess.channel.send(embed=game_real)
-        await mess.channel.send(play.end_msg)
+                    try:
+                        play.guess(r, c)
+                    except UnboundLocalError:
+                        await mess.channel.send("That position is already occupied")
+                    else:
+                        play.moves += 1
+                        break
+                if message != "quit":
+                    if play.flag_var == 1:
+                        play.flag = "On"
+                    else:
+                        play.flag = "Off"
+
+                    game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag +
+                    '''
+                    '''
+                    + play.str_row, color=discord.Color.blue())
+                    await mess.channel.send(embed=game_real)
+            await mess.channel.send(play.end_msg)
+            in_game.remove(author_id)
+        else:
+            await mess.channel.send("You're already in a game!")
         
         
 
     elif msg == ";minesweeper custom" or msg == ";mscustom":
         author_id = mess.author.id
-        while True:
-            while True:
-                await mess.channel.send("Enter the number of rows")
-                num_rows_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
-                try:
-                    num_rows = int(num_rows_msg.content)
-                    if num_rows <= 1:
-                        await mess.channel.send("You have too less rows")
-                    else:
-                        break
-                except ValueError:
-                    await mess.channel.send("Invalid input")
-
-            while True:
-                await mess.channel.send("Enter the number of columns")
-                num_cols_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
-                try:
-                    num_cols = int(num_cols_msg.content)
-                    if num_cols <= 1:
-                        await mess.channel.send("You have too less columns")
-                    elif num_cols+len(str(num_rows))+1 > 27:
-                        await mess.channel.send("You have too many columns")
-                    else:
-                        break
-                except ValueError:
-                    await mess.channel.send("Invalid input")
-
-            while True:
-                await mess.channel.send("Enter the number of bombs")
-                num_bombs_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
-                try:
-                    num_bombs = int(num_bombs_msg.content)
-                    if num_bombs >= (num_rows*num_cols):
-                        await mess.channel.send("You have too many bombs")
-                    elif num_bombs <= 0:
-                        await mess.channel.send("You have too less bombs")
-                    else:
-                        break
-                except ValueError:
-                    await mess.channel.send("Invalid input")
-
-            play = minesweeper(num_rows, num_cols, num_bombs, author_id, "no", get_theme(author_id))
-            if play.items_tot+((((len(str(num_rows))+1)*num_rows))+((len(str(num_cols))+1)*num_cols)+((len(str(num_rows))+1)*(len(str(num_cols))+1))) > 198:
-                await mess.channel.send("Your grid is too big (you can have only a max of 198 objects (row and column numbers included))")
-            else:
-                break
-        game_init = discord.Embed(title=author+"'s minesweeper game", description='''
-        You do not have to use ; while playing
-        '''
-        + play.str_row, color=discord.Color.blue())
-        await mess.channel.send(embed=game_init)
-        while play.game == 1:
+        if author_id not in in_game:
+            in_game.append(author_id)
             while True:
                 while True:
-                    await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                    await mess.channel.send("Enter the number of rows")
+                    num_rows_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
                     try:
-                        pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel, timeout = 30.0)
-                    except asyncio.TimeoutError:
-                        play.end_msg = "You took too long to respond so the game has ended 😢"
-                        message = "quit"
-                        play.game = 0
-                        break
-                    try:
-                        message = pos_msg.content
-                        r, c = map(int, message.split())
-                        if r <= 0 or r > play.num_rows:
-                            await mess.channel.send("Row is out of range")
-                        elif c <= 0 or c > play.num_cols:
-                            await mess.channel.send("Column is out of range")
+                        num_rows = int(num_rows_msg.content)
+                        if num_rows <= 1:
+                            await mess.channel.send("You have too less rows")
                         else:
                             break
                     except ValueError:
-                        message = str(pos_msg.content).lower()
-                        if message == "flag":
-                            if play.flag_var == 0:
-                                await mess.channel.send("Flag mode on")
-                                play.flag_var = 1
-                            else:
-                                await mess.channel.send("Flag mode off")
-                                play.flag_var = 0
-                        elif message == "board":
-                            if play.flag_var == 1:
-                                play.flag = "On"
-                            else:
-                                play.flag = "Off"
+                        await mess.channel.send("Invalid input")
 
-                            game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag+
-                            '''
-                            '''
-                            + play.str_row, color=discord.Color.blue())
-                            await mess.channel.send(embed=game_real)
-                        elif message == "quit":
-                            play.game = 0
-                            play.end_msg = "I'm sorry to see you leave 😢"
-                            break
+                while True:
+                    await mess.channel.send("Enter the number of columns")
+                    num_cols_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
+                    try:
+                        num_cols = int(num_cols_msg.content)
+                        if num_cols <= 1:
+                            await mess.channel.send("You have too less columns")
+                        elif num_cols+len(str(num_rows))+1 > 27:
+                            await mess.channel.send("You have too many columns")
                         else:
-                            await mess.channel.send("Invalid input")
+                            break
+                    except ValueError:
+                        await mess.channel.send("Invalid input")
 
-                if message == "quit":
-                    break
+                while True:
+                    await mess.channel.send("Enter the number of bombs")
+                    num_bombs_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel)
+                    try:
+                        num_bombs = int(num_bombs_msg.content)
+                        if num_bombs >= (num_rows*num_cols):
+                            await mess.channel.send("You have too many bombs")
+                        elif num_bombs <= 0:
+                            await mess.channel.send("You have too less bombs")
+                        else:
+                            break
+                    except ValueError:
+                        await mess.channel.send("Invalid input")
 
-                try:
-                    play.guess(r, c)
-                    break
-                except UnboundLocalError:
-                    await mess.channel.send("That position is already occupied")
-            if message != "quit":
-                if play.flag_var == 1:
-                    play.flag = "On"
+                play = minesweeper(num_rows, num_cols, num_bombs, author_id, "no", get_theme(author_id))
+                if play.items_tot+((((len(str(num_rows))+1)*num_rows))+((len(str(num_cols))+1)*num_cols)+((len(str(num_rows))+1)*(len(str(num_cols))+1))) > 198:
+                    await mess.channel.send("Your grid is too big (you can have only a max of 198 objects (row and column numbers included))")
                 else:
-                    play.flag = "Off"
+                    break
+            game_init = discord.Embed(title=author+"'s minesweeper game", description='''
+            You do not have to use ; while playing
+            '''
+            + play.str_row, color=discord.Color.blue())
+            await mess.channel.send(embed=game_init)
+            while play.game == 1:
+                while True:
+                    while True:
+                        await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                        try:
+                            pos_msg = await bot.wait_for("message", check=lambda m: m.author == mess.author and m.channel == mess.channel, timeout = 30.0)
+                        except asyncio.TimeoutError:
+                            play.end_msg = "You took too long to respond so the game has ended 😢"
+                            message = "quit"
+                            play.game = 0
+                            break
+                        try:
+                            message = pos_msg.content
+                            r, c = map(int, message.split())
+                            if r <= 0 or r > play.num_rows:
+                                await mess.channel.send("Row is out of range")
+                            elif c <= 0 or c > play.num_cols:
+                                await mess.channel.send("Column is out of range")
+                            else:
+                                break
+                        except ValueError:
+                            message = str(pos_msg.content).lower()
+                            if message == "flag":
+                                if play.flag_var == 0:
+                                    await mess.channel.send("Flag mode on")
+                                    play.flag_var = 1
+                                else:
+                                    await mess.channel.send("Flag mode off")
+                                    play.flag_var = 0
+                            elif message == "board":
+                                if play.flag_var == 1:
+                                    play.flag = "On"
+                                else:
+                                    play.flag = "Off"
 
-                game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag +
-                '''
-                '''
-                + play.str_row, color=discord.Color.blue())
-                await mess.channel.send(embed=game_real)
-        await mess.channel.send(play.end_msg)
+                                game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag+
+                                '''
+                                '''
+                                + play.str_row, color=discord.Color.blue())
+                                await mess.channel.send(embed=game_real)
+                            elif message == "quit":
+                                play.game = 0
+                                play.end_msg = "I'm sorry to see you leave 😢"
+                                break
+                            else:
+                                await mess.channel.send("Invalid input")
+
+                    if message == "quit":
+                        break
+
+                    try:
+                        play.guess(r, c)
+                        break
+                    except UnboundLocalError:
+                        await mess.channel.send("That position is already occupied")
+                if message != "quit":
+                    if play.flag_var == 1:
+                        play.flag = "On"
+                    else:
+                        play.flag = "Off"
+
+                    game_real = discord.Embed(title=author+"'s minesweeper game", description="Flag mode: "+play.flag +
+                    '''
+                    '''
+                    + play.str_row, color=discord.Color.blue())
+                    await mess.channel.send(embed=game_real)
+            await mess.channel.send(play.end_msg)
+            in_game.remove(author_id)
+        else:
+            await mess.channel.send("You're already in a game!")
         
         
     
@@ -307,204 +320,211 @@ async def on_message(mess):
                     for m in guild.members:
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
-                        want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of minesweeper! React with the emojis below to accept or decline", colour = discord.Colour.blue())
-                        want_play = await mess.channel.send(embed = want_play_embed)
-                        await want_play.add_reaction("✅")
-                        await want_play.add_reaction("❌")
-                        try:
-                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
-                        except asyncio.TimeoutError:
-                            await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
-                        else:
-                            if str(reaction.emoji) == "✅":
-                                player_1 = minesweeper(8, 8, 8, a_id, "yes", get_theme(a_id))
-                                player_2 = minesweeper(8, 8, 8, opp_id, "yes", get_theme(opp_id))
-                                turn = 0
-                                while player_1.game == 1 and player_2.game == 1:
-                                    if turn == 0:
-                                        await mess.channel.send(f"<@!{a_id}> it's your turn")
-                                        game_init_1 = discord.Embed(title=me.name+"'s minesweeper game", description='''
-                                        You do not have to use ; while playing
-                                        '''
-                                        + player_1.str_row, color=discord.Color.blue())
-                                        
-                                        await mess.channel.send(embed=game_init_1)
-                                        while True:
-                                            while True:
-                                                await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                                                try:
-                                                    pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 30.0)
-                                                except asyncio.TimeoutError:
-                                                    player_1.end_msg = "You took too long to respond so the game has ended 😢"
-                                                    message = "quit"
-                                                    break
-                                                try:
-                                                    message = pos_msg.content
-                                                    r, c = map(int, message.split())
-                                                    if r <= 0 or r > player_1.num_rows:
-                                                        await mess.channel.send("Row is out of range")
-                                                    elif c <= 0 or c > player_1.num_cols:
-                                                        await mess.channel.send("Column is out of range")
-                                                    else:
-                                                        break
-                                                except ValueError:
-                                                    message = str(pos_msg.content).lower()
-                                                    if message == "flag":
-                                                        if player_1.flag_var == 0:
-                                                            await mess.channel.send("Flag mode on")
-                                                            player_1.flag_var = 1
-                                                        else:
-                                                            await mess.channel.send("Flag mode off")
-                                                            player_1.flag_var = 0
-                                                    elif message == "board":
-                                                        if player_1.flag_var == 1:
-                                                            player_1.flag = "On"
-                                                        else:
-                                                            player_1.flag = "Off"
-
-                                                        game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag+
-                                                        '''
-                                                        '''
-                                                        + player_1.str_row, color=discord.Color.blue())
-                                                        
-                                                        await mess.channel.send(embed=game_real)
-                                                    elif message == "quit":
-                                                        player_1.game = 0
-                                                        player_1.end_msg = "I'm sorry to see you leave 😢"
-                                                        break
-                                                    else:
-                                                        await mess.channel.send("Invalid input")
-
-                                            if message == "quit":
-                                                break
-
-                                            try:
-                                                player_1.guess(r, c)
-                                                break
-                                            except UnboundLocalError:
-                                                await mess.channel.send("That position is already occupied")
-                                        if message != "quit":
-                                            if player_1.flag_var == 1:
-                                                player_1.flag = "On"
-                                            else:
-                                                player_1.flag = "Off"
-
-                                            game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag +
-                                            '''
+                        if a_id not in in_game and opp_id not in in_game:
+                            want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of minesweeper! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                            want_play = await mess.channel.send(embed = want_play_embed)
+                            await want_play.add_reaction("✅")
+                            await want_play.add_reaction("❌")
+                            try:
+                                reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                            except asyncio.TimeoutError:
+                                await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                            else:
+                                if str(reaction.emoji) == "✅":
+                                    in_game.append(a_id)
+                                    in_game.append(opp_od)
+                                    player_1 = minesweeper(8, 8, 8, a_id, "yes", get_theme(a_id))
+                                    player_2 = minesweeper(8, 8, 8, opp_id, "yes", get_theme(opp_id))
+                                    turn = 0
+                                    while player_1.game == 1 and player_2.game == 1:
+                                        if turn == 0:
+                                            await mess.channel.send(f"<@!{a_id}> it's your turn")
+                                            game_init_1 = discord.Embed(title=me.name+"'s minesweeper game", description='''
+                                            You do not have to use ; while playing
                                             '''
                                             + player_1.str_row, color=discord.Color.blue())
                                             
-                                            await mess.channel.send(embed=game_real)
-                                        else:
-                                            player_1.game = 0
-                                            player_1.game_over = 1
-                                        turn = 1
-
-                                    else:
-                                        await mess.channel.send(f"<@!{opp_id}> it's your turn")
-                                        game_init_2 = discord.Embed(title=opponent.name+"'s minesweeper game", description='''
-                                        You do not have to use ; while playing
-                                        '''
-                                        + player_2.str_row, color=discord.Color.blue())
-                                        
-                                        await mess.channel.send(embed=game_init_2)
-                                        while True:
+                                            await mess.channel.send(embed=game_init_1)
                                             while True:
-                                                await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                                                try:
-                                                    pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 30.0)
-                                                except asyncio.TimeoutError:
-                                                    player_2.end_msg = "You took too long to respond so the game has ended 😢"
-                                                    message = "quit"
+                                                while True:
+                                                    await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                                                    try:
+                                                        pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 30.0)
+                                                    except asyncio.TimeoutError:
+                                                        player_1.end_msg = "You took too long to respond so the game has ended 😢"
+                                                        message = "quit"
+                                                        break
+                                                    try:
+                                                        message = pos_msg.content
+                                                        r, c = map(int, message.split())
+                                                        if r <= 0 or r > player_1.num_rows:
+                                                            await mess.channel.send("Row is out of range")
+                                                        elif c <= 0 or c > player_1.num_cols:
+                                                            await mess.channel.send("Column is out of range")
+                                                        else:
+                                                            break
+                                                    except ValueError:
+                                                        message = str(pos_msg.content).lower()
+                                                        if message == "flag":
+                                                            if player_1.flag_var == 0:
+                                                                await mess.channel.send("Flag mode on")
+                                                                player_1.flag_var = 1
+                                                            else:
+                                                                await mess.channel.send("Flag mode off")
+                                                                player_1.flag_var = 0
+                                                        elif message == "board":
+                                                            if player_1.flag_var == 1:
+                                                                player_1.flag = "On"
+                                                            else:
+                                                                player_1.flag = "Off"
+
+                                                            game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag+
+                                                            '''
+                                                            '''
+                                                            + player_1.str_row, color=discord.Color.blue())
+                                                            
+                                                            await mess.channel.send(embed=game_real)
+                                                        elif message == "quit":
+                                                            player_1.game = 0
+                                                            player_1.end_msg = "I'm sorry to see you leave 😢"
+                                                            break
+                                                        else:
+                                                            await mess.channel.send("Invalid input")
+
+                                                if message == "quit":
                                                     break
+
                                                 try:
-                                                    message = pos_msg.content
-                                                    r, c = map(int, message.split())
-                                                    if r <= 0 or r > player_2.num_rows:
-                                                        await mess.channel.send("Row is out of range")
-                                                    elif c <= 0 or c > player_2.num_cols:
-                                                        await mess.channel.send("Column is out of range")
-                                                    else:
-                                                        break
-                                                except ValueError:
-                                                    message = str(pos_msg.content).lower()
-                                                    if message == "flag":
-                                                        if player_2.flag_var == 0:
-                                                            await mess.channel.send("Flag mode on")
-                                                            player_2.flag_var = 1
-                                                        else:
-                                                            await mess.channel.send("Flag mode off")
-                                                            player_2.flag_var = 0
-                                                    elif message == "board":
-                                                        if player_2.flag_var == 1:
-                                                            player_2.flag = "On"
-                                                        else:
-                                                            player_2.flag = "Off"
+                                                    player_1.guess(r, c)
+                                                    break
+                                                except UnboundLocalError:
+                                                    await mess.channel.send("That position is already occupied")
+                                            if message != "quit":
+                                                if player_1.flag_var == 1:
+                                                    player_1.flag = "On"
+                                                else:
+                                                    player_1.flag = "Off"
 
-                                                        game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag+
-                                                        '''
-                                                        '''
-                                                        + player_2.str_row, color=discord.Color.blue())
-                                                        
-                                                        await mess.channel.send(embed=game_real)
-                                                    elif message == "quit":
-                                                        player_2.game = 0
-                                                        player_2.end_msg = "I'm sorry to see you leave 😢"
-                                                        break
-                                                    else:
-                                                        await mess.channel.send("Invalid input")
-
-                                            if message == "quit":
-                                                break
-
-                                            try:
-                                                player_2.guess(r, c)
-                                                break
-                                            except UnboundLocalError:
-                                                await mess.channel.send("That position is already occupied")
-                                        if message != "quit":
-                                            if player_2.flag_var == 1:
-                                                player_2.flag = "On"
+                                                game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag +
+                                                '''
+                                                '''
+                                                + player_1.str_row, color=discord.Color.blue())
+                                                
+                                                await mess.channel.send(embed=game_real)
                                             else:
-                                                player_2.flag = "Off"
+                                                player_1.game = 0
+                                                player_1.game_over = 1
+                                            turn = 1
 
-                                            game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag +
-                                            '''
+                                        else:
+                                            await mess.channel.send(f"<@!{opp_id}> it's your turn")
+                                            game_init_2 = discord.Embed(title=opponent.name+"'s minesweeper game", description='''
+                                            You do not have to use ; while playing
                                             '''
                                             + player_2.str_row, color=discord.Color.blue())
                                             
-                                            await mess.channel.send(embed=game_real)
-                                        else:
-                                            player_2.game = 0
-                                            player_2.game_over = 1
-                                        turn = 0
+                                            await mess.channel.send(embed=game_init_2)
+                                            while True:
+                                                while True:
+                                                    await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                                                    try:
+                                                        pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 30.0)
+                                                    except asyncio.TimeoutError:
+                                                        player_2.end_msg = "You took too long to respond so the game has ended 😢"
+                                                        message = "quit"
+                                                        break
+                                                    try:
+                                                        message = pos_msg.content
+                                                        r, c = map(int, message.split())
+                                                        if r <= 0 or r > player_2.num_rows:
+                                                            await mess.channel.send("Row is out of range")
+                                                        elif c <= 0 or c > player_2.num_cols:
+                                                            await mess.channel.send("Column is out of range")
+                                                        else:
+                                                            break
+                                                    except ValueError:
+                                                        message = str(pos_msg.content).lower()
+                                                        if message == "flag":
+                                                            if player_2.flag_var == 0:
+                                                                await mess.channel.send("Flag mode on")
+                                                                player_2.flag_var = 1
+                                                            else:
+                                                                await mess.channel.send("Flag mode off")
+                                                                player_2.flag_var = 0
+                                                        elif message == "board":
+                                                            if player_2.flag_var == 1:
+                                                                player_2.flag = "On"
+                                                            else:
+                                                                player_2.flag = "Off"
 
-                                if player_1.game_over == 1:
-                                    await mess.channel.send(player_1.end_msg)
-                                    await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
-                                    
-                                    
-                                elif player_2.game_over == 1:
-                                    await mess.channel.send(player_2.end_msg)
-                                    await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
-                                    
-                                    
-                                elif player_1.game_won == 1:
-                                    await mess.channel.send(player_1.end_msg)
-                                    await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
-                                    
-                                    
-                                elif player_2.game_won == 1:
-                                    await mess.channel.send(player_2.end_msg)
-                                    await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
-                                    
-                                    
+                                                            game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag+
+                                                            '''
+                                                            '''
+                                                            + player_2.str_row, color=discord.Color.blue())
+                                                            
+                                                            await mess.channel.send(embed=game_real)
+                                                        elif message == "quit":
+                                                            player_2.game = 0
+                                                            player_2.end_msg = "I'm sorry to see you leave 😢"
+                                                            break
+                                                        else:
+                                                            await mess.channel.send("Invalid input")
 
+                                                if message == "quit":
+                                                    break
+
+                                                try:
+                                                    player_2.guess(r, c)
+                                                    break
+                                                except UnboundLocalError:
+                                                    await mess.channel.send("That position is already occupied")
+                                            if message != "quit":
+                                                if player_2.flag_var == 1:
+                                                    player_2.flag = "On"
+                                                else:
+                                                    player_2.flag = "Off"
+
+                                                game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag +
+                                                '''
+                                                '''
+                                                + player_2.str_row, color=discord.Color.blue())
+                                                
+                                                await mess.channel.send(embed=game_real)
+                                            else:
+                                                player_2.game = 0
+                                                player_2.game_over = 1
+                                            turn = 0
+
+                                    if player_1.game_over == 1:
+                                        await mess.channel.send(player_1.end_msg)
+                                        await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
+                                        
+                                        
+                                    elif player_2.game_over == 1:
+                                        await mess.channel.send(player_2.end_msg)
+                                        await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
+                                        
+                                        
+                                    elif player_1.game_won == 1:
+                                        await mess.channel.send(player_1.end_msg)
+                                        await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
+                                        
+                                        
+                                    elif player_2.game_won == 1:
+                                        await mess.channel.send(player_2.end_msg)
+                                        await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
+                                    in_game.remove(a_id)
+                                    in_game.remove(opp_id)
+                                        
+                                        
+
+                                else:
+                                    await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                        else:
+                            if a_id in in_game:
+                                await mess.channel.send("You're already in a game!")
                             else:
-                                await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
-                                
-                                
-
+                                await mess.channel.send("Your opponent is already in a game!")
                     else:
                         if opponent != me and not(opponent.bot):
                             dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
@@ -529,304 +549,323 @@ async def on_message(mess):
     elif msg == ";tournament":
         if not(isinstance(mess.channel, discord.DMChannel)):
             host_id = mess.author.id
-            thumb = bot.get_emoji(935120796358152212)
-            check = bot.get_emoji(935455988516028486)
-            winner = bot.get_emoji(935794255543275541)
-            yay = bot.get_emoji(951716865049247855)
-            tourney_members = [host_id]
-            tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below or type `;join` to join! Remove your reaction or type `;leave` to leave. <@!{host_id}> react with {check} or type `;start` to start the tournament!", colour = discord.Colour.blue())
-            tourney_init = await mess.channel.send(embed = tourney_init_embed)
-            await tourney_init.add_reaction(str(thumb))
-            await tourney_init.add_reaction(str(check))
-            while True:
-                decisions = [asyncio.create_task(bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "radd"), asyncio.create_task(bot.wait_for("reaction_remove", check = lambda r, p: str(r.emoji) == str(thumb) and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "rrem"), asyncio.create_task(bot.wait_for("message", check = lambda m: m.channel == mess.channel, timeout = 60.0), name = "msgd")]
+            if host_id not in in_game:
+                in_game.append(host_id)
+                thumb = bot.get_emoji(935120796358152212)
+                check = bot.get_emoji(935455988516028486)
+                winner = bot.get_emoji(935794255543275541)
+                yay = bot.get_emoji(951716865049247855)
+                tourney_members = [host_id]
+                tourney_init_embed = discord.Embed(title = "Tournament started!", description = f"<@!{host_id}> started a tournament! React with {thumb} below or type `;join` to join! Remove your reaction or type `;leave` to leave. <@!{host_id}> react with {check} or type `;start` to start the tournament!", colour = discord.Colour.blue())
+                tourney_init = await mess.channel.send(embed = tourney_init_embed)
+                await tourney_init.add_reaction(str(thumb))
+                await tourney_init.add_reaction(str(check))
+                while True:
+                    decisions = [asyncio.create_task(bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "radd"), asyncio.create_task(bot.wait_for("reaction_remove", check = lambda r, p: str(r.emoji) == str(thumb) and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "rrem"), asyncio.create_task(bot.wait_for("message", check = lambda m: m.channel == mess.channel, timeout = 60.0), name = "msgd")]
 
-                completed, pending = await asyncio.wait(decisions, return_when = asyncio.FIRST_COMPLETED)
-                
-                finished_task: asyncio.Task = list(completed)[0]
-                
-                for unfinished in pending:
+                    completed, pending = await asyncio.wait(decisions, return_when = asyncio.FIRST_COMPLETED)
+                    
+                    finished_task: asyncio.Task = list(completed)[0]
+                    
+                    for unfinished in pending:
+                        try:
+                            unfinished.cancel()
+                        except asyncio.CancelledError:
+                            pass
+
+                    action = finished_task.get_name()
                     try:
-                        unfinished.cancel()
-                    except asyncio.CancelledError:
-                        pass
+                        result = finished_task.result()
+                    except asyncio.TimeoutError:
+                        break
 
-                action = finished_task.get_name()
-                try:
-                    result = finished_task.result()
-                except asyncio.TimeoutError:
-                    break
-
-                else:
-                    if action == "radd":
-                        reaction, user = result
-                        reaction_e = str(reaction.emoji)
-                        if reaction_e == str(thumb) and user.id != host_id and user.id not in tourney_members:
-                            await mess.channel.send(f"<@!{user.id}> has joined the tournament {yay}")
-                            tourney_members.append(user.id)
-                        elif reaction_e == str(check) and user.id == host_id:
-                            break
-                    elif action == "rrem":
-                        reaction, user = result
-                        reaction_e = str(reaction.emoji)
-                        if reaction_e == str(thumb) and user.id != host_id and user.id in tourney_members:
-                            await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
-                            tourney_members.remove(user.id)
-                    elif action == "msgd":
-                        jl_msg = str(result.content)
-                        user = result.author
-                        if jl_msg == ";join" and user.id not in tourney_members and user.id != host_id:
-                            await mess.channel.send(f"<@!{user.id}> has joined the tournament {yay}")
-                            tourney_members.append(user.id)
-                        elif jl_msg == ";leave" and user.id in tourney_members and user.id != host_id:
-                            await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
-                            tourney_members.remove(user.id)
-                        elif jl_msg == ";start" and user.id == host_id:
-                            break
-            tourney_members = list(set(tourney_members))
-            mem_str = "Tournament participants:"
-            for mem in tourney_members:
-                mem_str += f'''
-<@!{mem}>'''
-            await mess.channel.send(mem_str)
-            round = 1
-            match = 1
-            while len(tourney_members) > 1:
-                pairings = []
-                tourney_members_temp = list(tourney_members)
-                while tourney_members_temp != []:
-                    p1 = rd.choice(tourney_members_temp)
-                    tourney_members_temp.remove(p1)
-                    if tourney_members_temp != []:
-                        p2 = rd.choice(tourney_members_temp)
-                        tourney_members_temp.remove(p2)
                     else:
-                        p2 = "Bye"
-                    pairings.append((p1, p2))
-                pairings_list_str = ""
-                for pai in pairings:
-                    if pai[1] != "Bye":
-                        pairings_list_str += f'''<@!{pai[0]}> --------------------- <@!{pai[1]}>
-'''
-                    else:
-                        pairings_list_str += f'''<@!{pai[0]}> --------------------- Bye
-'''
-                pairings_list = discord.Embed(title = f"Round {round} pairings", description = pairings_list_str, colour = discord.Colour.blue())
-                await mess.channel.send(embed = pairings_list)
-                for mat in range(len(pairings)):
-                    if pairings[match-1][1] != "Bye":
-                        match_init_embed = discord.Embed(title = f"Match {match}", description = f"<@!{pairings[match-1][0]}> VS <@!{pairings[match-1][1]}>", colour = discord.Color.blue())
-                        await mess.channel.send(embed = match_init_embed)
-                        me = await bot.fetch_user(pairings[match-1][0])
-                        opponent = await bot.fetch_user(pairings[match-1][1])
-                        a_id = me.id
-                        opp_id = opponent.id
-                        standby = await mess.channel.send(f"<@!{a_id}> and <@!{opp_id}> on standby! React with {thumb} to get ready!")
-                        await standby.add_reaction(str(thumb))
-                        p1_ready = False
-                        p2_ready = False
-                        pairing_temp = list(pairings[match-1])
-                        while not (p1_ready and p2_ready):
-                            try:
-                                reaction, user = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) == str(thumb) and p.id in pairing_temp and r.message.id == standby.id, timeout = 60.0)
-                            except asyncio.TimeoutError:
+                        if action == "radd":
+                            reaction, user = result
+                            reaction_e = str(reaction.emoji)
+                            if reaction_e == str(thumb) and user.id != host_id and user.id not in tourney_members:
+                                if user.id not in in_game:
+                                    await mess.channel.send(f"<@!{user.id}> has joined the tournament {yay}")
+                                    tourney_members.append(user.id)
+                                    in_game.append(user.id)
+                                else:
+                                    await mess.channel.send("You're already in a game!")
+                            elif reaction_e == str(check) and user.id == host_id:
                                 break
-                            else:
-                                if user.id == pairings[match-1][0]:
-                                    p1_ready = True
-                                    await mess.channel.send(f"<@!{pairings[match-1][0]}> is ready!")
-                                    pairing_temp.remove(pairings[match-1][0])
-                                elif user.id == pairings[match-1][1]:
-                                    p2_ready = True
-                                    await mess.channel.send(f"<@!{pairings[match-1][1]}> is ready!")
-                                    pairing_temp.remove(pairings[match-1][1])
-                        player_1 = minesweeper(8, 8, 8, a_id, "yes", get_theme(a_id))
-                        player_2 = minesweeper(8, 8, 8, opp_id, "yes", get_theme(opp_id))
-                        turn = 0
-                        while player_1.game == 1 and player_2.game == 1:
-                            if turn == 0:
-                                await mess.channel.send(f"<@!{a_id}> it's your turn")
-                                game_init_1 = discord.Embed(title=me.name+"'s minesweeper game", description='''
-                                You do not have to use ; while playing
-                                '''
-                                + player_1.str_row, color=discord.Color.blue())
-                                
-                                await mess.channel.send(embed=game_init_1)
-                                while True:
-                                    while True:
-                                        await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                                        try:
-                                            pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 60.0)
-                                        except asyncio.TimeoutError:
-                                            player_1.end_msg = "You took too long to respond so the game has ended 😢"
-                                            message = "quit"
-                                            break
-                                        try:
-                                            message = pos_msg.content
-                                            r, c = map(int, message.split())
-                                            if r <= 0 or r > player_1.num_rows:
-                                                await mess.channel.send("Row is out of range")
-                                            elif c <= 0 or c > player_1.num_cols:
-                                                await mess.channel.send("Column is out of range")
-                                            else:
-                                                break
-                                        except ValueError:
-                                            message = str(pos_msg.content).lower()
-                                            if message == "flag":
-                                                if player_1.flag_var == 0:
-                                                    await mess.channel.send("Flag mode on")
-                                                    player_1.flag_var = 1
-                                                else:
-                                                    await mess.channel.send("Flag mode off")
-                                                    player_1.flag_var = 0
-                                            elif message == "board":
-                                                if player_1.flag_var == 1:
-                                                    player_1.flag = "On"
-                                                else:
-                                                    player_1.flag = "Off"
-
-                                                game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag+
-                                                '''
-                                                '''
-                                                + player_1.str_row, color=discord.Color.blue())
-                                                
-                                                await mess.channel.send(embed=game_real)
-                                            elif message == "quit":
-                                                player_1.game = 0
-                                                player_1.end_msg = "I'm sorry to see you leave 😢"
-                                                break
-                                            else:
-                                                await mess.channel.send("Invalid input")
-
-                                    if message == "quit":
-                                        break
-
-                                    try:
-                                        player_1.guess(r, c)
-                                        break
-                                    except UnboundLocalError:
-                                        await mess.channel.send("That position is already occupied")
-                                if message != "quit":
-                                    if player_1.flag_var == 1:
-                                        player_1.flag = "On"
-                                    else:
-                                        player_1.flag = "Off"
-
-                                    game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag +
-                                    '''
+                        elif action == "rrem":
+                            reaction, user = result
+                            reaction_e = str(reaction.emoji)
+                            if reaction_e == str(thumb) and user.id != host_id and user.id in tourney_members:
+                                await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
+                                tourney_members.remove(user.id)
+                                in_game.remove(user.id)
+                        elif action == "msgd":
+                            jl_msg = str(result.content)
+                            user = result.author
+                            if jl_msg == ";join" and user.id not in tourney_members and user.id != host_id:
+                                if user.id not in in_game:
+                                    await mess.channel.send(f"<@!{user.id}> has joined the tournament {yay}")
+                                    tourney_members.append(user.id)
+                                    in_game.append(user.id)
+                                else:
+                                    await mess.channel.send("You're already in a game!")
+                            elif jl_msg == ";leave" and user.id in tourney_members and user.id != host_id:
+                                await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
+                                tourney_members.remove(user.id)
+                                in_game.remove(user.id)
+                            elif jl_msg == ";start" and user.id == host_id:
+                                break
+                tourney_members = list(set(tourney_members))
+                mem_str = "Tournament participants:"
+                for mem in tourney_members:
+                    mem_str += f'''
+<@!{mem}>'''
+                await mess.channel.send(mem_str)
+                round = 1
+                match = 1
+                while len(tourney_members) > 1:
+                    pairings = []
+                    tourney_members_temp = list(tourney_members)
+                    while tourney_members_temp != []:
+                        p1 = rd.choice(tourney_members_temp)
+                        tourney_members_temp.remove(p1)
+                        if tourney_members_temp != []:
+                            p2 = rd.choice(tourney_members_temp)
+                            tourney_members_temp.remove(p2)
+                        else:
+                            p2 = "Bye"
+                        pairings.append((p1, p2))
+                    pairings_list_str = ""
+                    for pai in pairings:
+                        if pai[1] != "Bye":
+                            pairings_list_str += f'''<@!{pai[0]}> --------------------- <@!{pai[1]}>
+'''
+                        else:
+                            pairings_list_str += f'''<@!{pai[0]}> --------------------- Bye
+'''
+                    pairings_list = discord.Embed(title = f"Round {round} pairings", description = pairings_list_str, colour = discord.Colour.blue())
+                    await mess.channel.send(embed = pairings_list)
+                    for mat in range(len(pairings)):
+                        if pairings[match-1][1] != "Bye":
+                            match_init_embed = discord.Embed(title = f"Match {match}", description = f"<@!{pairings[match-1][0]}> VS <@!{pairings[match-1][1]}>", colour = discord.Color.blue())
+                            await mess.channel.send(embed = match_init_embed)
+                            me = await bot.fetch_user(pairings[match-1][0])
+                            opponent = await bot.fetch_user(pairings[match-1][1])
+                            a_id = me.id
+                            opp_id = opponent.id
+                            standby = await mess.channel.send(f"<@!{a_id}> and <@!{opp_id}> on standby! React with {thumb} to get ready!")
+                            await standby.add_reaction(str(thumb))
+                            p1_ready = False
+                            p2_ready = False
+                            pairing_temp = list(pairings[match-1])
+                            while not (p1_ready and p2_ready):
+                                try:
+                                    reaction, user = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) == str(thumb) and p.id in pairing_temp and r.message.id == standby.id, timeout = 60.0)
+                                except asyncio.TimeoutError:
+                                    break
+                                else:
+                                    if user.id == pairings[match-1][0]:
+                                        p1_ready = True
+                                        await mess.channel.send(f"<@!{pairings[match-1][0]}> is ready!")
+                                        pairing_temp.remove(pairings[match-1][0])
+                                    elif user.id == pairings[match-1][1]:
+                                        p2_ready = True
+                                        await mess.channel.send(f"<@!{pairings[match-1][1]}> is ready!")
+                                        pairing_temp.remove(pairings[match-1][1])
+                            player_1 = minesweeper(8, 8, 8, a_id, "yes", get_theme(a_id))
+                            player_2 = minesweeper(8, 8, 8, opp_id, "yes", get_theme(opp_id))
+                            turn = 0
+                            while player_1.game == 1 and player_2.game == 1:
+                                if turn == 0:
+                                    await mess.channel.send(f"<@!{a_id}> it's your turn")
+                                    game_init_1 = discord.Embed(title=me.name+"'s minesweeper game", description='''
+                                    You do not have to use ; while playing
                                     '''
                                     + player_1.str_row, color=discord.Color.blue())
                                     
-                                    await mess.channel.send(embed=game_real)
-                                else:
-                                    player_1.game = 0
-                                    player_1.game_over = 1
-                                turn = 1
-
-                            else:
-                                await mess.channel.send(f"<@!{opp_id}> it's your turn")
-                                game_init_2 = discord.Embed(title=opponent.name+"'s minesweeper game", description='''
-                                You do not have to use ; while playing
-                                '''
-                                + player_2.str_row, color=discord.Color.blue())
-                                
-                                await mess.channel.send(embed=game_init_2)
-                                while True:
+                                    await mess.channel.send(embed=game_init_1)
                                     while True:
-                                        await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
-                                        try:
-                                            pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 60.0)
-                                        except asyncio.TimeoutError:
-                                            player_2.end_msg = "You took too long to respond so the game has ended 😢"
-                                            message = "quit"
+                                        while True:
+                                            await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                                            try:
+                                                pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 60.0)
+                                            except asyncio.TimeoutError:
+                                                player_1.end_msg = "You took too long to respond so the game has ended 😢"
+                                                message = "quit"
+                                                break
+                                            try:
+                                                message = pos_msg.content
+                                                r, c = map(int, message.split())
+                                                if r <= 0 or r > player_1.num_rows:
+                                                    await mess.channel.send("Row is out of range")
+                                                elif c <= 0 or c > player_1.num_cols:
+                                                    await mess.channel.send("Column is out of range")
+                                                else:
+                                                    break
+                                            except ValueError:
+                                                message = str(pos_msg.content).lower()
+                                                if message == "flag":
+                                                    if player_1.flag_var == 0:
+                                                        await mess.channel.send("Flag mode on")
+                                                        player_1.flag_var = 1
+                                                    else:
+                                                        await mess.channel.send("Flag mode off")
+                                                        player_1.flag_var = 0
+                                                elif message == "board":
+                                                    if player_1.flag_var == 1:
+                                                        player_1.flag = "On"
+                                                    else:
+                                                        player_1.flag = "Off"
+
+                                                    game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag+
+                                                    '''
+                                                    '''
+                                                    + player_1.str_row, color=discord.Color.blue())
+                                                    
+                                                    await mess.channel.send(embed=game_real)
+                                                elif message == "quit":
+                                                    player_1.game = 0
+                                                    player_1.end_msg = "I'm sorry to see you leave 😢"
+                                                    break
+                                                else:
+                                                    await mess.channel.send("Invalid input")
+
+                                        if message == "quit":
                                             break
+
                                         try:
-                                            message = pos_msg.content
-                                            r, c = map(int, message.split())
-                                            if r <= 0 or r > player_2.num_rows:
-                                                await mess.channel.send("Row is out of range")
-                                            elif c <= 0 or c > player_2.num_cols:
-                                                await mess.channel.send("Column is out of range")
-                                            else:
-                                                break
-                                        except ValueError:
-                                            message = str(pos_msg.content).lower()
-                                            if message == "flag":
-                                                if player_2.flag_var == 0:
-                                                    await mess.channel.send("Flag mode on")
-                                                    player_2.flag_var = 1
-                                                else:
-                                                    await mess.channel.send("Flag mode off")
-                                                    player_2.flag_var = 0
-                                            elif message == "board":
-                                                if player_2.flag_var == 1:
-                                                    player_2.flag = "On"
-                                                else:
-                                                    player_2.flag = "Off"
+                                            player_1.guess(r, c)
+                                            break
+                                        except UnboundLocalError:
+                                            await mess.channel.send("That position is already occupied")
+                                    if message != "quit":
+                                        if player_1.flag_var == 1:
+                                            player_1.flag = "On"
+                                        else:
+                                            player_1.flag = "Off"
 
-                                                game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag+
-                                                '''
-                                                '''
-                                                + player_2.str_row, color=discord.Color.blue())
-                                                
-                                                await mess.channel.send(embed=game_real)
-                                            elif message == "quit":
-                                                player_2.game = 0
-                                                player_2.end_msg = "I'm sorry to see you leave 😢"
-                                                break
-                                            else:
-                                                await mess.channel.send("Invalid input")
-
-                                    if message == "quit":
-                                        break
-
-                                    try:
-                                        player_2.guess(r, c)
-                                        break
-                                    except UnboundLocalError:
-                                        await mess.channel.send("That position is already occupied")
-                                if message != "quit":
-                                    if player_2.flag_var == 1:
-                                        player_2.flag = "On"
+                                        game_real = discord.Embed(title=me.name+"'s minesweeper game", description="Flag mode: "+player_1.flag +
+                                        '''
+                                        '''
+                                        + player_1.str_row, color=discord.Color.blue())
+                                        
+                                        await mess.channel.send(embed=game_real)
                                     else:
-                                        player_2.flag = "Off"
+                                        player_1.game = 0
+                                        player_1.game_over = 1
+                                    turn = 1
 
-                                    game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag +
-                                    '''
+                                else:
+                                    await mess.channel.send(f"<@!{opp_id}> it's your turn")
+                                    game_init_2 = discord.Embed(title=opponent.name+"'s minesweeper game", description='''
+                                    You do not have to use ; while playing
                                     '''
                                     + player_2.str_row, color=discord.Color.blue())
                                     
-                                    await mess.channel.send(embed=game_real)
-                                else:
-                                    player_2.game = 0
-                                    player_2.game_over = 1
-                                turn = 0
+                                    await mess.channel.send(embed=game_init_2)
+                                    while True:
+                                        while True:
+                                            await mess.channel.send("Enter the row and column (ex: '3 4') (to toggle flag mode, type 'flag'; type 'board' to see your current game; type 'quit' to end the game)")
+                                            try:
+                                                pos_msg = await bot.wait_for("message", check=lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 60.0)
+                                            except asyncio.TimeoutError:
+                                                player_2.end_msg = "You took too long to respond so the game has ended 😢"
+                                                message = "quit"
+                                                break
+                                            try:
+                                                message = pos_msg.content
+                                                r, c = map(int, message.split())
+                                                if r <= 0 or r > player_2.num_rows:
+                                                    await mess.channel.send("Row is out of range")
+                                                elif c <= 0 or c > player_2.num_cols:
+                                                    await mess.channel.send("Column is out of range")
+                                                else:
+                                                    break
+                                            except ValueError:
+                                                message = str(pos_msg.content).lower()
+                                                if message == "flag":
+                                                    if player_2.flag_var == 0:
+                                                        await mess.channel.send("Flag mode on")
+                                                        player_2.flag_var = 1
+                                                    else:
+                                                        await mess.channel.send("Flag mode off")
+                                                        player_2.flag_var = 0
+                                                elif message == "board":
+                                                    if player_2.flag_var == 1:
+                                                        player_2.flag = "On"
+                                                    else:
+                                                        player_2.flag = "Off"
 
-                        if player_1.game_over == 1:
-                            await mess.channel.send(player_1.end_msg)
-                            tourney_members.remove(a_id)
-                            await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
-                        elif player_2.game_over == 1:
-                            await mess.channel.send(player_2.end_msg)
-                            tourney_members.remove(opp_id)
-                            await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
-                        elif player_1.game_won == 1:
-                            await mess.channel.send(player_1.end_msg)
-                            tourney_members.remove(opp_id)
-                            await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
-                        elif player_2.game_won == 1:
-                            await mess.channel.send(player_2.end_msg)
-                            tourney_members.remove(a_id)
-                            await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
-                        match += 1
-                        await asyncio.sleep(5)
-                    
-                    else:
-                        match = 1
-                        await asyncio.sleep(5)
-                round += 1
-                match = 1
-            await mess.channel.send(f"<@!{tourney_members[0]}> is the winner of the tournament! {winner}")
+                                                    game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag+
+                                                    '''
+                                                    '''
+                                                    + player_2.str_row, color=discord.Color.blue())
+                                                    
+                                                    await mess.channel.send(embed=game_real)
+                                                elif message == "quit":
+                                                    player_2.game = 0
+                                                    player_2.end_msg = "I'm sorry to see you leave 😢"
+                                                    break
+                                                else:
+                                                    await mess.channel.send("Invalid input")
+
+                                        if message == "quit":
+                                            break
+
+                                        try:
+                                            player_2.guess(r, c)
+                                            break
+                                        except UnboundLocalError:
+                                            await mess.channel.send("That position is already occupied")
+                                    if message != "quit":
+                                        if player_2.flag_var == 1:
+                                            player_2.flag = "On"
+                                        else:
+                                            player_2.flag = "Off"
+
+                                        game_real = discord.Embed(title=opponent.name+"'s minesweeper game", description="Flag mode: "+player_2.flag +
+                                        '''
+                                        '''
+                                        + player_2.str_row, color=discord.Color.blue())
+                                        
+                                        await mess.channel.send(embed=game_real)
+                                    else:
+                                        player_2.game = 0
+                                        player_2.game_over = 1
+                                    turn = 0
+
+                            if player_1.game_over == 1:
+                                await mess.channel.send(player_1.end_msg)
+                                tourney_members.remove(a_id)
+                                in_game.remove(a_id)
+                                await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
+                            elif player_2.game_over == 1:
+                                await mess.channel.send(player_2.end_msg)
+                                tourney_members.remove(opp_id)
+                                in_game.remove(opp_id)
+                                await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
+                            elif player_1.game_won == 1:
+                                await mess.channel.send(player_1.end_msg)
+                                tourney_members.remove(opp_id)
+                                in_game.remove(opp_id)
+                                await mess.channel.send("<@!"+str(a_id)+"> is the winner!")
+                            elif player_2.game_won == 1:
+                                await mess.channel.send(player_2.end_msg)
+                                tourney_members.remove(a_id)
+                                in_game.remove(a_id)
+                                await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
+                            match += 1
+                            await asyncio.sleep(5)
+                        
+                        else:
+                            match = 1
+                            await asyncio.sleep(5)
+                    round += 1
+                    match = 1
+                await mess.channel.send(f"<@!{tourney_members[0]}> is the winner of the tournament! {winner}")
+                in_game.remove(tourney_members[0])
+            else:
+                await mess.channel.send("You're already in a game!")
             
             
 
@@ -1305,124 +1344,134 @@ async def on_message(mess):
                     for m in guild.members:
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
-                        want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of connect 4! React with the emojis below to accept or decline", colour = discord.Colour.blue())
-                        want_play = await mess.channel.send(embed = want_play_embed)
-                        await want_play.add_reaction("✅")
-                        await want_play.add_reaction("❌")
-                        try:
-                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
-                        except asyncio.TimeoutError:
-                            await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
-                        else:
-                            if str(reaction.emoji) == "✅":
-                                game = connect4(a_id, opp_id, get_theme(a_id), get_theme(opp_id))
-                                while game.game_end == 0:
-                                    if game.turn == 0:
-                                        await mess.channel.send(f"<@!{a_id}> it's your turn")
-                                        game.string_rows()
-                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
-                                        
-                                        await mess.channel.send(embed = c4_embed)
-                                        while True:
-                                            await mess.channel.send("Choose the column (1-7) in which you want to drop your coin! (Type 'board' to see your current game; type 'quit' to end the game)")
-                                            try:
-                                                pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 120.0)
-                                            except asyncio.TimeoutError:
-                                                await mess.channel.send("You took too long to respond so the game has ended 😢")
-                                                game.game_end = 1
-                                                game.winner = opp_id
-                                                await mess.channel.send(f"<@!{game.winner}> is the winner!")
-                                                break
-                                            pos = pos_msg.content
-                                            try:
-                                                pos = int(pos)
-                                                if not(1 <= pos <= 7):
-                                                    await mess.channel.send("Column is out of range")
-                                                else:
-                                                    game.columns[game.columns[pos-1].index("")]
-                                                    break
-                                            except ValueError:
-                                                try:
-                                                    pos = int(pos)
-                                                    await mess.channel.send("Column is full")
-                                                except ValueError:
-                                                    pos = str(pos).lower()
-                                                    if pos == "quit":
-                                                        game.game_end = 1
-                                                        game.winner = opp_id
-                                                        await mess.channel.send(f"<@!{game.winner}> is the winner!")
-                                                        break
-                                                    elif pos == "board":
-                                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
-                                                        
-                                                        await mess.channel.send(embed = c4_embed)
-                                                    else:
-                                                        await mess.channel.send("Column number can only be an integer from 1 to 7")
-                                        if game.game_end == 0:
-                                            game.columns[pos-1][game.columns[pos-1].index("")] = "Red"
-                                            game.string_rows()
-                                            c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
-                                            await mess.channel.send(embed = c4_embed)
-                                            game.turn = 1
-                                            game.left_pos -= 1
-                                    else:
-                                        await mess.channel.send(f"<@!{opp_id}> it's your turn")
-                                        game.string_rows()
-                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
-                                        await mess.channel.send(embed = c4_embed)
-                                        while True:
-                                            await mess.channel.send("Choose the column (1-7) in which you want to drop your coin! (Type 'board' to see your current game; type 'quit' to end the game)")
-                                            try:
-                                                pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 120.0)
-                                            except asyncio.TimeoutError:
-                                                await mess.channel.send("You took too long to respond so the game has ended 😢")
-                                                game.game_end = 1
-                                                game.winner = a_id
-                                                await mess.channel.send(f"<@!{game.winner}> is the winner!")
-                                                break
-                                            pos = pos_msg.content
-                                            try:
-                                                pos = int(pos)
-                                                if not(1 <= pos <= 7):
-                                                    await mess.channel.send("Column is out of range")
-                                                else:
-                                                    game.columns[game.columns[pos-1].index("")]
-                                                    break
-                                            except ValueError:
-                                                try:
-                                                    pos = int(pos)
-                                                    await mess.channel.send("Column is full")
-                                                except ValueError:
-                                                    pos = str(pos).lower()
-                                                    if pos == "quit":
-                                                        game.game_end = 1
-                                                        game.winner = a_id
-                                                        await mess.channel.send(f"<@!{game.winner}> is the winner!")
-                                                        break
-                                                    elif pos == "board":
-                                                        c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
-                                                        
-                                                        await mess.channel.send(embed = c4_embed)
-                                                    else:
-                                                        await mess.channel.send("Column number can only be an integer from 1 to 7")
-                                        if game.game_end == 0:
-                                            game.columns[pos-1][game.columns[pos-1].index("")] = "Yellow"
-                                            game.string_rows()
-                                            c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
-                                            await mess.channel.send(embed = c4_embed)
-                                            game.turn = 0
-                                            game.left_pos -= 1
-                                    if game.game_end == 0:
-                                        game.game_over()
-                                        if game.game_end == 1:
-                                            await mess.channel.send(f"<@!{game.winner}> is the winner!")
-                                        elif game.left_pos == 0:
-                                            await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
-                                            game.game_end = 1
-                                
-                                
+                        if a_id not in in_game and opp_id not in in_game:
+                            want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of connect 4! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                            want_play = await mess.channel.send(embed = want_play_embed)
+                            await want_play.add_reaction("✅")
+                            await want_play.add_reaction("❌")
+                            try:
+                                reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                            except asyncio.TimeoutError:
+                                await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                             else:
-                                await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                                if str(reaction.emoji) == "✅":
+                                    in_game.append(a_id)
+                                    in_game.append(opp_id)
+                                    game = connect4(a_id, opp_id, get_theme(a_id), get_theme(opp_id))
+                                    while game.game_end == 0:
+                                        if game.turn == 0:
+                                            await mess.channel.send(f"<@!{a_id}> it's your turn")
+                                            game.string_rows()
+                                            c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                            
+                                            await mess.channel.send(embed = c4_embed)
+                                            while True:
+                                                await mess.channel.send("Choose the column (1-7) in which you want to drop your coin! (Type 'board' to see your current game; type 'quit' to end the game)")
+                                                try:
+                                                    pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 120.0)
+                                                except asyncio.TimeoutError:
+                                                    await mess.channel.send("You took too long to respond so the game has ended 😢")
+                                                    game.game_end = 1
+                                                    game.winner = opp_id
+                                                    await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                    break
+                                                pos = pos_msg.content
+                                                try:
+                                                    pos = int(pos)
+                                                    if not(1 <= pos <= 7):
+                                                        await mess.channel.send("Column is out of range")
+                                                    else:
+                                                        game.columns[game.columns[pos-1].index("")]
+                                                        break
+                                                except ValueError:
+                                                    try:
+                                                        pos = int(pos)
+                                                        await mess.channel.send("Column is full")
+                                                    except ValueError:
+                                                        pos = str(pos).lower()
+                                                        if pos == "quit":
+                                                            game.game_end = 1
+                                                            game.winner = opp_id
+                                                            await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                            break
+                                                        elif pos == "board":
+                                                            c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                                            
+                                                            await mess.channel.send(embed = c4_embed)
+                                                        else:
+                                                            await mess.channel.send("Column number can only be an integer from 1 to 7")
+                                            if game.game_end == 0:
+                                                game.columns[pos-1][game.columns[pos-1].index("")] = "Red"
+                                                game.string_rows()
+                                                c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                                await mess.channel.send(embed = c4_embed)
+                                                game.turn = 1
+                                                game.left_pos -= 1
+                                        else:
+                                            await mess.channel.send(f"<@!{opp_id}> it's your turn")
+                                            game.string_rows()
+                                            c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                            await mess.channel.send(embed = c4_embed)
+                                            while True:
+                                                await mess.channel.send("Choose the column (1-7) in which you want to drop your coin! (Type 'board' to see your current game; type 'quit' to end the game)")
+                                                try:
+                                                    pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 120.0)
+                                                except asyncio.TimeoutError:
+                                                    await mess.channel.send("You took too long to respond so the game has ended 😢")
+                                                    game.game_end = 1
+                                                    game.winner = a_id
+                                                    await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                    break
+                                                pos = pos_msg.content
+                                                try:
+                                                    pos = int(pos)
+                                                    if not(1 <= pos <= 7):
+                                                        await mess.channel.send("Column is out of range")
+                                                    else:
+                                                        game.columns[game.columns[pos-1].index("")]
+                                                        break
+                                                except ValueError:
+                                                    try:
+                                                        pos = int(pos)
+                                                        await mess.channel.send("Column is full")
+                                                    except ValueError:
+                                                        pos = str(pos).lower()
+                                                        if pos == "quit":
+                                                            game.game_end = 1
+                                                            game.winner = a_id
+                                                            await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                            break
+                                                        elif pos == "board":
+                                                            c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                                            
+                                                            await mess.channel.send(embed = c4_embed)
+                                                        else:
+                                                            await mess.channel.send("Column number can only be an integer from 1 to 7")
+                                            if game.game_end == 0:
+                                                game.columns[pos-1][game.columns[pos-1].index("")] = "Yellow"
+                                                game.string_rows()
+                                                c4_embed = discord.Embed(title = "Connect 4!", description = game.string_items, colour = discord.Colour.blue())
+                                                await mess.channel.send(embed = c4_embed)
+                                                game.turn = 0
+                                                game.left_pos -= 1
+                                        if game.game_end == 0:
+                                            game.game_over()
+                                            if game.game_end == 1:
+                                                await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                            elif game.left_pos == 0:
+                                                await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
+                                                game.game_end = 1
+                                        in_game.remove(a_id)
+                                        in_game.remove(opp_id)
+                                    
+                                    
+                                else:
+                                    await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                        else:
+                            if a_id in in_game:
+                                await mess.channel.send("You're already in a game!")
+                            else:
+                                await mess.channel.send("Your opponent is already in a game!")
                                 
                                 
 
@@ -1494,133 +1543,140 @@ async def on_message(mess):
                     for m in guild.members:
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
-                        want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of othello! React with the emojis below to accept or decline", colour = discord.Colour.blue())
-                        want_play = await mess.channel.send(embed = want_play_embed)
-                        await want_play.add_reaction("✅")
-                        await want_play.add_reaction("❌")
-                        try:
-                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
-                        except asyncio.TimeoutError:
-                            await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
-                        else:
-                            if str(reaction.emoji) == "✅":
-                                game = othello(a_id, opp_id, get_theme(a_id), get_theme(opp_id))
-                                while (game.any_valid("black") or game.any_valid("white")) and game.game_end == 0:
-                                    if game.turn == 0:
-                                        if game.any_valid("black"):
-                                            await mess.channel.send(f"<@!{a_id}> it's your turn")
-                                            game.string_rows()
-                                            board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
-                                            await mess.channel.send(embed = board)
-                                            while True:
-                                                await mess.channel.send("Enter the row and column where you would like to place your coin (ex: '3 4') (Type 'board' to see your current game; type 'quit' to end the game)")
-                                                try:
-                                                    rc_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 120.0)
-                                                except asyncio.TimeoutError:
-                                                    await mess.channel.send("You took too long to respond so the game has ended 😢")
-                                                    game.game_end = 1
-                                                    game.winner = opp_id
-                                                    await mess.channel.send(f"<@!{game.winner}> is the winner!")
-                                                    break
-                                                message = rc_msg.content
-                                                try:
-                                                    r, c = map(int, message.split())
-                                                    if r <= 0 or r > 8:
-                                                        await mess.channel.send("Row is out of range")
-                                                    elif c <= 0 or c > 8:
-                                                        await mess.channel.send("Column is out of range")
-                                                    else:
-                                                        if game.items[r-1][c-1] != "":
-                                                            await mess.channel.send("That spot is already occupied")
-                                                        elif not game.is_valid_move(r, c, "black"):
-                                                            await mess.channel.send("Invalid move")
-                                                        else:
-                                                            break
-                                                except ValueError:
-                                                    if message == "board":
-                                                        game.string_rows()
-                                                        board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
-                                                        await mess.channel.send(embed = board)
-                                                    elif message == "quit":
+                        if a_id not in in_game and opp_id not in in_game:
+                            want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of othello! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                            want_play = await mess.channel.send(embed = want_play_embed)
+                            await want_play.add_reaction("✅")
+                            await want_play.add_reaction("❌")
+                            try:
+                                reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                            except asyncio.TimeoutError:
+                                await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                            else:
+                                if str(reaction.emoji) == "✅":
+                                    in_game.append(a_id)
+                                    in_game.append(opp_id)
+                                    game = othello(a_id, opp_id, get_theme(a_id), get_theme(opp_id))
+                                    while (game.any_valid("black") or game.any_valid("white")) and game.game_end == 0:
+                                        if game.turn == 0:
+                                            if game.any_valid("black"):
+                                                await mess.channel.send(f"<@!{a_id}> it's your turn")
+                                                game.string_rows()
+                                                board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                                await mess.channel.send(embed = board)
+                                                while True:
+                                                    await mess.channel.send("Enter the row and column where you would like to place your coin (ex: '3 4') (Type 'board' to see your current game; type 'quit' to end the game)")
+                                                    try:
+                                                        rc_msg = await bot.wait_for("message", check = lambda m: m.author.id == a_id and m.channel == mess.channel, timeout = 120.0)
+                                                    except asyncio.TimeoutError:
+                                                        await mess.channel.send("You took too long to respond so the game has ended 😢")
                                                         game.game_end = 1
                                                         game.winner = opp_id
                                                         await mess.channel.send(f"<@!{game.winner}> is the winner!")
                                                         break
-                                                    else:
-                                                        await mess.channel.send("Invalid input")
-                                            if game.game_end == 0:
-                                                game.guess(r, c, "black")
+                                                    message = rc_msg.content
+                                                    try:
+                                                        r, c = map(int, message.split())
+                                                        if r <= 0 or r > 8:
+                                                            await mess.channel.send("Row is out of range")
+                                                        elif c <= 0 or c > 8:
+                                                            await mess.channel.send("Column is out of range")
+                                                        else:
+                                                            if game.items[r-1][c-1] != "":
+                                                                await mess.channel.send("That spot is already occupied")
+                                                            elif not game.is_valid_move(r, c, "black"):
+                                                                await mess.channel.send("Invalid move")
+                                                            else:
+                                                                break
+                                                    except ValueError:
+                                                        if message == "board":
+                                                            game.string_rows()
+                                                            board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                                            await mess.channel.send(embed = board)
+                                                        elif message == "quit":
+                                                            game.game_end = 1
+                                                            game.winner = opp_id
+                                                            await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                            break
+                                                        else:
+                                                            await mess.channel.send("Invalid input")
+                                                if game.game_end == 0:
+                                                    game.guess(r, c, "black")
+                                                    game.string_rows()
+                                                    board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                                    await mess.channel.send(embed = board)
+                                                    game.turn = 1
+                                            else:
+                                                await mess.channel.send("Black has no moves left so it is white's turn")
+                                                game.turn = 1
+                                        else:
+                                            if game.any_valid("white"):
+                                                await mess.channel.send(f"<@!{opp_id}> it's your turn")
                                                 game.string_rows()
                                                 board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
                                                 await mess.channel.send(embed = board)
-                                                game.turn = 1
-                                        else:
-                                            await mess.channel.send("Black has no moves left so it is white's turn")
-                                            game.turn = 1
-                                    else:
-                                        if game.any_valid("white"):
-                                            await mess.channel.send(f"<@!{opp_id}> it's your turn")
-                                            game.string_rows()
-                                            board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
-                                            await mess.channel.send(embed = board)
-                                            while True:
-                                                await mess.channel.send("Enter the row and column where you would like to place your coin (ex: '3 4') (Type 'board' to see your current game; type 'quit' to end the game)")
-                                                try:
-                                                    rc_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 120.0)
-                                                except asyncio.TimeoutError:
-                                                    await mess.channel.send("You took too long to respond so the game has ended 😢")
-                                                    game.game_end = 1
-                                                    game.winner = a_id
-                                                    await mess.channel.send(f"<@!{game.winner}> is the winner!")
-                                                    break
-                                                message = rc_msg.content
-                                                try:
-                                                    r, c = map(int, message.split())
-                                                    if r <= 0 or r > 8:
-                                                        await mess.channel.send("Row is out of range")
-                                                    elif c <= 0 or c > 8:
-                                                        await mess.channel.send("Column is out of range")
-                                                    else:
-                                                        if game.items[r-1][c-1] != "":
-                                                            await mess.channel.send("That spot is already occupied")
-                                                        elif not game.is_valid_move(r, c, "white"):
-                                                            await mess.channel.send("Invalid move")
-                                                        else:
-                                                            break
-                                                except ValueError:
-                                                    message = message.lower()
-                                                    if message == "board":
-                                                        game.string_rows()
-                                                        board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
-                                                        await mess.channel.send(embed = board)
-                                                    elif message == "quit":
+                                                while True:
+                                                    await mess.channel.send("Enter the row and column where you would like to place your coin (ex: '3 4') (Type 'board' to see your current game; type 'quit' to end the game)")
+                                                    try:
+                                                        rc_msg = await bot.wait_for("message", check = lambda m: m.author.id == opp_id and m.channel == mess.channel, timeout = 120.0)
+                                                    except asyncio.TimeoutError:
+                                                        await mess.channel.send("You took too long to respond so the game has ended 😢")
                                                         game.game_end = 1
                                                         game.winner = a_id
                                                         await mess.channel.send(f"<@!{game.winner}> is the winner!")
                                                         break
-                                                    else:
-                                                        await mess.channel.send("Invalid input")
-                                            if game.game_end == 0:
-                                                game.guess(r, c, "white")
-                                                game.string_rows()
-                                                board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
-                                                await mess.channel.send(embed = board)
+                                                    message = rc_msg.content
+                                                    try:
+                                                        r, c = map(int, message.split())
+                                                        if r <= 0 or r > 8:
+                                                            await mess.channel.send("Row is out of range")
+                                                        elif c <= 0 or c > 8:
+                                                            await mess.channel.send("Column is out of range")
+                                                        else:
+                                                            if game.items[r-1][c-1] != "":
+                                                                await mess.channel.send("That spot is already occupied")
+                                                            elif not game.is_valid_move(r, c, "white"):
+                                                                await mess.channel.send("Invalid move")
+                                                            else:
+                                                                break
+                                                    except ValueError:
+                                                        message = message.lower()
+                                                        if message == "board":
+                                                            game.string_rows()
+                                                            board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                                            await mess.channel.send(embed = board)
+                                                        elif message == "quit":
+                                                            game.game_end = 1
+                                                            game.winner = a_id
+                                                            await mess.channel.send(f"<@!{game.winner}> is the winner!")
+                                                            break
+                                                        else:
+                                                            await mess.channel.send("Invalid input")
+                                                if game.game_end == 0:
+                                                    game.guess(r, c, "white")
+                                                    game.string_rows()
+                                                    board = discord.Embed(title = "Othello!", description = game.board, colour = discord.Colour.blue())
+                                                    await mess.channel.send(embed = board)
+                                                    game.turn = 0
+                                            else:
+                                                await mess.channel.send("White has no moves left so it is black's turn")
                                                 game.turn = 0
+                                    if game.game_end == 0:
+                                        game.find_winner()
+                                        if not game.tie:
+                                            await mess.channel.send(f"<@!{game.winner}> is the winner!")
                                         else:
-                                            await mess.channel.send("White has no moves left so it is black's turn")
-                                            game.turn = 0
-                                if game.game_end == 0:
-                                    game.find_winner()
-                                    if not game.tie:
-                                        await mess.channel.send(f"<@!{game.winner}> is the winner!")
-                                    else:
-                                        await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
+                                            await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
+                                    in_game.remove(a_id)
+                                    in_game.remove(opp_id)
 
-                                
-                                
-                                
+                                else:
+                                    await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                        else:
+                            if a_id in in_game:
+                                await mess.channel.send("You're already in a game!")
                             else:
-                                await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                                await mess.channel.send("Your opponent is already in a game!")
                                 
                                 
 
@@ -1693,132 +1749,140 @@ async def on_message(mess):
                     for m in guild.members:
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
-                        want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of mastermind! React with the emojis below to accept or decline", colour = discord.Colour.blue())
-                        want_play = await mess.channel.send(embed = want_play_embed)
-                        await want_play.add_reaction("✅")
-                        await want_play.add_reaction("❌")
-                        try:
-                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
-                        except asyncio.TimeoutError:
-                            await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
-                        else:
-                            if str(reaction.emoji) == "✅":
-                                red = str(bot.get_emoji(962686453157068880))
-                                orange = str(bot.get_emoji(962686453320679454))
-                                yellow = str(bot.get_emoji(962686452918009858))
-                                green = str(bot.get_emoji(962686453123534858))
-                                blue = str(bot.get_emoji(962686453123543050))
-                                purple = str(bot.get_emoji(962686453438095360))
-                                brown = str(bot.get_emoji(962686453157085275))
-                                p1_id = rd.choice([a_id, opp_id])
-                                if p1_id == a_id:
-                                    p2_id = opp_id
-                                else:
-                                    p2_id = a_id
-                                await mess.channel.send(f"<@!{p1_id}> check your DMs for a message from me to enter your code!")
-                                game = mastermind(p1_id, p2_id, get_theme(p2_id), red, orange, yellow, green, blue, purple, brown)
-                                p1 = await bot.fetch_user(p1_id)
-                                while True:
-                                    await p1.send(f'''Enter the hidden code with the following numbers:
+                        if a_id not in in_game and opp_id not in in_game:
+                            want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of mastermind! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                            want_play = await mess.channel.send(embed = want_play_embed)
+                            await want_play.add_reaction("✅")
+                            await want_play.add_reaction("❌")
+                            try:
+                                reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                            except asyncio.TimeoutError:
+                                await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                            else:
+                                if str(reaction.emoji) == "✅":
+                                    in_game.append(a_id)
+                                    in_game.append(opp_id)
+                                    red = str(bot.get_emoji(962686453157068880))
+                                    orange = str(bot.get_emoji(962686453320679454))
+                                    yellow = str(bot.get_emoji(962686452918009858))
+                                    green = str(bot.get_emoji(962686453123534858))
+                                    blue = str(bot.get_emoji(962686453123543050))
+                                    purple = str(bot.get_emoji(962686453438095360))
+                                    brown = str(bot.get_emoji(962686453157085275))
+                                    p1_id = rd.choice([a_id, opp_id])
+                                    if p1_id == a_id:
+                                        p2_id = opp_id
+                                    else:
+                                        p2_id = a_id
+                                    await mess.channel.send(f"<@!{p1_id}> check your DMs for a message from me to enter your code!")
+                                    game = mastermind(p1_id, p2_id, get_theme(p2_id), red, orange, yellow, green, blue, purple, brown)
+                                    p1 = await bot.fetch_user(p1_id)
+                                    while True:
+                                        await p1.send(f'''Enter the hidden code with the following numbers:
 {red}, {orange}, {yellow}, {green}, {blue}, {purple}, {brown}
 Ex: 1 2 3 4
 ''')
-                                    try:
-                                        hcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p1_id and m.guild == None, timeout = 120.0)
-                                    except asyncio.TimeoutError:
-                                        await p1.send("You took too long to respond so the game has been cancelled")
-                                        game.game = 1
-                                        break
-                                    else:
-                                        hc = hcode_msg.content
                                         try:
-                                            invalid = 0
-                                            nums = list(map(int, hc.split()))
-                                            if len(nums) != 4:
-                                                await p1.send("You can only enter 4 numbers")
-                                                invalid = 1
-                                            else:
-                                                for x in nums:
-                                                    if not(1 <= x <= 7):
-                                                        await p1.send("You can only enter numbers from 1-7")
-                                                        invalid = 1
-                                                        break
-                                            if invalid == 0:
-                                                break
-                                        except ValueError:
-                                            await p1.send("You can only enter numbers from 1-7")
-                                if game.game == 0:
-                                    game.colourify(nums, 1)
-                                    hcode_str = ""
-                                    for x in game.hcode:
-                                        hcode_str += x
-                                    await p1.send(f"You have chosen the code {hcode_str}. Head back to <#{channel_id}> to watch the match!")
-                                    channel = await bot.fetch_channel(channel_id)
-                                    await channel.send(f"<@!{p2_id}> the code has been chosen! Get ready!" )
-                                    while game.game == 0 and game.turns < 8:
-                                        game.string_rows()
-                                        grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
-                                        await channel.send(embed = grid_embed)
-                                        while True:
-                                            await channel.send(f'''Enter your guess with the following numbers:
+                                            hcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p1_id and m.guild == None, timeout = 120.0)
+                                        except asyncio.TimeoutError:
+                                            await p1.send("You took too long to respond so the game has been cancelled")
+                                            game.game = 1
+                                            break
+                                        else:
+                                            hc = hcode_msg.content
+                                            try:
+                                                invalid = 0
+                                                nums = list(map(int, hc.split()))
+                                                if len(nums) != 4:
+                                                    await p1.send("You can only enter 4 numbers")
+                                                    invalid = 1
+                                                else:
+                                                    for x in nums:
+                                                        if not(1 <= x <= 7):
+                                                            await p1.send("You can only enter numbers from 1-7")
+                                                            invalid = 1
+                                                            break
+                                                if invalid == 0:
+                                                    break
+                                            except ValueError:
+                                                await p1.send("You can only enter numbers from 1-7")
+                                    if game.game == 0:
+                                        game.colourify(nums, 1)
+                                        hcode_str = ""
+                                        for x in game.hcode:
+                                            hcode_str += x
+                                        await p1.send(f"You have chosen the code {hcode_str}. Head back to <#{channel_id}> to watch the match!")
+                                        channel = await bot.fetch_channel(channel_id)
+                                        await channel.send(f"<@!{p2_id}> the code has been chosen! Get ready!" )
+                                        while game.game == 0 and game.turns < 8:
+                                            game.string_rows()
+                                            grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
+                                            await channel.send(embed = grid_embed)
+                                            while True:
+                                                await channel.send(f'''Enter your guess with the following numbers:
 {red}, {orange}, {yellow}, {green}, {blue}, {purple}, {brown}
 Ex: 1 2 3 4
 
 Type 'board' to view the current board; type 'quit' to quit the game
 ''')
-                                            try:
-                                                gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel == channel, timeout = 300.0)
-                                            except asyncio.TimeoutError:
-                                                await channel.send("You took too long to respond so the game has ended")
-                                                game.winner = game.p1
-                                                await channel.send(f"<@!{game.winner}> is the winner!")
-                                                game.turns = None
-                                                break
-                                            else:
-                                                gc = gcode_msg.content
                                                 try:
-                                                    invalid = 0
-                                                    nums = list(map(int, gc.split()))
-                                                    if len(nums) != 4:
-                                                        await channel.send("You can only enter 4 numbers")
-                                                        invalid = 1
-                                                    else:
-                                                        for x in nums:
-                                                            if not(1 <= x <= 7):
-                                                                await channel.send("You can only enter numbers from 1-7")
-                                                                invalid = 1
-                                                                break
-                                                    if invalid == 0:
-                                                        break
-                                                except ValueError:
-                                                    gc = gc.lower()
-                                                    if gc == "quit":
-                                                        game.turns = None
-                                                        game.winner = game.p1
-                                                        await channel.send(f"<@!{game.winner}> is the winner!")
-                                                        break
-                                                    elif gc == "board":
-                                                        game.string_rows()
-                                                        grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
-                                                        await channel.send(embed = grid_embed)
-                                                    else:
-                                                        await channel.send("You can only enter numbers from 1-7")
+                                                    gcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel == channel, timeout = 300.0)
+                                                except asyncio.TimeoutError:
+                                                    await channel.send("You took too long to respond so the game has ended")
+                                                    game.winner = game.p1
+                                                    await channel.send(f"<@!{game.winner}> is the winner!")
+                                                    game.turns = None
+                                                    break
+                                                else:
+                                                    gc = gcode_msg.content
+                                                    try:
+                                                        invalid = 0
+                                                        nums = list(map(int, gc.split()))
+                                                        if len(nums) != 4:
+                                                            await channel.send("You can only enter 4 numbers")
+                                                            invalid = 1
+                                                        else:
+                                                            for x in nums:
+                                                                if not(1 <= x <= 7):
+                                                                    await channel.send("You can only enter numbers from 1-7")
+                                                                    invalid = 1
+                                                                    break
+                                                        if invalid == 0:
+                                                            break
+                                                    except ValueError:
+                                                        gc = gc.lower()
+                                                        if gc == "quit":
+                                                            game.turns = None
+                                                            game.winner = game.p1
+                                                            await channel.send(f"<@!{game.winner}> is the winner!")
+                                                            break
+                                                        elif gc == "board":
+                                                            game.string_rows()
+                                                            grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
+                                                            await channel.send(embed = grid_embed)
+                                                        else:
+                                                            await channel.send("You can only enter numbers from 1-7")
+                                            if game.turns != None:
+                                                game.guess(nums)
+                                            else:
+                                                break
                                         if game.turns != None:
-                                            game.guess(nums)
-                                        else:
-                                            break
-                                    if game.turns != None:
-                                        game.string_rows()
-                                        grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
-                                        await channel.send(embed = grid_embed)
-                                        if game.turns == 8:
-                                            game.winner = game.p1
-                                        await channel.send(f"<@!{game.winner}> is the winner!")
+                                            game.string_rows()
+                                            grid_embed = discord.Embed(title = "Mastermind!", description = game.grid, colour = discord.Colour.blue())
+                                            await channel.send(embed = grid_embed)
+                                            if game.turns == 8:
+                                                game.winner = game.p1
+                                            await channel.send(f"<@!{game.winner}> is the winner!")
+                                        in_game.remove(a_id)
+                                        in_game.remove(opp_id)
 
+                                else:
+                                    await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                        else:
+                            if a_id in in_game:
+                                await mess.channel.send("You're already in a game!")
                             else:
-                                await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
-                                
-                                
+                                await mess.channel.send("Your opponent is already in a game!")
 
                     else:
                         if opponent != me and not(opponent.bot):
@@ -1889,350 +1953,359 @@ Type 'board' to view the current board; type 'quit' to quit the game
                     for m in guild.members:
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
-                        want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of yahtzee! React with the emojis below to accept or decline", colour = discord.Colour.blue())
-                        want_play = await mess.channel.send(embed = want_play_embed)
-                        await want_play.add_reaction("✅")
-                        await want_play.add_reaction("❌")
-                        try:
-                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
-                        except asyncio.TimeoutError:
-                            await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
-                        else:
-                            if str(reaction.emoji) == "✅":
-                                d1 = str(bot.get_emoji(963012018066055188))
-                                d2 = str(bot.get_emoji(963012017558540309))
-                                d3 = str(bot.get_emoji(963012018045063248))
-                                d4 = str(bot.get_emoji(963012017982173254))
-                                d5 = str(bot.get_emoji(963012017894084638))
-                                d6 = str(bot.get_emoji(963012017671774259))
-                                p1_game = yahtzee(a_id, d1, d2, d3, d4, d5, d6)
-                                p2_game = yahtzee(opp_id, d1, d2, d3, d4, d5, d6)
-                                turn = 0
-                                while (p1_game.game == 0 or p2_game.game == 0) and p1_game.quit == 0 and p2_game.quit == 0:
-                                    if turn == 0:
-                                        if p1_game.empty_pos > 0:
-                                            await mess.channel.send(f"<@!{p1_game.user_id}> it's your turn")
-                                            p1_game.string_rows()
-                                            p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
-                                            p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
-                                            p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
-                                            p1_card.add_field(name = "Scores", value = p1_game.right)
-                                            await mess.channel.send(embed = p1_card)
-                                            inp = ""
-                                            while p1_game.rolls > 0 and inp != "stop" and p1_game.quit == 0:
-                                                p1_game.roll()
-                                                p1_game.string_dice()
-                                                dice_string = ""
-                                                for x in p1_game.sdice:
-                                                    dice_string += x+" "
-                                                roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
-                                                await mess.channel.send(embed = roll)
-                                                if p1_game.rolls > 0:
-                                                    while True:
-                                                        await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'card' to view the card; enter 'quit' to quit the game)")
-                                                        try:
-                                                            inp = await bot.wait_for("message", check = lambda m: m.author.id == p1_game.user_id and m.channel == mess.channel, timeout = 120.0)
-                                                        except asyncio.TimeoutError:
-                                                            await mess.channel.send("You took too long to respond so the game has ended")
-                                                            p1_game.quit = 1
-                                                            await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
-                                                            break
-                                                        else:
-                                                            inp = inp.content
-                                                            inp = inp.lower()
-                                                            if inp != "stop":
-                                                                try:
-                                                                    invalid = 0
-                                                                    nums = list(map(int, inp.split()))
-                                                                    if len(nums) > 5:
-                                                                        await mess.channel.send("You cant hold more than 5 dice")
-                                                                        invalid = 1
-                                                                    elif len(nums) == 1 and nums[0] == 0:
-                                                                        nums = []
-                                                                    else:
-                                                                        for x in nums:
-                                                                            if not(1 <= x <= 6):
-                                                                                await mess.channel.send("You can only hold dice with numbers from 1-6")
-                                                                                invalid = 1
-                                                                                break
-                                                                            elif x not in p1_game.dice or nums.count(x) > p1_game.counts[x]:
-                                                                                await mess.channel.send("You can only hold dice that have been rolled")
-                                                                                invalid = 1
-                                                                                break
-                                                                    if invalid == 0:
-                                                                        break
-                                                                except ValueError:
-                                                                    if inp == "quit":
-                                                                        p1_game.quit = 1
-                                                                        await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
-                                                                        break
-                                                                    elif inp == "dice":
-                                                                        p1_game.string_dice()
-                                                                        dice_string = ""
-                                                                        for x in p1_game.sdice:
-                                                                            dice_string += x+" "
-                                                                        roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
-                                                                        await mess.channel.send(embed = roll)
-                                                                    elif inp == "card":
-                                                                        p1_game.string_rows()
-                                                                        p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
-                                                                        p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
-                                                                        p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
-                                                                        p1_card.add_field(name = "Scores", value = p1_game.right)
-                                                                        await mess.channel.send(embed = p1_card)
-                                                                        p1_game.string_dice()
-                                                                        dice_string = ""
-                                                                        for x in p1_game.sdice:
-                                                                            dice_string += x+" "
-                                                                        roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
-                                                                        await mess.channel.send(embed = roll)
-                                                                    else:
-                                                                        await mess.channel.send("You can only enter integral values")
-                                                            else:
-                                                                break
-                                                    if inp != "stop" and p1_game.quit == 0:
-                                                        p1_game.store(nums)
-                                            if p1_game.quit == 0:
+                        if a_id not in in_game and opp_id not in in_game:
+                            want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of yahtzee! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                            want_play = await mess.channel.send(embed = want_play_embed)
+                            await want_play.add_reaction("✅")
+                            await want_play.add_reaction("❌")
+                            try:
+                                reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                            except asyncio.TimeoutError:
+                                await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                            else:
+                                if str(reaction.emoji) == "✅":
+                                    in_game.append(a_id)
+                                    in_game.append(opp_id)
+                                    d1 = str(bot.get_emoji(963012018066055188))
+                                    d2 = str(bot.get_emoji(963012017558540309))
+                                    d3 = str(bot.get_emoji(963012018045063248))
+                                    d4 = str(bot.get_emoji(963012017982173254))
+                                    d5 = str(bot.get_emoji(963012017894084638))
+                                    d6 = str(bot.get_emoji(963012017671774259))
+                                    p1_game = yahtzee(a_id, d1, d2, d3, d4, d5, d6)
+                                    p2_game = yahtzee(opp_id, d1, d2, d3, d4, d5, d6)
+                                    turn = 0
+                                    while (p1_game.game == 0 or p2_game.game == 0) and p1_game.quit == 0 and p2_game.quit == 0:
+                                        if turn == 0:
+                                            if p1_game.empty_pos > 0:
+                                                await mess.channel.send(f"<@!{p1_game.user_id}> it's your turn")
                                                 p1_game.string_rows()
-                                                p1_game.string_dice()
-                                                dice_string = ""
-                                                for x in p1_game.sdice:
-                                                    dice_string += x+" "
                                                 p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
-                                                p1_card.add_field(name = "Final dice", value = dice_string, inline = False)
                                                 p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
                                                 p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
                                                 p1_card.add_field(name = "Scores", value = p1_game.right)
                                                 await mess.channel.send(embed = p1_card)
-                                                while True:
-                                                    await mess.channel.send("Which field would you like to place your roll in. Ex: L1 (Enter 'card' to view the card)")
-                                                    try:
-                                                        loc = await bot.wait_for("message", check = lambda m: m.author.id == p1_game.user_id and m.channel == mess.channel, timeout = 120.0)
-                                                    except asyncio.TimeoutError:
-                                                        await mess.channel.send("You took too long to repond so the game has ended")
-                                                        p1_game.quit = 1
-                                                        await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
-                                                        break
-                                                    else:
-                                                        loc = loc.content
-                                                        loc = str(loc).upper()
-                                                        if loc[0] in ["U", "L"]:
+                                                inp = ""
+                                                while p1_game.rolls > 0 and inp != "stop" and p1_game.quit == 0:
+                                                    p1_game.roll()
+                                                    p1_game.string_dice()
+                                                    dice_string = ""
+                                                    for x in p1_game.sdice:
+                                                        dice_string += x+" "
+                                                    roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                    await mess.channel.send(embed = roll)
+                                                    if p1_game.rolls > 0:
+                                                        while True:
+                                                            await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'card' to view the card; enter 'quit' to quit the game)")
                                                             try:
-                                                                invalid = 0
-                                                                if len(loc) != 2:
-                                                                    await mess.channel.send("Invalid input")
-                                                                    invalid = 1
-                                                                elif loc[0] == "U":
-                                                                    if not(1 <= int(loc[1:]) <= 6):
-                                                                        await mess.channel.send("Invalid field")
-                                                                        invalid = 1
-                                                                else:
-                                                                    if not(1 <= int(loc[1:]) <= 7):
-                                                                        await mess.channel.send("Invalid field")
-                                                                        invalid = 1
-                                                                if invalid == 0:
-                                                                    p1_game.points(loc)
-                                                                    if p1_game.invalid == 0:
-                                                                        break
-                                                                    else:
-                                                                        await mess.channel.send("That field is already occupied")
-                                                            except ValueError:
-                                                                await mess.channel.send("Invalid input")
-                                                        else:
-                                                            if loc == "CARD":
-                                                                p1_game.string_rows()
-                                                                p1_game.string_dice()
-                                                                dice_string = ""
-                                                                for x in p1_game.sdice:
-                                                                    dice_string += x+" "
-                                                                p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
-                                                                p1_card.add_field(name = "Final dice", value = dice_string, inline = False)
-                                                                p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
-                                                                p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
-                                                                p1_card.add_field(name = "Scores", value = p1_game.right)
-                                                                await mess.channel.send(embed = p1_card)
+                                                                inp = await bot.wait_for("message", check = lambda m: m.author.id == p1_game.user_id and m.channel == mess.channel, timeout = 120.0)
+                                                            except asyncio.TimeoutError:
+                                                                await mess.channel.send("You took too long to respond so the game has ended")
+                                                                p1_game.quit = 1
+                                                                await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
+                                                                break
                                                             else:
-                                                                await mess.channel.send("Invalid input")
+                                                                inp = inp.content
+                                                                inp = inp.lower()
+                                                                if inp != "stop":
+                                                                    try:
+                                                                        invalid = 0
+                                                                        nums = list(map(int, inp.split()))
+                                                                        if len(nums) > 5:
+                                                                            await mess.channel.send("You cant hold more than 5 dice")
+                                                                            invalid = 1
+                                                                        elif len(nums) == 1 and nums[0] == 0:
+                                                                            nums = []
+                                                                        else:
+                                                                            for x in nums:
+                                                                                if not(1 <= x <= 6):
+                                                                                    await mess.channel.send("You can only hold dice with numbers from 1-6")
+                                                                                    invalid = 1
+                                                                                    break
+                                                                                elif x not in p1_game.dice or nums.count(x) > p1_game.counts[x]:
+                                                                                    await mess.channel.send("You can only hold dice that have been rolled")
+                                                                                    invalid = 1
+                                                                                    break
+                                                                        if invalid == 0:
+                                                                            break
+                                                                    except ValueError:
+                                                                        if inp == "quit":
+                                                                            p1_game.quit = 1
+                                                                            await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
+                                                                            break
+                                                                        elif inp == "dice":
+                                                                            p1_game.string_dice()
+                                                                            dice_string = ""
+                                                                            for x in p1_game.sdice:
+                                                                                dice_string += x+" "
+                                                                            roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                                            await mess.channel.send(embed = roll)
+                                                                        elif inp == "card":
+                                                                            p1_game.string_rows()
+                                                                            p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                                            p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
+                                                                            p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
+                                                                            p1_card.add_field(name = "Scores", value = p1_game.right)
+                                                                            await mess.channel.send(embed = p1_card)
+                                                                            p1_game.string_dice()
+                                                                            dice_string = ""
+                                                                            for x in p1_game.sdice:
+                                                                                dice_string += x+" "
+                                                                            roll = discord.Embed(title = f"Roll {3-p1_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                                            await mess.channel.send(embed = roll)
+                                                                        else:
+                                                                            await mess.channel.send("You can only enter integral values")
+                                                                else:
+                                                                    break
+                                                        if inp != "stop" and p1_game.quit == 0:
+                                                            p1_game.store(nums)
                                                 if p1_game.quit == 0:
                                                     p1_game.string_rows()
+                                                    p1_game.string_dice()
+                                                    dice_string = ""
+                                                    for x in p1_game.sdice:
+                                                        dice_string += x+" "
                                                     p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                    p1_card.add_field(name = "Final dice", value = dice_string, inline = False)
                                                     p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
                                                     p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
                                                     p1_card.add_field(name = "Scores", value = p1_game.right)
                                                     await mess.channel.send(embed = p1_card)
-                                        else:
-                                            p1_game.game = 1
-                                        turn = 1
-                                    else:
-                                        if p2_game.empty_pos > 0:
-                                            await mess.channel.send(f"<@!{p2_game.user_id}> it's your turn")
-                                            p2_game.string_rows()
-                                            p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
-                                            p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
-                                            p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
-                                            p2_card.add_field(name = "Scores", value = p2_game.right)
-                                            await mess.channel.send(embed = p2_card)
-                                            inp = ""
-                                            while p2_game.rolls > 0 and inp != "stop" and p2_game.quit == 0:
-                                                p2_game.roll()
-                                                p2_game.string_dice()
-                                                dice_string = ""
-                                                for x in p2_game.sdice:
-                                                    dice_string += x+" "
-                                                roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
-                                                await mess.channel.send(embed = roll)
-                                                if p2_game.rolls > 0:
                                                     while True:
-                                                        await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'card' to view the card; enter 'quit' to quit the game)")
+                                                        await mess.channel.send("Which field would you like to place your roll in. Ex: L1 (Enter 'card' to view the card)")
                                                         try:
-                                                            inp = await bot.wait_for("message", check = lambda m: m.author.id == p2_game.user_id and m.channel == mess.channel, timeout = 120.0)
+                                                            loc = await bot.wait_for("message", check = lambda m: m.author.id == p1_game.user_id and m.channel == mess.channel, timeout = 120.0)
                                                         except asyncio.TimeoutError:
-                                                            await mess.channel.send("You took too long to respond so the game has ended")
-                                                            p2_game.quit = 1
-                                                            await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
+                                                            await mess.channel.send("You took too long to repond so the game has ended")
+                                                            p1_game.quit = 1
+                                                            await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
                                                             break
                                                         else:
-                                                            inp = inp.content
-                                                            inp = inp.lower()
-                                                            if inp != "stop":
+                                                            loc = loc.content
+                                                            loc = str(loc).upper()
+                                                            if loc[0] in ["U", "L"]:
                                                                 try:
                                                                     invalid = 0
-                                                                    nums = list(map(int, inp.split()))
-                                                                    if len(nums) > 5:
-                                                                        await mess.channel.send("You cant hold more than 5 dice")
+                                                                    if len(loc) != 2:
+                                                                        await mess.channel.send("Invalid input")
                                                                         invalid = 1
-                                                                    elif len(nums) == 1 and nums[0] == 0:
-                                                                        nums = []
+                                                                    elif loc[0] == "U":
+                                                                        if not(1 <= int(loc[1:]) <= 6):
+                                                                            await mess.channel.send("Invalid field")
+                                                                            invalid = 1
                                                                     else:
-                                                                        for x in nums:
-                                                                            if not(1 <= x <= 6):
-                                                                                await mess.channel.send("You can only hold dice with numbers from 1-6")
-                                                                                invalid = 1
-                                                                                break
-                                                                            elif x not in p2_game.dice or nums.count(x) > p2_game.counts[x]:
-                                                                                await mess.channel.send("You can only hold dice that have been rolled")
-                                                                                invalid = 1
-                                                                                break
+                                                                        if not(1 <= int(loc[1:]) <= 7):
+                                                                            await mess.channel.send("Invalid field")
+                                                                            invalid = 1
                                                                     if invalid == 0:
-                                                                        break
+                                                                        p1_game.points(loc)
+                                                                        if p1_game.invalid == 0:
+                                                                            break
+                                                                        else:
+                                                                            await mess.channel.send("That field is already occupied")
                                                                 except ValueError:
-                                                                    if inp == "quit":
-                                                                        p2_game.quit = 1
-                                                                        await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
-                                                                        break
-                                                                    elif inp == "dice":
-                                                                        p2_game.string_dice()
-                                                                        dice_string = ""
-                                                                        for x in p2_game.sdice:
-                                                                            dice_string += x+" "
-                                                                        roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
-                                                                        await mess.channel.send(embed = roll)
-                                                                    elif inp == "card":
-                                                                        p2_game.string_rows()
-                                                                        p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
-                                                                        p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
-                                                                        p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
-                                                                        p2_card.add_field(name = "Scores", value = p2_game.right)
-                                                                        await mess.channel.send(embed = p2_card)
-                                                                        p2_game.string_dice()
-                                                                        dice_string = ""
-                                                                        for x in p2_game.sdice:
-                                                                            dice_string += x+" "
-                                                                        roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
-                                                                        await mess.channel.send(embed = roll)
-                                                                    else:
-                                                                        await mess.channel.send("You can only enter integral values")
+                                                                    await mess.channel.send("Invalid input")
                                                             else:
-                                                                break
-                                                    if inp != "stop" and p2_game.quit == 0:
-                                                        p2_game.store(nums)
-                                            if p2_game.quit == 0:
+                                                                if loc == "CARD":
+                                                                    p1_game.string_rows()
+                                                                    p1_game.string_dice()
+                                                                    dice_string = ""
+                                                                    for x in p1_game.sdice:
+                                                                        dice_string += x+" "
+                                                                    p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                                    p1_card.add_field(name = "Final dice", value = dice_string, inline = False)
+                                                                    p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
+                                                                    p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
+                                                                    p1_card.add_field(name = "Scores", value = p1_game.right)
+                                                                    await mess.channel.send(embed = p1_card)
+                                                                else:
+                                                                    await mess.channel.send("Invalid input")
+                                                    if p1_game.quit == 0:
+                                                        p1_game.string_rows()
+                                                        p1_card = discord.Embed(title = "Yahtzee!", description = f"{me.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                        p1_card.add_field(name = "Upper", value = p1_game.left, inline = True)
+                                                        p1_card.add_field(name = "Lower", value = p1_game.middle, inline = True)
+                                                        p1_card.add_field(name = "Scores", value = p1_game.right)
+                                                        await mess.channel.send(embed = p1_card)
+                                            else:
+                                                p1_game.game = 1
+                                            turn = 1
+                                        else:
+                                            if p2_game.empty_pos > 0:
+                                                await mess.channel.send(f"<@!{p2_game.user_id}> it's your turn")
                                                 p2_game.string_rows()
-                                                p2_game.string_dice()
-                                                dice_string = ""
-                                                for x in p2_game.sdice:
-                                                    dice_string += x+" "
                                                 p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
-                                                p2_card.add_field(name = "Final dice", value = dice_string, inline = False)
                                                 p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
                                                 p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
                                                 p2_card.add_field(name = "Scores", value = p2_game.right)
                                                 await mess.channel.send(embed = p2_card)
-                                                while True:
-                                                    await mess.channel.send("Which field would you like to place your roll in. Ex: L1 (Enter 'card' to view the card)")
-                                                    try:
-                                                        loc = await bot.wait_for("message", check = lambda m: m.author.id == p2_game.user_id and m.channel == mess.channel, timeout = 120.0)
-                                                    except asyncio.TimeoutError:
-                                                        await mess.channel.send("You took too long to repond so the game has ended")
-                                                        p2_game.quit = 1
-                                                        await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
-                                                        break
-                                                    else:
-                                                        loc = loc.content
-                                                        loc = str(loc).upper()
-                                                        if loc[0] in ["U", "L"]:
+                                                inp = ""
+                                                while p2_game.rolls > 0 and inp != "stop" and p2_game.quit == 0:
+                                                    p2_game.roll()
+                                                    p2_game.string_dice()
+                                                    dice_string = ""
+                                                    for x in p2_game.sdice:
+                                                        dice_string += x+" "
+                                                    roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                    await mess.channel.send(embed = roll)
+                                                    if p2_game.rolls > 0:
+                                                        while True:
+                                                            await mess.channel.send("Enter the numbers of the dice you would like to hold separated by spaces. Ex: 1 2 3 (Enter 0 to hold none of the dice; enter 'stop' to not roll again; enter 'dice' to view the current roll; enter 'card' to view the card; enter 'quit' to quit the game)")
                                                             try:
-                                                                invalid = 0
-                                                                if len(loc) != 2:
-                                                                    await mess.channel.send("Invalid input")
-                                                                    invalid = 1
-                                                                elif loc[0] == "U":
-                                                                    if not(1 <= int(loc[1:]) <= 6):
-                                                                        await mess.channel.send("Invalid field")
-                                                                        invalid = 1
-                                                                else:
-                                                                    if not(1 <= int(loc[1:]) <= 7):
-                                                                        await mess.channel.send("Invalid field")
-                                                                        invalid = 1
-                                                                if invalid == 0:
-                                                                    p2_game.points(loc)
-                                                                    if p2_game.invalid == 0:
-                                                                        break
-                                                                    else:
-                                                                        await mess.channel.send("That field is already occupied")
-                                                            except ValueError:
-                                                                await mess.channel.send("Invalid input")
-                                                        else:
-                                                            if loc == "CARD":
-                                                                p2_game.string_rows()
-                                                                p2_game.string_dice()
-                                                                dice_string = ""
-                                                                for x in p2_game.sdice:
-                                                                    dice_string += x+" "
-                                                                p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
-                                                                p2_card.add_field(name = "Final dice", value = dice_string, inline = False)
-                                                                p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
-                                                                p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
-                                                                p2_card.add_field(name = "Scores", value = p2_game.right)
-                                                                await mess.channel.send(embed = p2_card)
+                                                                inp = await bot.wait_for("message", check = lambda m: m.author.id == p2_game.user_id and m.channel == mess.channel, timeout = 120.0)
+                                                            except asyncio.TimeoutError:
+                                                                await mess.channel.send("You took too long to respond so the game has ended")
+                                                                p2_game.quit = 1
+                                                                await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
+                                                                break
                                                             else:
-                                                                await mess.channel.send("Invalid input")
+                                                                inp = inp.content
+                                                                inp = inp.lower()
+                                                                if inp != "stop":
+                                                                    try:
+                                                                        invalid = 0
+                                                                        nums = list(map(int, inp.split()))
+                                                                        if len(nums) > 5:
+                                                                            await mess.channel.send("You cant hold more than 5 dice")
+                                                                            invalid = 1
+                                                                        elif len(nums) == 1 and nums[0] == 0:
+                                                                            nums = []
+                                                                        else:
+                                                                            for x in nums:
+                                                                                if not(1 <= x <= 6):
+                                                                                    await mess.channel.send("You can only hold dice with numbers from 1-6")
+                                                                                    invalid = 1
+                                                                                    break
+                                                                                elif x not in p2_game.dice or nums.count(x) > p2_game.counts[x]:
+                                                                                    await mess.channel.send("You can only hold dice that have been rolled")
+                                                                                    invalid = 1
+                                                                                    break
+                                                                        if invalid == 0:
+                                                                            break
+                                                                    except ValueError:
+                                                                        if inp == "quit":
+                                                                            p2_game.quit = 1
+                                                                            await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
+                                                                            break
+                                                                        elif inp == "dice":
+                                                                            p2_game.string_dice()
+                                                                            dice_string = ""
+                                                                            for x in p2_game.sdice:
+                                                                                dice_string += x+" "
+                                                                            roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                                            await mess.channel.send(embed = roll)
+                                                                        elif inp == "card":
+                                                                            p2_game.string_rows()
+                                                                            p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                                            p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
+                                                                            p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
+                                                                            p2_card.add_field(name = "Scores", value = p2_game.right)
+                                                                            await mess.channel.send(embed = p2_card)
+                                                                            p2_game.string_dice()
+                                                                            dice_string = ""
+                                                                            for x in p2_game.sdice:
+                                                                                dice_string += x+" "
+                                                                            roll = discord.Embed(title = f"Roll {3-p2_game.rolls}", description = dice_string, colour = discord.Colour.blue())
+                                                                            await mess.channel.send(embed = roll)
+                                                                        else:
+                                                                            await mess.channel.send("You can only enter integral values")
+                                                                else:
+                                                                    break
+                                                        if inp != "stop" and p2_game.quit == 0:
+                                                            p2_game.store(nums)
                                                 if p2_game.quit == 0:
                                                     p2_game.string_rows()
+                                                    p2_game.string_dice()
+                                                    dice_string = ""
+                                                    for x in p2_game.sdice:
+                                                        dice_string += x+" "
                                                     p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                    p2_card.add_field(name = "Final dice", value = dice_string, inline = False)
                                                     p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
                                                     p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
                                                     p2_card.add_field(name = "Scores", value = p2_game.right)
                                                     await mess.channel.send(embed = p2_card)
-                                        else:
-                                            p2_game.game = 1
-                                        turn = 0
-                                if p1_game.quit == 0 and p2_game.quit == 0:
-                                    await mess.channel.send(f'''
+                                                    while True:
+                                                        await mess.channel.send("Which field would you like to place your roll in. Ex: L1 (Enter 'card' to view the card)")
+                                                        try:
+                                                            loc = await bot.wait_for("message", check = lambda m: m.author.id == p2_game.user_id and m.channel == mess.channel, timeout = 120.0)
+                                                        except asyncio.TimeoutError:
+                                                            await mess.channel.send("You took too long to repond so the game has ended")
+                                                            p2_game.quit = 1
+                                                            await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
+                                                            break
+                                                        else:
+                                                            loc = loc.content
+                                                            loc = str(loc).upper()
+                                                            if loc[0] in ["U", "L"]:
+                                                                try:
+                                                                    invalid = 0
+                                                                    if len(loc) != 2:
+                                                                        await mess.channel.send("Invalid input")
+                                                                        invalid = 1
+                                                                    elif loc[0] == "U":
+                                                                        if not(1 <= int(loc[1:]) <= 6):
+                                                                            await mess.channel.send("Invalid field")
+                                                                            invalid = 1
+                                                                    else:
+                                                                        if not(1 <= int(loc[1:]) <= 7):
+                                                                            await mess.channel.send("Invalid field")
+                                                                            invalid = 1
+                                                                    if invalid == 0:
+                                                                        p2_game.points(loc)
+                                                                        if p2_game.invalid == 0:
+                                                                            break
+                                                                        else:
+                                                                            await mess.channel.send("That field is already occupied")
+                                                                except ValueError:
+                                                                    await mess.channel.send("Invalid input")
+                                                            else:
+                                                                if loc == "CARD":
+                                                                    p2_game.string_rows()
+                                                                    p2_game.string_dice()
+                                                                    dice_string = ""
+                                                                    for x in p2_game.sdice:
+                                                                        dice_string += x+" "
+                                                                    p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                                    p2_card.add_field(name = "Final dice", value = dice_string, inline = False)
+                                                                    p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
+                                                                    p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
+                                                                    p2_card.add_field(name = "Scores", value = p2_game.right)
+                                                                    await mess.channel.send(embed = p2_card)
+                                                                else:
+                                                                    await mess.channel.send("Invalid input")
+                                                    if p2_game.quit == 0:
+                                                        p2_game.string_rows()
+                                                        p2_card = discord.Embed(title = "Yahtzee!", description = f"{opponent.name}'s yahtzee card", colour = discord.Colour.blue())
+                                                        p2_card.add_field(name = "Upper", value = p2_game.left, inline = True)
+                                                        p2_card.add_field(name = "Lower", value = p2_game.middle, inline = True)
+                                                        p2_card.add_field(name = "Scores", value = p2_game.right)
+                                                        await mess.channel.send(embed = p2_card)
+                                            else:
+                                                p2_game.game = 1
+                                            turn = 0
+                                    if p1_game.quit == 0 and p2_game.quit == 0:
+                                        await mess.channel.send(f'''
 {me.name}'s total: {p1_game.total}
 {opponent.name}'s total: {p2_game.total}
 ''')
-                                    if p1_game.total > p2_game.total:
-                                        await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
-                                    elif p2_game.total > p1_game.total:
-                                        await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
-                                    else:
-                                        await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
+                                        if p1_game.total > p2_game.total:
+                                            await mess.channel.send(f"<@!{p1_game.user_id}> is the winner!")
+                                        elif p2_game.total > p1_game.total:
+                                            await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
+                                        else:
+                                            await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
+                                    in_game.remove(a_id)
+                                    in_game.remove(opp_id)
 
+                                else:
+                                    await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                                
+                        else:
+                            if a_id in in_game:
+                                await mess.channel.send("You're already in a game!")
                             else:
-                                await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
-                                
-                                
+                                await mess.channel.send("Your opponent is already in a game!")
 
                     else:
                         if opponent != me and not(opponent.bot):
