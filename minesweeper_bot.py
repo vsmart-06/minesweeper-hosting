@@ -5,6 +5,7 @@ from connect4_class import connect4
 from othello_class import othello
 from mastermind_class import mastermind
 from yahtzee_class import yahtzee
+from battleship_class import battleship
 from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record, theme_change, get_theme, member_count
 import os
 import asyncio
@@ -332,7 +333,7 @@ async def on_message(mess):
                             else:
                                 if str(reaction.emoji) == "✅":
                                     in_game.append(a_id)
-                                    in_game.append(opp_od)
+                                    in_game.append(opp_id)
                                     player_1 = minesweeper(8, 8, 8, a_id, "yes", get_theme(a_id))
                                     player_2 = minesweeper(8, 8, 8, opp_id, "yes", get_theme(opp_id))
                                     turn = 0
@@ -515,7 +516,7 @@ async def on_message(mess):
                                         await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
                                     in_game.remove(a_id)
                                     in_game.remove(opp_id)
-                                        
+
                                         
 
                                 else:
@@ -2300,7 +2301,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
 
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
-                                
+
                         else:
                             if a_id in in_game:
                                 await mess.channel.send("You're already in a game!")
@@ -2326,7 +2327,317 @@ Type 'board' to view the current board; type 'quit' to quit the game
         else:
             await mess.channel.send("You cant play a match against someone in a DM!")
             
+    elif msg.startswith(";battleship") or msg.startswith(";bs"):
+        if not(isinstance(mess.channel, discord.DMChannel)):
+            valid_id = 0
+            channel_id = mess.channel.id
+            if msg.startswith(";battleship <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";battleship <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";bs <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";bs <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";battleship <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";battleship <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";bs <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";bs <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            if valid_id == 1:
+                opp_id = int(opp_id)
+                try:
+                    a_id = mess.author.id
+                    me = await bot.fetch_user(a_id)
+                    opponent = await bot.fetch_user(opp_id)
+                    server_id = mess.guild.id
+                    guild = bot.get_guild(server_id)
+                    members = []
+                    channel = mess.channel
+                    for m in guild.members:
+                        members.append(m)
+                    if opponent in members and opponent != me and not(opponent.bot):
+                        if a_id not in in_game and opp_id not in in_game:
+                            want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of battleship! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                            want_play = await mess.channel.send(embed = want_play_embed)
+                            await want_play.add_reaction("✅")
+                            await want_play.add_reaction("❌")
+                            try:
+                                reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                            except asyncio.TimeoutError:
+                                await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                            else:
+                                if str(reaction.emoji) == "✅":
+                                    in_game.append(a_id)
+                                    in_game.append(opp_id)
+                                    await mess.channel.send("Hop into your DMs and start playing!")
+                                    p1_game = battleship(get_theme(a_id), get_theme(opp_id))
+                                    p2_game = battleship(get_theme(opp_id), get_theme(a_id))
+                                    async def get_pos(id, o_id):
+                                        timeout = 0
+                                        p0 = await bot.fetch_user(id)
+                                        p0_game = battleship(get_theme(id), get_theme(o_id))
+                                        ships = [("carrier", 5), ("battleship", 4), ("cruiser", 3), ("submarine", 3), ("destroyer", 2)]
+                                        for ship in ships:
+                                            if timeout == 0:
+                                                while True:
+                                                    invalid = 0
+                                                    p0_game.string_grid()
+                                                    grid = discord.Embed(title = "Your grid", description = p0_game.grid_string, colour = discord.Colour.blue())
+                                                    await p0.send(embed = grid)
+                                                    await p0.send(f"Where would you like to place your {ship[0]} ({ship[1]} holes)? (Enter the start and end coordinates separated by spaces. Ex: 1 1 1 5)")
+                                                    try:
+                                                        ship_loc = await bot.wait_for("message", check = lambda m: m.author.id == id and m.guild == None, timeout = 60.0)
+                                                    except asyncio.TimeoutError:
+                                                        await p0.send("You took too long to respond so the game has ended")
+                                                        timeout = 1
+                                                        break
+                                                    else:
+                                                        try:
+                                                            coords = list(map(int, ship_loc.content.split()))
+                                                            if len(coords) != 4:
+                                                                await p0.send("You have to enter 2 sets of coordinates with 4 values")
+                                                                invalid = 1
+                                                            else:
+                                                                for coord in coords:
+                                                                    if not(1 <= coord <= 10):
+                                                                        await p0.send("You can only enter numbers from 1 to 10")
+                                                                        invalid = 1
+                                                                        break
+                                                        except ValueError:
+                                                            await p0.send("Invalid input")
+                                                            invalid = 1
+                                                        if invalid == 0:
+                                                            locs = ((coords[0], coords[1]), (coords[2], coords[3]))
+                                                            result = p0_game.valid_ship(locs, ship[1])
+                                                            if result[0] == 1:
+                                                                error = result[1]
+                                                                if error == "row":
+                                                                    await p0.send("You can only place the ship in a single row or column")
+                                                                elif error == "length":
+                                                                    await p0.send(f"Your ship must be {ship[1]} units long")
+                                                                elif error == "overlap":
+                                                                    await p0.send("Your entered ship is overlapping another one of your ships")
             
+                                                            else:
+                                                                p0_game.place_ship(locs, ship[1])
+                                                                break
+                                            else:
+                                                break
+                                        if timeout == 0:
+                                            p0_game.string_grid()
+                                            grid = discord.Embed(title = "Your final grid", description = p0_game.grid_string, colour = discord.Colour.blue())
+                                            await p0.send(embed = grid)
+                                            await p0.send("Please wait for some time while your opponent finishes arranging their ships")
+                                            return p0_game
+                                        else:
+                                            return timeout
+                                    tasks = []
+                                    tasks.append(asyncio.create_task(get_pos(a_id, opp_id)))
+                                    tasks.append(asyncio.create_task(get_pos(opp_id, a_id)))
+                                    await asyncio.gather(*tasks)
+                                    p1_game = tasks[0].result()
+                                    p2_game = tasks[1].result()
+                                    p1 = me
+                                    p2 = opponent
+                                    if not(p1_game == 1 or p2_game == 1):
+                                        turn = 0
+                                        await p1.send("Get ready to begin!")
+                                        await p2.send("Get ready to begin!")
+                                        quit = 0
+                                        while p1_game.alive_ships > 0 and p2_game.alive_ships > 0 and quit == 0:
+                                            if turn == 0:
+                                                await p2.send(f"It is <@!{p1.id}>'s turn")
+                                                while True:
+                                                    p1_game.string_grid()
+                                                    p2_game.string_guess()
+                                                    p1_comp = discord.Embed(title = "Battleship!", description = f'''**Opponent ships**: {p2_game.ship_names}
+**Your ships**: {p1_game.ship_names}''', colour = discord.Colour.blue())
+                                                    p1_comp.add_field(name = "Your target grid", value = p2_game.guess_string, inline = False)
+                                                    p1_comp.add_field(name = "Your grid", value = p1_game.grid_string, inline = False)
+                                                    await p1.send(embed = p1_comp)
+                                                    await p1.send("Enter the coordinates where you would like to shoot separated by a space (Ex: 5 4) (Enter 'quit' if you wish to quit the game)")
+                                                    try:
+                                                        loc_msg = await bot.wait_for("message", check = lambda m: m.author.id == p1.id and m.guild == None, timeout = 120.0)
+                                                    except asyncio.TimeoutError:
+                                                        await p1.send("You took too long to respond so the game has ended")
+                                                        await channel.send(f"<@!{p2.id}>, <@!{p1.id}> took too long to respond so the game has ended")
+                                                        quit = 1
+                                                        break
+                                                    else:
+                                                        try:
+                                                            loc = tuple(map(int, loc_msg.content.split()))
+                                                            if len(loc) != 2:
+                                                                await p1.send("You can only enter 2 integral coordinates")
+                                                            elif not(1 <= loc[0] <= 10) or not(1 <= loc[1] <= 10):
+                                                                await p1.send("You can only enter integers from 1 to 10")
+                                                            else:
+                                                                shot = p2_game.shoot(loc)
+                                                                if shot[0] == 1:
+                                                                    await p1.send("You have already shot over there")
+                                                                else:
+                                                                    if shot[1] == 0:
+                                                                        await p1.send("That was a miss!")
+                                                                        await p2.send(f"<@!{p1.id}> shot at {loc} and missed!")
+                                                                    else:
+                                                                        if shot[2] == 1:
+                                                                            await p1.send(f"{shot[3].upper()} SUNK!")
+                                                                            await p2.send(f"<@!{p1.id}> shot at {loc} and sunk your {shot[3]}!")
+                                                                            
+                                                                        else:
+                                                                            await p1.send(f"YOU HIT THE {shot[3].upper()}!")
+                                                                            await p2.send(f"<@!{p1.id}> shot at {loc} and hit your {shot[3]}!")
+                                                                            
+                                                                    break
+                                                        except ValueError:
+                                                            text = loc_msg.content.lower()
+                                                            if text == "quit":
+                                                                await channel.send(f"<@!{p2.id}>, <@!{p1.id}> quit the game so you are the winner!")
+                                                                quit = 1
+                                                                break
+                                                            else:
+                                                                await p1.send("You can only enter integers")
+                                                if quit == 0:
+                                                    p1_game.string_grid()
+                                                    p2_game.string_guess()
+                                                    p1_comp = discord.Embed(title = "Battleship!", description = f'''**Opponent ships**: {p2_game.ship_names}
+**Your ships**: {p1_game.ship_names}''', colour = discord.Colour.blue())
+                                                    p1_comp.add_field(name = "Your target grid", value = p2_game.guess_string, inline = False)
+                                                    p1_comp.add_field(name = "Your grid", value = p1_game.grid_string, inline = False)
+                                                    await p1.send(embed = p1_comp)
+                                                    turn = 1
+                                            else:
+                                                await p1.send(f"It is <@!{p2.id}>'s turn")
+                                                while True:
+                                                    p2_game.string_grid()
+                                                    p1_game.string_guess()
+                                                    p2_comp = discord.Embed(title = "Battleship!", description = f'''**Opponent ships**: {p1_game.ship_names}
+**Your ships**: {p2_game.ship_names}''', colour = discord.Colour.blue())
+                                                    p2_comp.add_field(name = "Your target grid", value = p1_game.guess_string, inline = False)
+                                                    p2_comp.add_field(name = "Your grid", value = p2_game.grid_string, inline = False)
+                                                    await p2.send(embed = p2_comp)
+                                                    await p2.send("Enter the coordinates where you would like to shoot separated by a space (Ex: 5 4) (Enter 'quit' if you wish to quit the game)")
+                                                    try:
+                                                        loc_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2.id and m.guild == None, timeout = 120.0)
+                                                    except asyncio.TimeoutError:
+                                                        await p2.send("You took too long to respond so the game has ended")
+                                                        await channel.send(f"<@!{p1.id}>, <@!{p2.id}> took too long to respond so the game has ended")
+                                                        quit = 1
+                                                        break
+                                                    else:
+                                                        try:
+                                                            loc = tuple(map(int, loc_msg.content.split()))
+                                                            if len(loc) != 2:
+                                                                await p2.send("You can only enter 2 integral coordinates")
+                                                            elif not(1 <= loc[0] <= 10) or not(1 <= loc[1] <= 10):
+                                                                await p2.send("You can only enter integers from 1 to 10")
+                                                            else:
+                                                                shot = p1_game.shoot(loc)
+                                                                if shot[0] == 1:
+                                                                    await p2.send("You have already shot over there")
+                                                                else:
+                                                                    if shot[1] == 0:
+                                                                        await p2.send("That was a miss!")
+                                                                        await p1.send(f"<@!{p2.id}> shot at {loc} and missed!")
+                                                                    else:
+                                                                        if shot[2] == 1:
+                                                                            await p2.send(f"{shot[3].upper()} SUNK!")
+                                                                            await p1.send(f"<@!{p2.id}> shot at {loc} and sunk your {shot[3]}!")
+                                                                            
+                                                                        else:
+                                                                            await p2.send(f"YOU HIT THE {shot[3].upper()}!")
+                                                                            await p1.send(f"<@!{p2.id}> shot at {loc} and hit your {shot[3]}!")
+                                                                            
+                                                                    break
+                                                        except ValueError:
+                                                            text = loc_msg.content.lower()
+                                                            if text == "quit":
+                                                                await channel.send(f"<@!{p1.id}>, <@!{p2.id}> quit the game so you are the winner!")
+                                                                quit = 1
+                                                                break
+                                                            else:
+                                                                await p2.send("You can only enter integers")
+                                                if quit == 0:
+                                                    p2_game.string_grid()
+                                                    p1_game.string_guess()
+                                                    p2_comp = discord.Embed(title = "Battleship!", description = f'''**Opponent ships**: {p1_game.ship_names}
+**Your ships**: {p2_game.ship_names}''', colour = discord.Colour.blue())
+                                                    p2_comp.add_field(name = "Your target grid", value = p1_game.guess_string, inline = False)
+                                                    p2_comp.add_field(name = "Your grid", value = p2_game.grid_string, inline = False)
+                                                    await p2.send(embed = p2_comp)
+                                                    turn = 0
+                                        if quit == 0:
+                                            if p1_game.alive_ships == 0:
+                                                await p1.send("You lost 😢")
+                                                await p2.send("You won! 🥳")
+                                                winner = p2.id
+                                            else:
+                                                await p2.send("You lost 😢")
+                                                await p1.send("You won! 🥳")
+                                                winner = p1.id
+                                            p1_game.final_grid()
+                                            p2_game.final_grid()
+                                            p1_final = discord.Embed(title = "Your opponent's final grid", description = f"Ships alive: {p2_game.alive_ships}", colour = discord.Colour.blue())
+                                            p1_final.add_field(name = "Your guesses on the grid", value = p2_game.grid_string)
+                                            p2_final = discord.Embed(title = "Your opponent's final grid", description = f"Ships alive: {p1_game.alive_ships}", colour = discord.Colour.blue())
+                                            p2_final.add_field(name = "Your guesses on the grid", value = p1_game.grid_string)
+                                            await p1.send(embed = p1_final)
+                                            await p2.send(embed = p2_final)
+                                            await channel.send(f"<@!{winner}> is the winner!")
+                                        in_game.remove(a_id)
+                                        in_game.remove(opp_id)
+                                    else:
+                                        if p1_game == 1:
+                                            await channel.send(f"<@!{p2.id}>, <@!{p1.id}> took too long to respond so the game has ended")
+                                        else:
+                                            await channel.send(f"<@!{p1.id}>, <@!{p2.id}> took too long to respond so the game has ended")
+                                    
+                                else:
+                                    await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+
+                        else:
+                            if a_id in in_game:
+                                await mess.channel.send("You're already in a game!")
+                            else:
+                                await mess.channel.send("Your opponent is already in a game!")
+                                
+                    else:
+                        if opponent != me and not(opponent.bot):
+                            dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                            await mess.channel.send(embed = dual_game)
+                            
+                            
+                except discord.errors.NotFound:
+                    dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
+                    await mess.channel.send(embed = dual_game)
+                    
+                    
+            else:
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The battleship syntax is invalid! The correct syntax is: ;battleship/;bs @user", color = discord.Color.blue())
+                await mess.channel.send(embed = dual_game)
+                
+                
+        else:
+            await mess.channel.send("You cant play a match against someone in a DM!")            
 
     elif msg == ";other":
         page = 1
@@ -2429,7 +2740,7 @@ Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/90249810
     
     elif msg == ";count" and mess.author.id == 706855396828250153:
         await mess.channel.send(f"We have {member_count()} users!")
-    
+
     elif msg == ";help":
         page = 1
         while True:
