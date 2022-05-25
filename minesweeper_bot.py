@@ -2610,6 +2610,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                             await channel.send(f"<@!{p2.id}>, <@!{p1.id}> took too long to respond so the game has ended")
                                         else:
                                             await channel.send(f"<@!{p1.id}>, <@!{p2.id}> took too long to respond so the game has ended")
+                                        in_game.remove(a_id)
+                                        in_game.remove(opp_id)
                                     
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
