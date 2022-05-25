@@ -29,6 +29,7 @@ statcord_client = statcord.Client(bot, statcord_token)
 statcord_client.start_loop()
 
 in_game = []
+live_battles = {}
 
 @bot.event
 async def on_ready():
@@ -55,7 +56,7 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_message(mess):
-    global in_game
+    global in_game, live_battles
     msg = mess.content.lower()
     author = mess.author.name
     if mess.author == bot.user or mess.author.bot:
@@ -2379,7 +2380,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                     for m in guild.members:
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
-                        if a_id not in in_game and opp_id not in in_game:
+                        if a_id not in in_game and opp_id not in in_game and channel.id not in live_battles.keys():
                             in_game.append(a_id)
                             in_game.append(opp_id)
                             want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of battleship! React with the emojis below to accept or decline", colour = discord.Colour.blue())
@@ -2392,6 +2393,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                 await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                             else:
                                 if str(reaction.emoji) == "✅":
+                                    live_battles[channel.id] = (0, 0)
                                     await mess.channel.send("Hop into your DMs and start playing!")
                                     p1_game = battleship(get_theme(a_id), get_theme(opp_id))
                                     p2_game = battleship(get_theme(opp_id), get_theme(a_id))
@@ -2470,6 +2472,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                         channel_game_embed.add_field(name = f"{p1.name}'s grid", value = p1_game.guess_string, inline = True)
                                         channel_game_embed.add_field(name = f"{p2.name}'s grid", value = p2_game.guess_string, inline = True)
                                         channel_game = await channel.send(embed = channel_game_embed)
+                                        live_battles[channel.id] = (channel.guild.id, channel_game.id)
                                         await p1.send("Get ready to begin!")
                                         await p2.send("Get ready to begin!")
                                         quit = 0
@@ -2640,16 +2643,20 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                             await channel.send(f"<@!{p2.id}>, <@!{p1.id}> took too long to respond so the game has ended")
                                         else:
                                             await channel.send(f"<@!{p1.id}>, <@!{p2.id}> took too long to respond so the game has ended")
+                                    del live_battles[channel.id]
                                     
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
                             in_game.remove(a_id)
                             in_game.remove(opp_id)
                         else:
-                            if a_id in in_game:
-                                await mess.channel.send("You're already in a game!")
+                            if channel.id not in live_battles.keys():
+                                if a_id in in_game:
+                                    await mess.channel.send("You're already in a game!")
+                                else:
+                                    await mess.channel.send("Your opponent is already in a game!")
                             else:
-                                await mess.channel.send("Your opponent is already in a game!")
+                                await mess.channel.send("There is already a battleship game going on over here!")
                                 
                     else:
                         if opponent != me and not(opponent.bot):
@@ -2669,6 +2676,16 @@ Type 'board' to view the current board; type 'quit' to quit the game
                 
         else:
             await mess.channel.send("You cant play a match against someone in a DM!")            
+
+    elif msg == ";live":
+        channel_id = mess.channel.id
+        if channel_id in live_battles.keys():
+            if live_battles[channel_id] != (0, 0):
+                await mess.channel.send(f"https://discord.com/channels/{live_battles[channel_id][0]}/{channel_id}/{live_battles[channel_id][1]}")
+            else:
+                await mess.channel.send("The players are placing their ships so the game is yet to begin")
+        else:
+            await mess.channel.send("There is no battleship game going on in this channel at the moment")          
 
     elif msg == ";other":
         page = 1
