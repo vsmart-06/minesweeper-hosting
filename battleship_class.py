@@ -83,7 +83,7 @@ class battleship:
                 self.guess_string += "9️⃣"
             elif c == 10:
                 self.guess_string += "🔟"
-            self.guess_string += self.box_2
+            self.guess_string += "⬛"
             for p in row:
                 if p == "alive" or p == "occupied":
                     self.guess_string += "🟦"
@@ -155,7 +155,7 @@ class battleship:
                 self.grid_string += "9️⃣"
             elif c == 10:
                 self.grid_string += "🔟"
-            self.grid_string += self.box_2
+            self.grid_string += "⬛"
             for p in row:
                 if p == "alive":
                     self.grid_string += "🟦"
