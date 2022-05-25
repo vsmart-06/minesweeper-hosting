@@ -64,8 +64,8 @@ async def on_message(mess):
     if msg == ";minesweeper" or msg == ";ms":
         author_id = mess.author.id
         if author_id not in in_game:
-            in_game.append(author_id)
             play = minesweeper(8, 8, 8, author_id, "no", get_theme(author_id))
+            in_game.append(author_id)
             game_init = discord.Embed(title=author+"'s minesweeper game", description='''
             You do not have to use ; while playing
             '''
@@ -514,11 +514,11 @@ async def on_message(mess):
                                     elif player_2.game_won == 1:
                                         await mess.channel.send(player_2.end_msg)
                                         await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
-                                    in_game.remove(a_id)
-                                    in_game.remove(opp_id)
                                         
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                            in_game.remove(a_id)
+                            in_game.remove(opp_id)
                         else:
                             if a_id in in_game:
                                 await mess.channel.send("You're already in a game!")
@@ -1463,12 +1463,11 @@ async def on_message(mess):
                                             elif game.left_pos == 0:
                                                 await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
                                                 game.game_end = 1
-                                        in_game.remove(a_id)
-                                        in_game.remove(opp_id)
-                                    
-                                    
+                                     
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                            in_game.remove(a_id)
+                            in_game.remove(opp_id)
                         else:
                             if a_id in in_game:
                                 await mess.channel.send("You're already in a game!")
@@ -1669,11 +1668,11 @@ async def on_message(mess):
                                             await mess.channel.send(f"<@!{game.winner}> is the winner!")
                                         else:
                                             await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
-                                    in_game.remove(a_id)
-                                    in_game.remove(opp_id)
-                                    
+
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                            in_game.remove(a_id)
+                            in_game.remove(opp_id)
                         else:
                             if a_id in in_game:
                                 await mess.channel.send("You're already in a game!")
@@ -1789,8 +1788,6 @@ Ex: 1 2 3 4
                                         except asyncio.TimeoutError:
                                             await p1.send("You took too long to respond so the game has been cancelled")
                                             game.game = 1
-                                            in_game.remove(a_id)
-                                            in_game.remove(opp_id)
                                             break
                                         else:
                                             hc = hcode_msg.content
@@ -1877,17 +1874,19 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                             if game.turns == 8:
                                                 game.winner = game.p1
                                             await channel.send(f"<@!{game.winner}> is the winner!")
-                                        in_game.remove(a_id)
-                                        in_game.remove(opp_id)
 
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                            in_game.remove(a_id)
+                            in_game.remove(opp_id)
                         else:
                             if a_id in in_game:
                                 await mess.channel.send("You're already in a game!")
                             else:
                                 await mess.channel.send("Your opponent is already in a game!")
                                 
+                                
+
                     else:
                         if opponent != me and not(opponent.bot):
                             dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
@@ -2299,11 +2298,11 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                             await mess.channel.send(f"<@!{p2_game.user_id}> is the winner!")
                                         else:
                                             await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
-                                    in_game.remove(a_id)
-                                    in_game.remove(opp_id)
 
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
+                            in_game.remove(a_id)
+                            in_game.remove(opp_id)
                         else:
                             if a_id in in_game:
                                 await mess.channel.send("You're already in a game!")
@@ -2482,8 +2481,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                     p2_game.string_guess()
                                                     p1_comp = discord.Embed(title = "Battleship!", description = f'''**Opponent ships**: {p2_game.ship_names}
 **Your ships**: {p1_game.ship_names}''', colour = discord.Colour.blue())
-                                                    p1_comp.add_field(name = "Your target grid", value = p2_game.guess_string, inline = False)
-                                                    p1_comp.add_field(name = "Your grid", value = p1_game.grid_string, inline = False)
+                                                    p1_comp.add_field(name = "Your target grid", value = p2_game.guess_string, inline = True)
+                                                    p1_comp.add_field(name = "Your grid", value = p1_game.grid_string, inline = True)
                                                     await p1.send(embed = p1_comp)
                                                     await p1.send("Enter the coordinates where you would like to shoot separated by a space (Ex: 5 4) (Enter 'quit' if you wish to quit the game)")
                                                     try:
@@ -2535,8 +2534,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                     p2_game.string_guess()
                                                     p1_comp = discord.Embed(title = "Battleship!", description = f'''**Opponent ships**: {p2_game.ship_names}
 **Your ships**: {p1_game.ship_names}''', colour = discord.Colour.blue())
-                                                    p1_comp.add_field(name = "Your target grid", value = p2_game.guess_string, inline = False)
-                                                    p1_comp.add_field(name = "Your grid", value = p1_game.grid_string, inline = False)
+                                                    p1_comp.add_field(name = "Your target grid", value = p2_game.guess_string, inline = True)
+                                                    p1_comp.add_field(name = "Your grid", value = p1_game.grid_string, inline = True)
                                                     await p1.send(embed = p1_comp)
                                                     p1_game.channel_grid()
                                                     p2_game.channel_grid()
@@ -2551,8 +2550,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                     p1_game.string_guess()
                                                     p2_comp = discord.Embed(title = "Battleship!", description = f'''**Opponent ships**: {p1_game.ship_names}
 **Your ships**: {p2_game.ship_names}''', colour = discord.Colour.blue())
-                                                    p2_comp.add_field(name = "Your target grid", value = p1_game.guess_string, inline = False)
-                                                    p2_comp.add_field(name = "Your grid", value = p2_game.grid_string, inline = False)
+                                                    p2_comp.add_field(name = "Your target grid", value = p1_game.guess_string, inline = True)
+                                                    p2_comp.add_field(name = "Your grid", value = p2_game.grid_string, inline = True)
                                                     await p2.send(embed = p2_comp)
                                                     await p2.send("Enter the coordinates where you would like to shoot separated by a space (Ex: 5 4) (Enter 'quit' if you wish to quit the game)")
                                                     try:
@@ -2603,8 +2602,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                     p1_game.string_guess()
                                                     p2_comp = discord.Embed(title = "Battleship!", description = f'''**Opponent ships**: {p1_game.ship_names}
 **Your ships**: {p2_game.ship_names}''', colour = discord.Colour.blue())
-                                                    p2_comp.add_field(name = "Your target grid", value = p1_game.guess_string, inline = False)
-                                                    p2_comp.add_field(name = "Your grid", value = p2_game.grid_string, inline = False)
+                                                    p2_comp.add_field(name = "Your target grid", value = p1_game.guess_string, inline = True)
+                                                    p2_comp.add_field(name = "Your grid", value = p2_game.grid_string, inline = True)
                                                     await p2.send(embed = p2_comp)
                                                     p1_game.channel_grid()
                                                     p2_game.channel_grid()
@@ -2636,19 +2635,16 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                             channel_game_embed.add_field(name = f"{p1.name}'s revealed grid", value = p1_game.grid_string, inline = True)
                                             channel_game_embed.add_field(name = f"{p2.name}'s revealed grid", value = p2_game.grid_string, inline = True)
                                             await channel_game.edit(embed = channel_game_embed)
-                                        in_game.remove(a_id)
-                                        in_game.remove(opp_id)
                                     else:
                                         if p1_game == 1:
                                             await channel.send(f"<@!{p2.id}>, <@!{p1.id}> took too long to respond so the game has ended")
                                         else:
                                             await channel.send(f"<@!{p1.id}>, <@!{p2.id}> took too long to respond so the game has ended")
-                                        in_game.remove(a_id)
-                                        in_game.remove(opp_id)
                                     
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
-
+                            in_game.remove(a_id)
+                            in_game.remove(opp_id)
                         else:
                             if a_id in in_game:
                                 await mess.channel.send("You're already in a game!")
