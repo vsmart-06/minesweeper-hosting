@@ -1788,6 +1788,8 @@ Ex: 1 2 3 4
                                         except asyncio.TimeoutError:
                                             await p1.send("You took too long to respond so the game has been cancelled")
                                             game.game = 1
+                                            in_game.remove(a_id)
+                                            in_game.remove(opp_id)
                                             break
                                         else:
                                             hc = hcode_msg.content
