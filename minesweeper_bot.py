@@ -322,6 +322,8 @@ async def on_message(mess):
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
                         if a_id not in in_game and opp_id not in in_game:
+                            in_game.append(a_id)
+                            in_game.append(opp_id)
                             want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of minesweeper! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                             want_play = await mess.channel.send(embed = want_play_embed)
                             await want_play.add_reaction("✅")
@@ -332,8 +334,6 @@ async def on_message(mess):
                                 await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                             else:
                                 if str(reaction.emoji) == "✅":
-                                    in_game.append(a_id)
-                                    in_game.append(opp_id)
                                     player_1 = minesweeper(8, 8, 8, a_id, "yes", get_theme(a_id))
                                     player_2 = minesweeper(8, 8, 8, opp_id, "yes", get_theme(opp_id))
                                     turn = 0
@@ -516,9 +516,7 @@ async def on_message(mess):
                                         await mess.channel.send("<@!"+str(opp_id)+"> is the winner!")
                                     in_game.remove(a_id)
                                     in_game.remove(opp_id)
-
                                         
-
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
                         else:
@@ -526,6 +524,9 @@ async def on_message(mess):
                                 await mess.channel.send("You're already in a game!")
                             else:
                                 await mess.channel.send("Your opponent is already in a game!")
+                                
+                                
+
                     else:
                         if opponent != me and not(opponent.bot):
                             dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
@@ -1346,6 +1347,8 @@ async def on_message(mess):
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
                         if a_id not in in_game and opp_id not in in_game:
+                            in_game.append(a_id)
+                            in_game.append(opp_id)
                             want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of connect 4! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                             want_play = await mess.channel.send(embed = want_play_embed)
                             await want_play.add_reaction("✅")
@@ -1356,8 +1359,6 @@ async def on_message(mess):
                                 await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                             else:
                                 if str(reaction.emoji) == "✅":
-                                    in_game.append(a_id)
-                                    in_game.append(opp_id)
                                     game = connect4(a_id, opp_id, get_theme(a_id), get_theme(opp_id))
                                     while game.game_end == 0:
                                         if game.turn == 0:
@@ -1545,6 +1546,8 @@ async def on_message(mess):
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
                         if a_id not in in_game and opp_id not in in_game:
+                            in_game.append(a_id)
+                            in_game.append(opp_id)
                             want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of othello! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                             want_play = await mess.channel.send(embed = want_play_embed)
                             await want_play.add_reaction("✅")
@@ -1555,8 +1558,6 @@ async def on_message(mess):
                                 await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                             else:
                                 if str(reaction.emoji) == "✅":
-                                    in_game.append(a_id)
-                                    in_game.append(opp_id)
                                     game = othello(a_id, opp_id, get_theme(a_id), get_theme(opp_id))
                                     while (game.any_valid("black") or game.any_valid("white")) and game.game_end == 0:
                                         if game.turn == 0:
@@ -1670,7 +1671,7 @@ async def on_message(mess):
                                             await mess.channel.send("It's a tie ¯\_(ツ)_/¯")
                                     in_game.remove(a_id)
                                     in_game.remove(opp_id)
-
+                                    
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
                         else:
@@ -1751,6 +1752,8 @@ async def on_message(mess):
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
                         if a_id not in in_game and opp_id not in in_game:
+                            in_game.append(a_id)
+                            in_game.append(opp_id)
                             want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of mastermind! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                             want_play = await mess.channel.send(embed = want_play_embed)
                             await want_play.add_reaction("✅")
@@ -1761,8 +1764,6 @@ async def on_message(mess):
                                 await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                             else:
                                 if str(reaction.emoji) == "✅":
-                                    in_game.append(a_id)
-                                    in_game.append(opp_id)
                                     red = str(bot.get_emoji(962686453157068880))
                                     orange = str(bot.get_emoji(962686453320679454))
                                     yellow = str(bot.get_emoji(962686452918009858))
@@ -1886,7 +1887,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                 await mess.channel.send("You're already in a game!")
                             else:
                                 await mess.channel.send("Your opponent is already in a game!")
-
+                                
                     else:
                         if opponent != me and not(opponent.bot):
                             dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
@@ -1957,6 +1958,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
                         if a_id not in in_game and opp_id not in in_game:
+                            in_game.append(a_id)
+                            in_game.append(opp_id)
                             want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of yahtzee! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                             want_play = await mess.channel.send(embed = want_play_embed)
                             await want_play.add_reaction("✅")
@@ -1967,8 +1970,6 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                 await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                             else:
                                 if str(reaction.emoji) == "✅":
-                                    in_game.append(a_id)
-                                    in_game.append(opp_id)
                                     d1 = str(bot.get_emoji(963012018066055188))
                                     d2 = str(bot.get_emoji(963012017558540309))
                                     d3 = str(bot.get_emoji(963012018045063248))
@@ -2303,12 +2304,13 @@ Type 'board' to view the current board; type 'quit' to quit the game
 
                                 else:
                                     await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
-
                         else:
                             if a_id in in_game:
                                 await mess.channel.send("You're already in a game!")
                             else:
                                 await mess.channel.send("Your opponent is already in a game!")
+                                
+                                
 
                     else:
                         if opponent != me and not(opponent.bot):
@@ -2379,6 +2381,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
                         if a_id not in in_game and opp_id not in in_game:
+                            in_game.append(a_id)
+                            in_game.append(opp_id)
                             want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of battleship! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                             want_play = await mess.channel.send(embed = want_play_embed)
                             await want_play.add_reaction("✅")
@@ -2389,8 +2393,6 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                 await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                             else:
                                 if str(reaction.emoji) == "✅":
-                                    in_game.append(a_id)
-                                    in_game.append(opp_id)
                                     await mess.channel.send("Hop into your DMs and start playing!")
                                     p1_game = battleship(get_theme(a_id), get_theme(opp_id))
                                     p2_game = battleship(get_theme(opp_id), get_theme(a_id))
@@ -2439,7 +2441,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                                     await p0.send(f"Your ship must be {ship[1]} units long")
                                                                 elif error == "overlap":
                                                                     await p0.send("Your entered ship is overlapping another one of your ships")
-            
+
                                                             else:
                                                                 p0_game.place_ship(locs, ship[1])
                                                                 break
@@ -2463,6 +2465,12 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                     p2 = opponent
                                     if not(p1_game == 1 or p2_game == 1):
                                         turn = 0
+                                        channel_game_embed = discord.Embed(title = f"Battleship | {p1.name} VS {p2.name}", colour = discord.Colour.blue())
+                                        p1_game.channel_grid()
+                                        p2_game.channel_grid()
+                                        channel_game_embed.add_field(name = f"{p1.name}'s grid", value = p1_game.guess_string, inline = True)
+                                        channel_game_embed.add_field(name = f"{p2.name}'s grid", value = p2_game.guess_string, inline = True)
+                                        channel_game = await channel.send(embed = channel_game_embed)
                                         await p1.send("Get ready to begin!")
                                         await p2.send("Get ready to begin!")
                                         quit = 0
@@ -2500,15 +2508,19 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                                     if shot[1] == 0:
                                                                         await p1.send("That was a miss!")
                                                                         await p2.send(f"<@!{p1.id}> shot at {loc} and missed!")
+                                                                        channel_game_embed = discord.Embed(title = f"Battleship | {p1.name} VS {p2.name}", description = f"<@!{p1.id}> shot at {loc} and missed!", colour = discord.Colour.blue())
+                                                                        
                                                                     else:
                                                                         if shot[2] == 1:
                                                                             await p1.send(f"{shot[3].upper()} SUNK!")
                                                                             await p2.send(f"<@!{p1.id}> shot at {loc} and sunk your {shot[3]}!")
+                                                                            channel_game_embed = discord.Embed(title = f"Battleship | {p1.name} VS {p2.name}", description = f"<@!{p1.id}> shot at {loc} and sunk the {shot[3]}!", colour = discord.Colour.blue())
                                                                             
                                                                         else:
                                                                             await p1.send(f"YOU HIT THE {shot[3].upper()}!")
                                                                             await p2.send(f"<@!{p1.id}> shot at {loc} and hit your {shot[3]}!")
-                                                                            
+                                                                            channel_game_embed = discord.Embed(title = f"Battleship | {p1.name} VS {p2.name}", description = f"<@!{p1.id}> shot at {loc} and hit the {shot[3]}!", colour = discord.Colour.blue())
+   
                                                                     break
                                                         except ValueError:
                                                             text = loc_msg.content.lower()
@@ -2526,6 +2538,11 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                     p1_comp.add_field(name = "Your target grid", value = p2_game.guess_string, inline = False)
                                                     p1_comp.add_field(name = "Your grid", value = p1_game.grid_string, inline = False)
                                                     await p1.send(embed = p1_comp)
+                                                    p1_game.channel_grid()
+                                                    p2_game.channel_grid()
+                                                    channel_game_embed.add_field(name = f"{p1.name}'s grid", value = p1_game.guess_string, inline = True)
+                                                    channel_game_embed.add_field(name = f"{p2.name}'s grid", value = p2_game.guess_string, inline = True)
+                                                    await channel_game.edit(embed = channel_game_embed)
                                                     turn = 1
                                             else:
                                                 await p1.send(f"It is <@!{p2.id}>'s turn")
@@ -2560,14 +2577,17 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                                     if shot[1] == 0:
                                                                         await p2.send("That was a miss!")
                                                                         await p1.send(f"<@!{p2.id}> shot at {loc} and missed!")
+                                                                        channel_game_embed = discord.Embed(title = f"Battleship | {p1.name} VS {p2.name}", description = f"<@!{p2.id}> shot at {loc} and missed!", colour = discord.Colour.blue())
                                                                     else:
                                                                         if shot[2] == 1:
                                                                             await p2.send(f"{shot[3].upper()} SUNK!")
                                                                             await p1.send(f"<@!{p2.id}> shot at {loc} and sunk your {shot[3]}!")
+                                                                            channel_game_embed = discord.Embed(title = f"Battleship | {p1.name} VS {p2.name}", description = f"<@!{p2.id}> shot at {loc} and sunk the {shot[3]}!", colour = discord.Colour.blue())
                                                                             
                                                                         else:
                                                                             await p2.send(f"YOU HIT THE {shot[3].upper()}!")
                                                                             await p1.send(f"<@!{p2.id}> shot at {loc} and hit your {shot[3]}!")
+                                                                            channel_game_embed = discord.Embed(title = f"Battleship | {p1.name} VS {p2.name}", description = f"<@!{p2.id}> shot at {loc} and hit the {shot[3]}!", colour = discord.Colour.blue())
                                                                             
                                                                     break
                                                         except ValueError:
@@ -2586,16 +2606,21 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                     p2_comp.add_field(name = "Your target grid", value = p1_game.guess_string, inline = False)
                                                     p2_comp.add_field(name = "Your grid", value = p2_game.grid_string, inline = False)
                                                     await p2.send(embed = p2_comp)
+                                                    p1_game.channel_grid()
+                                                    p2_game.channel_grid()
+                                                    channel_game_embed.add_field(name = f"{p1.name}'s grid", value = p1_game.guess_string, inline = True)
+                                                    channel_game_embed.add_field(name = f"{p2.name}'s grid", value = p2_game.guess_string, inline = True)
+                                                    await channel_game.edit(embed = channel_game_embed)
                                                     turn = 0
                                         if quit == 0:
                                             if p1_game.alive_ships == 0:
                                                 await p1.send("You lost 😢")
                                                 await p2.send("You won! 🥳")
-                                                winner = p2.id
+                                                winner = p2
                                             else:
                                                 await p2.send("You lost 😢")
                                                 await p1.send("You won! 🥳")
-                                                winner = p1.id
+                                                winner = p1
                                             p1_game.final_grid()
                                             p2_game.final_grid()
                                             p1_final = discord.Embed(title = "Your opponent's final grid", description = f"Ships alive: {p2_game.alive_ships}", colour = discord.Colour.blue())
@@ -2604,7 +2629,13 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                             p2_final.add_field(name = "Your guesses on the grid", value = p1_game.grid_string)
                                             await p1.send(embed = p1_final)
                                             await p2.send(embed = p2_final)
-                                            await channel.send(f"<@!{winner}> is the winner!")
+                                            await channel.send(f"<@!{winner.id}> is the winner!")
+                                            p1_game.channel_final()
+                                            p2_game.channel_final()
+                                            channel_game_embed = discord.Embed(title = f"Battleship | {p1.name} VS {p2.name}", description = f"<@!{winner.id}> is the winner!", colour = discord.Colour.blue())
+                                            channel_game_embed.add_field(name = f"{p1.name}'s revealed grid", value = p1_game.grid_string, inline = True)
+                                            channel_game_embed.add_field(name = f"{p2.name}'s revealed grid", value = p2_game.grid_string, inline = True)
+                                            await channel_game.edit(embed = channel_game_embed)
                                         in_game.remove(a_id)
                                         in_game.remove(opp_id)
                                     else:

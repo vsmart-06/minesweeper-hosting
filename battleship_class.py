@@ -24,7 +24,153 @@ class battleship:
             self.box_2 = "⬜"
             self.box_2_ulta = "🔲"
         
-    
+    def channel_grid(self):
+        self.ship_names = ""
+        for ind in range(len(self.ship_locs)):
+            if self.ship_locs[ind][1] == "dead":
+                if ind == 0:
+                    ship = "Carrier (5)"
+                elif ind == 1:
+                    ship = "Battleship (4)"
+                elif ind == 2:
+                    ship = "Cruiser (3)"
+                elif ind == 3:
+                    ship = "Submarine (3)"
+                elif ind == 4:
+                    ship = "Destroyer (2)"
+                self.ship_names += f"~~{ship}~~"
+            else:
+                if ind == 0:
+                    ship = "Carrier (5)"
+                elif ind == 1:
+                    ship = "Battleship (4)"
+                elif ind == 2:
+                    ship = "Cruiser (3)"
+                elif ind == 3:
+                    ship = "Submarine (3)"
+                elif ind == 4:
+                    ship = "Destroyer (2)"
+                self.ship_names += f"{ship}"
+            self.ship_names += ", "
+        self.ship_names = self.ship_names[0:-2]
+        self.guess_string = ""
+        self.guess_string = ""
+        self.guess_string += "⬛⬛1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣🔟"
+        self.guess_string += '''
+'''
+        self.guess_string += "⬛"*12
+        self.guess_string += '''
+'''
+        c = 1
+        for row in self.grid:
+            if c == 1:
+                self.guess_string += "1️⃣"
+            elif c == 2:
+                self.guess_string += "2️⃣"
+            elif c == 3:
+                self.guess_string += "3️⃣"
+            elif c == 4:
+                self.guess_string += "4️⃣"
+            elif c == 5:
+                self.guess_string += "5️⃣"
+            elif c == 6:
+                self.guess_string += "6️⃣"
+            elif c == 7:
+                self.guess_string += "7️⃣"
+            elif c == 8:
+                self.guess_string += "8️⃣"
+            elif c == 9:
+                self.guess_string += "9️⃣"
+            elif c == 10:
+                self.guess_string += "🔟"
+            self.guess_string += self.box_2
+            for p in row:
+                if p == "alive" or p == "occupied":
+                    self.guess_string += "🟦"
+                elif p == "dead":
+                    self.guess_string += "⏺"
+                elif p == "shot":
+                    self.guess_string += "🔥"
+                elif p == "destroyed":
+                    self.guess_string += "❌"
+            self.guess_string += '''
+'''
+            c += 1
+        
+    def channel_final(self):
+        self.ship_names = ""
+        for ind in range(len(self.ship_locs)):
+            if self.ship_locs[ind][1] == "dead":
+                if ind == 0:
+                    ship = "Carrier (5)"
+                elif ind == 1:
+                    ship = "Battleship (4)"
+                elif ind == 2:
+                    ship = "Cruiser (3)"
+                elif ind == 3:
+                    ship = "Submarine (3)"
+                elif ind == 4:
+                    ship = "Destroyer (2)"
+                self.ship_names += f"~~{ship}~~"
+            else:
+                if ind == 0:
+                    ship = "Carrier (5)"
+                elif ind == 1:
+                    ship = "Battleship (4)"
+                elif ind == 2:
+                    ship = "Cruiser (3)"
+                elif ind == 3:
+                    ship = "Submarine (3)"
+                elif ind == 4:
+                    ship = "Destroyer (2)"
+                self.ship_names += f"{ship}"
+            self.ship_names += ", "
+        self.ship_names = self.ship_names[0:-2]
+        self.grid_string = ""
+        self.grid_string += "⬛⬛1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣🔟"
+        self.grid_string += '''
+'''
+        self.grid_string += "⬛"*12
+        self.grid_string += '''
+'''
+        c = 1
+        for row in self.grid:
+            if c == 1:
+                self.grid_string += "1️⃣"
+            elif c == 2:
+                self.grid_string += "2️⃣"
+            elif c == 3:
+                self.grid_string += "3️⃣"
+            elif c == 4:
+                self.grid_string += "4️⃣"
+            elif c == 5:
+                self.grid_string += "5️⃣"
+            elif c == 6:
+                self.grid_string += "6️⃣"
+            elif c == 7:
+                self.grid_string += "7️⃣"
+            elif c == 8:
+                self.grid_string += "8️⃣"
+            elif c == 9:
+                self.grid_string += "9️⃣"
+            elif c == 10:
+                self.grid_string += "🔟"
+            self.grid_string += self.box_2
+            for p in row:
+                if p == "alive":
+                    self.grid_string += "🟦"
+                elif p == "occupied":
+                    self.grid_string += "🔳"
+                elif p == "dead":
+                    self.grid_string += "⏺"
+                elif p == "shot":
+                    self.grid_string += "🔥"
+                elif p == "destroyed":
+                    self.grid_string += "❌"
+            self.grid_string += '''
+'''
+            c += 1
+
     def string_grid(self):
         self.ship_names = ""
         for ind in range(len(self.ship_locs)):
