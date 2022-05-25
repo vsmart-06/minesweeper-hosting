@@ -30,6 +30,7 @@ statcord_client.start_loop()
 
 in_game = []
 live_battles = {}
+tourney_channels = []
 
 @bot.event
 async def on_ready():
@@ -56,7 +57,7 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_message(mess):
-    global in_game, live_battles
+    global in_game, live_battles, tourney_channels
     msg = mess.content.lower()
     author = mess.author.name
     if mess.author == bot.user or mess.author.bot:
@@ -552,8 +553,9 @@ async def on_message(mess):
     elif msg == ";tournament":
         if not(isinstance(mess.channel, discord.DMChannel)):
             host_id = mess.author.id
-            if host_id not in in_game:
+            if host_id not in in_game and mess.channel.id not in tourney_channels:
                 in_game.append(host_id)
+                tourney_channels.append(mess.channel.id)
                 thumb = bot.get_emoji(935120796358152212)
                 check = bot.get_emoji(935455988516028486)
                 winner = bot.get_emoji(935794255543275541)
@@ -867,8 +869,12 @@ async def on_message(mess):
                     match = 1
                 await mess.channel.send(f"<@!{tourney_members[0]}> is the winner of the tournament! {winner}")
                 in_game.remove(tourney_members[0])
+                tourney_channels.remove(mess.channel.id)
             else:
-                await mess.channel.send("You're already in a game!")
+                if mess.channel.id not in tourney_channels:
+                    await mess.channel.send("You're already in a game!")
+                else:
+                    await mess.channel.send("There is already a tournament going on in this channel; type `;join` to join it!")
             
             
 
@@ -2685,7 +2691,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
             else:
                 await mess.channel.send("The players are placing their ships so the game is yet to begin")
         else:
-            await mess.channel.send("There is no battleship game going on in this channel at the moment")          
+            await mess.channel.send("There is no battleship game going on in this channel at the moment")
 
     elif msg == ";other":
         page = 1
