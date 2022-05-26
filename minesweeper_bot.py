@@ -2698,7 +2698,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
         while True:
             if page == 1:
                 other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-                other_games.set_footer(text = "Other Games Page 1/2")
+                other_games.set_footer(text = "Other Games Page 1/3")
                 other_games.add_field(name = "Connect 4", value = '''
 Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
 
@@ -2727,7 +2727,7 @@ Othello is now here on the minesweeper bot! There are 2 players who play this ga
 
             elif page == 2:
                 other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-                other_games.set_footer(text = "Other Games Page 2/2")
+                other_games.set_footer(text = "Other Games Page 2/3")
                 other_games.add_field(name = "Mastermind", value = '''
 Mastermind is now here on the minesweeper bot! 2 players play this game and they are give one of two roles - the code setter, or the code guesser. The code setter will make a code following a prompt from the bot in their DMs. The code will consist of 4 colours, which can be repeated. The code guesser will then have to guess the code in a maximum of 8 turns. Following each turn, the code guesser will see how close their guess is to the actual word. This will be seen at the side of the grid in the following form:
 ✅ - Correct colour in the correct position
@@ -2743,6 +2743,29 @@ Yahtzee is now here on the minesweeper bot! This game is played with 2 players w
 
 **Complete rules**: https://www.ultraboardgames.com/yahtzee/game-rules.php
 **Commands and aliases**: `;yahtzee`, `;yz`
+''', inline = False)
+                o_games = await mess.channel.send(embed = other_games)
+                await o_games.add_reaction("◀")
+                await o_games.add_reaction("▶")
+                try:
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
+                except asyncio.TimeoutError:
+                    break
+                else:
+                    if str(reaction.emoji) == "◀":
+                        page = 1
+                    else:
+                        page = 3
+                    await o_games.delete()
+            
+            elif page == 3:
+                other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
+                other_games.set_footer(text = "Other Games Page 3/3")
+                other_games.add_field(name = "Battleship", value = '''
+Battleship is now here on the minesweeper bot! An intense two-player game, battleship requires players to destroy each others ships fastest. Based on the theme of naval warfare, the players will first have to place their ships in strategic positions to avoid getting blasted by the other player's cannons. Turn by turn, the players will then enter coordinates as they try to locate and destroy each of the opponent's 5 ships. The first person to destroy all of the other person's ships wins!
+
+**Complete rules**: https://www.ultraboardgames.com/battleship/game-rules.php
+**Commands and aliases**: `;battleship`, `;bs`, `;live`
 ''', inline = False)
                 o_games = await mess.channel.send(embed = other_games)
                 await o_games.add_reaction("◀")
