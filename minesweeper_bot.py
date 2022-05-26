@@ -2684,14 +2684,17 @@ Type 'board' to view the current board; type 'quit' to quit the game
             await mess.channel.send("You cant play a match against someone in a DM!")            
 
     elif msg == ";live":
-        channel_id = mess.channel.id
-        if channel_id in live_battles.keys():
-            if live_battles[channel_id] != (0, 0):
-                await mess.channel.send(f"https://discord.com/channels/{live_battles[channel_id][0]}/{channel_id}/{live_battles[channel_id][1]}")
+        if not(isinstance(mess.channel, discord.DMChannel)):
+            channel_id = mess.channel.id
+            if channel_id in live_battles.keys():
+                if live_battles[channel_id] != (0, 0):
+                    await mess.channel.send(f"https://discord.com/channels/{live_battles[channel_id][0]}/{channel_id}/{live_battles[channel_id][1]}")
+                else:
+                    await mess.channel.send("The players are placing their ships so the game is yet to begin")
             else:
-                await mess.channel.send("The players are placing their ships so the game is yet to begin")
+                await mess.channel.send("There is no battleship game going on in this channel at the moment")
         else:
-            await mess.channel.send("There is no battleship game going on in this channel at the moment")
+            await mess.channel.send("This is not a DM command!")
 
     elif msg == ";other":
         page = 1
