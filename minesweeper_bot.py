@@ -2774,7 +2774,7 @@ Battleship is now here on the minesweeper bot! An intense two-player game, battl
                 except asyncio.TimeoutError:
                     break
                 else:
-                    page = 1
+                    page = 2
                     await o_games.delete()
         
 
