@@ -2765,7 +2765,7 @@ Yahtzee is now here on the minesweeper bot! This game is played with 2 players w
                 other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
                 other_games.set_footer(text = "Other Games Page 3/3")
                 other_games.add_field(name = "Battleship", value = '''
-Battleship is now here on the minesweeper bot! An intense two-player game, battleship requires players to destroy each others ships fastest. Based on the theme of naval warfare, the players will first have to place their ships in strategic positions to avoid getting blasted by the other player's cannons. Turn by turn, the players will then enter coordinates as they try to locate and destroy each of the opponent's 5 ships. The first person to destroy all of the other person's ships wins!
+Battleship is now here on the minesweeper bot! An intense two-player game, battleship requires players to destroy each others ships fastest. Based on the theme of naval warfare, the players will first have to place their ships in strategic positions to avoid getting blasted by the other player's cannons. Turn by turn, the players will then enter coordinates as they try to locate and destroy each of the opponent's 5 ships. The first person to destroy all of the other person's ships wins! Other people can follow the game by using the `;live` command in the channel the game was started in!
 
 **Complete rules**: https://www.ultraboardgames.com/battleship/game-rules.php
 **Commands and aliases**: `;battleship`, `;bs`, `;live`
