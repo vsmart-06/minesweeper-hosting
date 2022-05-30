@@ -6,6 +6,7 @@ from othello_class import othello
 from mastermind_class import mastermind
 from yahtzee_class import yahtzee
 from battleship_class import battleship
+from hangman_class import hangman
 from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record, theme_change, get_theme, member_count
 import os
 import asyncio
@@ -2696,6 +2697,220 @@ Type 'board' to view the current board; type 'quit' to quit the game
         else:
             await mess.channel.send("This is not a DM command!")
 
+    elif msg.startswith(";hangman") or msg.startswith(";hm"):
+        if not(isinstance(mess.channel, discord.DMChannel)):
+            valid_id = 0
+            channel_id = mess.channel.id
+            if msg.startswith(";hangman <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";hangman <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";hm <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";hm <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";hangman <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";hangman <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";hm <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";hm <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            if valid_id == 1:
+                opp_id = int(opp_id)
+                try:
+                    a_id = mess.author.id
+                    me = await bot.fetch_user(a_id)
+                    opponent = await bot.fetch_user(opp_id)
+                    server_id = mess.guild.id
+                    guild = bot.get_guild(server_id)
+                    channel = mess.channel
+                    members = []
+                    for m in guild.members:
+                        members.append(m)
+                    if opponent in members and opponent != me and not(opponent.bot):
+                        if a_id not in in_game and opp_id not in in_game:
+                            in_game.append(a_id)
+                            in_game.append(opp_id)
+                            want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of hangman! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                            want_play = await mess.channel.send(embed = want_play_embed)
+                            await want_play.add_reaction("✅")
+                            await want_play.add_reaction("❌")
+                            try:
+                                reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                            except asyncio.TimeoutError:
+                                await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                            else:
+                                if str(reaction.emoji) == "✅":
+                                    game = hangman()
+                                    l = [me, opponent]
+                                    p1 = rd.choice(l)
+                                    l.remove(p1)
+                                    p2 = l[0]
+                                    await mess.channel.send(f"<@!{p1.id}> check your DMs for a message from me to enter your word/phrase!")
+                                    timeout = 0
+                                    while True:
+                                        await p1.send("Enter the hidden word/phrase; it must be at least 3 characters in length and must consist of only letters and spaces")
+                                        try:
+                                            hmsg = await bot.wait_for("message", check = lambda m: m.author.id == p1.id and m.guild == None, timeout = 120.0)
+                                        except asyncio.TimeoutError:
+                                            await p1.send("You took too long to respond so the game has ended")
+                                            await channel.send(f"<@!{p2.id}>, <@!{p1.id}> took too long to respond so the game has ended")
+                                            timeout = 1
+                                            break
+                                        else:
+                                            word = hmsg.content
+                                            word = str(word).lower()
+                                            if len(word) >= 3:
+                                                is_alpha = True
+                                                for x in word:
+                                                    if not(x.isalpha() or x == " "):
+                                                        is_alpha = False
+                                                        break
+                                                if is_alpha:
+                                                    has_cons = False
+                                                    for x in word:
+                                                        if x not in "aeiou":
+                                                            has_cons = True
+                                                            break
+                                                    if not has_cons:
+                                                        await p1.send("You need to have at least one consonant in your word/phrase as all the vowels will be revealed at the start of the game")
+                                                    else:
+                                                        break
+                                                else:
+                                                    await p1.send("You can only enter characters and spaces")
+                                            else:
+                                                await p1.send("Your word/phrase has to be at least 3 characters long")
+                                    if timeout == 0:
+                                        game.sto_word(word)
+                                        await p1.send(f"You have chosen the phrase `{word}`. Head back to <#{channel.id}> to watch the match!")
+                                        await channel.send(f"<@!{p2.id}> the word has been chosen! Get ready! (All the vowels have already been filled in)")
+                                        while game.game == 0 and game.misses < 6 and timeout == 0:
+                                            if game.misses == 0:
+                                                photo = "https://cdn.discordapp.com/attachments/879559947380211723/980030062973829160/hangman_1.png"
+                                            elif game.misses == 1:
+                                                photo = "https://cdn.discordapp.com/attachments/879559947380211723/980030062692823080/hangman_2.png"
+                                            elif game.misses == 2:
+                                                photo = "https://cdn.discordapp.com/attachments/879559947380211723/980030062436941825/hangman_3.png"
+                                            elif game.misses == 3:
+                                                photo = "https://cdn.discordapp.com/attachments/879559947380211723/980030062197891122/hangman_4.png"
+                                            elif game.misses == 4:
+                                                photo = "https://cdn.discordapp.com/attachments/879559947380211723/980030061904269362/hangman_5.png"
+                                            elif game.misses == 5:
+                                                photo = "https://cdn.discordapp.com/attachments/879559947380211723/980030061631668324/hangman_6.png"
+                                            else:
+                                                photo = "https://cdn.discordapp.com/attachments/879559947380211723/980030061346422794/hangman_7.png"
+                                            man = discord.Embed(title = "Hangman!", colour = discord.Colour.blue())
+                                            man.set_image(url = photo)
+                                            game.string_letters()
+                                            await channel.send(embed = man)
+                                            await channel.send(f'''**Word**: {game.gword.upper()}
+
+**Letters**:
+{game.letters_string}''')
+                                            while True:
+                                                await channel.send("Enter a letter to guess (Enter 'quit' to leave the game; Enter 'board' to see the current board)")
+                                                try:
+                                                    letter_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2.id and m.channel == mess.channel, timeout = 120.0)
+                                                except asyncio.TimeoutError:
+                                                    await channel.send("You took too long to respond so the game has ended")
+                                                    await channel.send(f"<@!{p1.id}> is the winner!")
+                                                    timeout = 1
+                                                    break
+                                                else:
+                                                    letter = letter_msg.content
+                                                    letter = str(letter).lower()
+                                                    if len(letter) == 1:
+                                                        if letter.isalpha():
+                                                            result = game.guess(letter)
+                                                            if result[1] == 0:
+                                                                if result[0]:
+                                                                    await channel.send(f"{letter.upper()} was in the word/phrase!")
+                                                                else:
+                                                                    await channel.send(f"{letter.upper()} was not in the word/phrase!")
+                                                                break 
+                                                            else:
+                                                                if letter not in "aeiou":
+                                                                    await channel.send("You have already guessed that letter!")
+                                                                else:
+                                                                    await channel.send("All the vowels have already been displayed!")
+                                                        else:
+                                                            await channel.send("You can only enter a single letter")
+                                                    else:
+                                                        if letter == "quit":
+                                                            await channel.send(f"<@!{p1.id}> is the winner!")
+                                                            timeout = 1
+                                                            break
+                                                        elif letter == "board":
+                                                            man = discord.Embed(title = "Hangman!", colour = discord.Colour.blue())
+                                                            man.set_image(url = photo)
+                                                            game.string_letters()
+                                                            await channel.send(embed = man)
+                                                            await channel.send(f'''**Word**: {game.gword.upper()}
+
+**Letters**:
+{game.letters_string}''')
+                                                        else:
+                                                            await channel.send("You can only enter a single letter")
+                                        if timeout == 0:
+                                            man = discord.Embed(title = "Hangman!", colour = discord.Colour.blue())
+                                            if game.misses == 6:
+                                                photo = "https://cdn.discordapp.com/attachments/879559947380211723/980030061346422794/hangman_7.png"
+                                            man.set_image(url = photo)
+                                            game.string_letters()
+                                            await channel.send(embed = man)
+                                            await channel.send(f'''**Word**: {game.gword.upper()}
+
+**Letters**:
+{game.letters_string}''')
+                                            if game.game == 0:
+                                                await channel.send(f"<@!{p2.id}>, you could not guess the phrase correctly; it was `{game.hword}`")
+                                                await channel.send(f"<@!{p1.id}> is the winner!")
+                                            else:
+                                                await channel.send(f"<@!{p2.id}>, you guessed the phrase correctly! It was `{game.hword}`")
+                                                await channel.send(f"<@!{p2.id}> is the winner!")
+
+
+                            in_game.remove(a_id)
+                            in_game.remove(opp_id)
+                        else:
+                            if a_id in in_game:
+                                await mess.channel.send("You're already in a game!")
+                            else:
+                                await mess.channel.send("Your opponent is already in a game!")     
+
+                    else:
+                        if opponent != me and not(opponent.bot):
+                            dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                            await mess.channel.send(embed = dual_game)
+                            
+                            
+                except discord.errors.NotFound:
+                    dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
+                    await mess.channel.send(embed = dual_game)
+                    
+                    
+            else:
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The hangman syntax is invalid! The correct syntax is: ;hangman/;hm @user", color = discord.Color.blue())
+                await mess.channel.send(embed = dual_game)
+
     elif msg == ";other":
         page = 1
         while True:
@@ -2769,6 +2984,12 @@ Battleship is now here on the minesweeper bot! An intense two-player game, battl
 
 **Complete rules**: https://www.ultraboardgames.com/battleship/game-rules.php
 **Commands and aliases**: `;battleship`, `;bs`, `;live`
+''', inline = False)
+                other_games.add_field(name = "Hangman", value = '''
+Hangman is now here on the minesweeper bot! An old classic, hangman is a game where one person decides on a word or phrase and then draws blanks corresponding to each letter of the word/phrase. The vowels may or may not be revealed, but in this version we will reveal the vowels beforehand. The other player must then guess individual letters to fill in the blanks. For every incorrect guess, a body part of the man will be revealed. If the player successfully guesses all the letters before the man is completely hanged, he will win the game!
+
+**Complete rules**: https://www.ultraboardgames.com/hangman/game-rules.php
+**Commands and aliases**: `;hangman`, `;hm`
 ''', inline = False)
                 o_games = await mess.channel.send(embed = other_games)
                 await o_games.add_reaction("◀")
