@@ -39,3 +39,4 @@ The official repository where I will store the files for the stable version of m
 - Othello
 - Mastermind
 - Yahtzee
+- Battleship
