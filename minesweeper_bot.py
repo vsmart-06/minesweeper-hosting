@@ -2910,6 +2910,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
             else:
                 dual_game = discord.Embed(title = "Invalid syntax!", description = "The hangman syntax is invalid! The correct syntax is: ;hangman/;hm @user", color = discord.Color.blue())
                 await mess.channel.send(embed = dual_game)
+        else:
+            await mess.channel.send("You cant play a match against someone in a DM!")   
 
     elif msg == ";other":
         page = 1
