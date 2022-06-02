@@ -595,7 +595,7 @@ async def on_message(mess):
                                     tourney_members.append(user.id)
                                     in_game.append(user.id)
                                 else:
-                                    await mess.channel.send("You're already in a game!")
+                                    await mess.channel.send(f"<@!{user.id}>, you're already in a game!")
                             elif reaction_e == str(check) and user.id == host_id:
                                 break
                         elif action == "rrem":
@@ -614,7 +614,7 @@ async def on_message(mess):
                                     tourney_members.append(user.id)
                                     in_game.append(user.id)
                                 else:
-                                    await mess.channel.send("You're already in a game!")
+                                    await mess.channel.send(f"<@!{user.id}>, you're already in a game!")
                             elif jl_msg == ";leave" and user.id in tourney_members and user.id != host_id:
                                 await mess.channel.send(f"<@!{user.id}> has left the tournament 😢")
                                 tourney_members.remove(user.id)
