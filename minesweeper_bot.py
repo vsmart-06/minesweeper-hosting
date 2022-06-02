@@ -547,7 +547,7 @@ async def on_message(mess):
                 
                 
         else:
-            await mess.channel.send("You cant play a match against someone in a DM!")
+            await mess.channel.send("You can't play a match against someone in a DM!")
             
             
 
@@ -1501,7 +1501,7 @@ async def on_message(mess):
                 
                 
         else:
-            await mess.channel.send("You cant play a match against someone in a DM!")
+            await mess.channel.send("You can't play a match against someone in a DM!")
             
             
 
@@ -1706,7 +1706,7 @@ async def on_message(mess):
                 
                 
         else:
-            await mess.channel.send("You cant play a match against someone in a DM!")
+            await mess.channel.send("You can't play a match against someone in a DM!")
             
             
 
@@ -1912,7 +1912,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                 
                 
         else:
-            await mess.channel.send("You cant play a match against someone in a DM!")
+            await mess.channel.send("You can't play a match against someone in a DM!")
             
             
 
@@ -2023,7 +2023,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                                         invalid = 0
                                                                         nums = list(map(int, inp.split()))
                                                                         if len(nums) > 5:
-                                                                            await mess.channel.send("You cant hold more than 5 dice")
+                                                                            await mess.channel.send("You can't hold more than 5 dice")
                                                                             invalid = 1
                                                                         elif len(nums) == 1 and nums[0] == 0:
                                                                             nums = []
@@ -2177,7 +2177,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                                         invalid = 0
                                                                         nums = list(map(int, inp.split()))
                                                                         if len(nums) > 5:
-                                                                            await mess.channel.send("You cant hold more than 5 dice")
+                                                                            await mess.channel.send("You can't hold more than 5 dice")
                                                                             invalid = 1
                                                                         elif len(nums) == 1 and nums[0] == 0:
                                                                             nums = []
@@ -2336,7 +2336,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                 
                 
         else:
-            await mess.channel.send("You cant play a match against someone in a DM!")
+            await mess.channel.send("You can't play a match against someone in a DM!")
             
     elif msg.startswith(";battleship") or msg.startswith(";bs"):
         if not(isinstance(mess.channel, discord.DMChannel)):
@@ -2682,7 +2682,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                 
                 
         else:
-            await mess.channel.send("You cant play a match against someone in a DM!")            
+            await mess.channel.send("You can't play a match against someone in a DM!")            
 
     elif msg == ";live":
         if not(isinstance(mess.channel, discord.DMChannel)):
@@ -2911,7 +2911,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                 dual_game = discord.Embed(title = "Invalid syntax!", description = "The hangman syntax is invalid! The correct syntax is: ;hangman/;hm @user", color = discord.Color.blue())
                 await mess.channel.send(embed = dual_game)
         else:
-            await mess.channel.send("You cant play a match against someone in a DM!")   
+            await mess.channel.send("You can't play a match against someone in a DM!")   
 
     elif msg == ";other":
         page = 1
