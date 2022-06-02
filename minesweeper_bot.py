@@ -875,7 +875,7 @@ async def on_message(mess):
                 if mess.channel.id not in tourney_channels:
                     await mess.channel.send("You're already in a game!")
                 else:
-                    await mess.channel.send("There is already a tournament going on in this channel; type `;join` to join it!")
+                    await mess.channel.send("There is already a tournament going on in this channel!")
             
             
 
