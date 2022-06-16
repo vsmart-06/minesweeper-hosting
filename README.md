@@ -44,3 +44,4 @@ This bot started as a passion project as I attempted to bring minesweeper, a gam
 - Yahtzee
 - Battleship
 - Hangman
+- Uno
