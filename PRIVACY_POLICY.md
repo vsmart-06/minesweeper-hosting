@@ -6,7 +6,7 @@ Please read this Privacy Policy ("Policy", "Privacy Policy") before using the Di
 ---
 The following specifies the details we store about you:
 
-## Message content:
+## Message content
 This data is accessed to provide functionality for all games on the bot, but no part of it is ever stored with the bot
 
 ## Discord User ID
