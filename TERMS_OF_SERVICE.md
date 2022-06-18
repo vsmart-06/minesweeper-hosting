@@ -1,6 +1,5 @@
 # Minesweeper Bot - Terms Of Service
 ## Last Updated: 18th June, 2022
----
 
 Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the Discord Bot **Minesweeper Bot**: `Application ID: 902498109270134794`.
 

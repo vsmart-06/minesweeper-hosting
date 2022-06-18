@@ -1,6 +1,6 @@
 # Minesweeper Bot - Privacy Policy
 ## Effective from: 18th June, 2022
----
+
 Please read this Privacy Policy ("Policy", "Privacy Policy") before using the Discord Bot **Minesweeper Bot**: `Application ID: 902498109270134794`. By using this bot, you agree to be bound by this policy.
 
 ---
