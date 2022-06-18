@@ -59,7 +59,7 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_message(mess):
     global in_game, live_battles, tourney_channels
-    if isinstance(mess.channel, discord.TextChannel):
+    if isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel):
         msg = mess.content.lower()
         author = mess.author.name
         if mess.author == bot.user or mess.author.bot:
