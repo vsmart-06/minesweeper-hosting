@@ -1,4 +1,4 @@
-# minesweeper-hosting
+# [Minesweeper Bot](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot)
 The official repository where I will store the files for the stable version of my minesweeper bot!
 
 [![Discord Bots](https://top.gg/api/widget/902498109270134794.svg)](https://top.gg/bot/902498109270134794)
