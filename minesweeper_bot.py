@@ -2887,7 +2887,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                                 else:
                                                     await channel.send(f"<@!{p2.id}>, you guessed the phrase correctly! It was `{game.hword}`")
                                                     await channel.send(f"<@!{p2.id}> is the winner!")
-
+                                    else:
+                                        await mess.channel.send(f"<@!{a_id}> your challenge was rejected")
 
                                 in_game.remove(a_id)
                                 in_game.remove(opp_id)
