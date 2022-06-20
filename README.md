@@ -1,4 +1,4 @@
-# [Minesweeper Bot](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot)
+# Minesweeper Bot
 The official repository where I will store the files for the stable version of my minesweeper bot!
 
 [![Discord Bots](https://top.gg/api/widget/902498109270134794.svg)](https://top.gg/bot/902498109270134794)
@@ -45,6 +45,14 @@ This bot started as a passion project as I attempted to bring minesweeper, a gam
 - Battleship
 - Hangman
 - Uno
+
+## 🔗 Links
+Bot invite: [https://discord.com/bot/minesweeper](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot)
+Support server: [https://discord.gg/minesweeper](https://discord.gg/3jCG74D3RK)
+Vote for us on `top.gg`: https://top.gg/bot/902498109270134794/vote
+Vote for us on `discordbotlist.com`: https://discordbotlist.com/bots/minesweeper-bot/upvote
+Vote for us on `discords.com`: https://discords.com/bots/bot/902498109270134794/vote
+Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/902498109270134794?vote
 
 ## ⚖ License
 This project is licensed under the [GNU General Public License v3.0](https://github.com/vsmart-06/minesweeper-hosting/blob/master/LICENSE.md).
