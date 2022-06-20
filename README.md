@@ -38,7 +38,7 @@ This bot started as a passion project as I attempted to bring minesweeper, a gam
 
 ## 🎮 Games list
 - Minesweeper
-- Connect Four
+- Connect 4
 - Othello
 - Mastermind
 - Yahtzee
