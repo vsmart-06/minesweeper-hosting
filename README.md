@@ -49,7 +49,7 @@ This bot started as a passion project as I attempted to bring minesweeper, a gam
 ## 📜 License
 This project is licensed under the [GNU General Public License v3.0](https://github.com/vsmart-06/minesweeper-hosting/blob/master/LICENSE.md).
 
-    Minesweeper Bot - A discord bot to play minesweeper and other games like connect 4, othello, mastermind, and more!
+    Minesweeper Bot - A collection of some extremely entertaining games to play on discord!
     Copyright (C) 2022 - Present  Srivishnu Vusirikala
 
     This program is free software: you can redistribute it and/or modify
