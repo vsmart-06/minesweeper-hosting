@@ -12,7 +12,7 @@ By accessing or using the bot you agree to be bound by these Terms. If you disag
 Use of this bot for any kind of unethical or unintended purposes is strictly prohibited.
 
 ## Termination
-We reserve the right to terminate your rights to use our service for any reason - we are no obligated to provide any advanced warning or notice of termination
+We reserve the right to terminate your rights to use our service for any reason - we are not obligated to provide any advanced warning or notice of termination.
 
 ## Contact
 If you have any queries regarding the Terms or the usage of the bot in general, contact us at the Minesweeper Bot Support Server: https://discord.gg/3jCG74D3RK

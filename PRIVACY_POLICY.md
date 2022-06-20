@@ -7,7 +7,7 @@ Please read this Privacy Policy ("Policy", "Privacy Policy") before using the Di
 The following specifies the details we store about you:
 
 ## Message content
-This data is accessed to provide functionality for all games on the bot, but no part of it is ever stored with the bot
+This data is accessed to provide functionality for all games on the bot, but no part of it is ever stored with the bot.
 
 ## Discord User ID
 Your Discord User ID is a unique number that directly corresponds to your Discord account. All data that is stored is in relation to this ID. No other personal data, like server nicknames, is stored about you.
