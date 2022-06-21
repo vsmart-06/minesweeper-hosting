@@ -2921,7 +2921,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                 other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
                 other_games.set_footer(text = "Other Games Page 1/3")
                 other_games.add_field(name = "Connect 4", value = '''
-Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns toplace them!
+Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
 
 **Complete rules**: https://www.ultraboardgames.com/connect4/game-rules.php
 **Commands and aliases**: `;connect4`, `;c4` 
