@@ -3049,7 +3049,7 @@ Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/90249810
         page = 1
         while True:
             if page == 1:
-                help_embed = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
+                help_embed = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play a collection of some extremely entertaining games on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
                 help_embed.set_footer(text = "Help Page 1/2")
                 help_embed.add_field(name = "Rules: ", value = 
                 '''The basic rules of minesweeper are:
@@ -3070,7 +3070,7 @@ Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/90249810
                     await help.delete()
 
             elif page == 2:
-                help_embed = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play minesweeper on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
+                help_embed = discord.Embed(title = "A complete guide on how to use the Minesweeper Bot!", description = "This bot allows you to play a collection of some extremely entertaining games on discord! The prefix for the bot is `;`.", colour = discord.Colour.blue())
                 help_embed.set_footer(text = "Help Page 2/2")
                 help_embed.add_field(name = "Commands: ", value = 
 '''
