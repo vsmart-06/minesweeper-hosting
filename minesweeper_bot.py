@@ -7,6 +7,7 @@ from mastermind_class import mastermind
 from yahtzee_class import yahtzee
 from battleship_class import battleship
 from hangman_class import hangman
+from uno_class import uno
 from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record, theme_change, get_theme, member_count
 import os
 import asyncio
@@ -32,6 +33,7 @@ statcord_client.start_loop()
 in_game = []
 live_battles = {}
 tourney_channels = []
+live_uno = {}
 
 @bot.event
 async def on_ready():
@@ -58,7 +60,7 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_message(mess):
-    global in_game, live_battles, tourney_channels
+    global in_game, live_battles, tourney_channels, live_uno
     msg = mess.content.lower()
     author = mess.author.name
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
@@ -2689,11 +2691,16 @@ Type 'board' to view the current board; type 'quit' to quit the game
             channel_id = mess.channel.id
             if channel_id in live_battles.keys():
                 if live_battles[channel_id] != (0, 0):
-                    await mess.channel.send(f"https://discord.com/channels/{live_battles[channel_id][0]}/{channel_id}/{live_battles[channel_id][1]}")
+                    await mess.channel.send(f"**Battleship**: https://discord.com/channels/{live_battles[channel_id][0]}/{channel_id}/{live_battles[channel_id][1]}")
                 else:
-                    await mess.channel.send("The players are placing their ships so the game is yet to begin")
-            else:
-                await mess.channel.send("There is no battleship game going on in this channel at the moment")
+                    await mess.channel.send("**Battleship**: The players are placing their ships so the game is yet to begin")
+            if channel_id in live_uno.keys():
+                if live_uno[channel_id] != (0, 0):
+                    await mess.channel.send(f"**Uno**: https://discord.com/channels/{live_uno[channel_id][0]}/{channel_id}/{live_uno[channel_id][1]}")
+                else:
+                    await mess.channel.send("**Uno**: People are still joining the uno game!")
+            if channel_id not in live_battles.keys() and channel_id not in live_uno.keys():
+                await mess.channel.send("There are no battleship or uno games going on in this channel at the moment")
         else:
             await mess.channel.send("This is not a DM command!")
 
@@ -2914,12 +2921,501 @@ Type 'board' to view the current board; type 'quit' to quit the game
         else:
             await mess.channel.send("You can't play a match against someone in a DM!")   
 
+    elif msg == ";uno":
+        if not(isinstance(mess.channel, discord.DMChannel)):
+            host_id = mess.author.id
+            if host_id not in in_game and mess.channel.id not in live_uno.keys():
+                channel = mess.channel
+                in_game.append(host_id)
+                live_uno[mess.channel.id] = (0, 0)
+                #thumb = bot.get_emoji(935120796358152212)
+                #check = bot.get_emoji(935455988516028486)
+                thumb = "👍"
+                check = "✅"
+                uno_members = [host_id]
+                uno_init_embed = discord.Embed(title = "Uno game started!", description = f"<@!{host_id}> started a game of uno! React with {thumb} below or type `;join` to join! Remove your reaction or type `;leave` to leave. <@!{host_id}> react with {check} or type `;start` to start the game!", colour = discord.Colour.blue())
+                uno_init = await mess.channel.send(embed = uno_init_embed)
+                await uno_init.add_reaction(str(thumb))
+                await uno_init.add_reaction(str(check))
+                while True:
+                    decisions = [asyncio.create_task(bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == uno_init.id, timeout = 60.0), name = "radd"), asyncio.create_task(bot.wait_for("reaction_remove", check = lambda r, p: str(r.emoji) == str(thumb) and p != bot.user and r.message.id == uno_init.id, timeout = 60.0), name = "rrem"), asyncio.create_task(bot.wait_for("message", check = lambda m: m.channel == mess.channel, timeout = 60.0), name = "msgd")]
+
+                    completed, pending = await asyncio.wait(decisions, return_when = asyncio.FIRST_COMPLETED)
+                    
+                    finished_task: asyncio.Task = list(completed)[0]
+                    
+                    for unfinished in pending:
+                        try:
+                            unfinished.cancel()
+                        except asyncio.CancelledError:
+                            pass
+
+                    action = finished_task.get_name()
+                    try:
+                        result = finished_task.result()
+                    except asyncio.TimeoutError:
+                        break
+
+                    else:
+                        if action == "radd":
+                            reaction, user = result
+                            reaction_e = str(reaction.emoji)
+                            if reaction_e == str(thumb) and user.id != host_id and user.id not in uno_members:
+                                if user.id not in in_game:
+                                    await mess.channel.send(f"<@!{user.id}> has joined the game!")
+                                    uno_members.append(user.id)
+                                    in_game.append(user.id)
+                                else:
+                                    await mess.channel.send("You're already in a game!")
+                            elif reaction_e == str(check) and user.id == host_id:
+                                break
+                        elif action == "rrem":
+                            reaction, user = result
+                            reaction_e = str(reaction.emoji)
+                            if reaction_e == str(thumb) and user.id != host_id and user.id in uno_members:
+                                await mess.channel.send(f"<@!{user.id}> has left the game")
+                                uno_members.remove(user.id)
+                                in_game.remove(user.id)
+                        elif action == "msgd":
+                            jl_msg = str(result.content)
+                            user = result.author
+                            if jl_msg == ";join" and user.id not in uno_members and user.id != host_id:
+                                if user.id not in in_game:
+                                    await mess.channel.send(f"<@!{user.id}> has joined the game!")
+                                    uno_members.append(user.id)
+                                    in_game.append(user.id)
+                                else:
+                                    await mess.channel.send("You're already in a game!")
+                            elif jl_msg == ";leave" and user.id in uno_members and user.id != host_id:
+                                await mess.channel.send(f"<@!{user.id}> has left the game")
+                                uno_members.remove(user.id)
+                                in_game.remove(user.id)
+                            elif jl_msg == ";start" and user.id == host_id:
+                                break
+                uno_members = list(set(uno_members))
+                rd.shuffle(uno_members)
+                if len(uno_members) > 1:
+                    uno_cards = [bot.get_emoji(982179451150430249), bot.get_emoji(982179449711759400), bot.get_emoji(982179450668089404), bot.get_emoji(982179833826115634), bot.get_emoji(982179450433200168), bot.get_emoji(982179450781327370), bot.get_emoji(982179449590132746), bot.get_emoji(982179450819059722), bot.get_emoji(982179451154595860), bot.get_emoji(982179450223493131), bot.get_emoji(982179449313316864), bot.get_emoji(982199615753437204), bot.get_emoji(982179450865193000), bot.get_emoji(982179450479325224), bot.get_emoji(982179450269630544), bot.get_emoji(982179450315739196), bot.get_emoji(982179450684842005), bot.get_emoji(982179449661435935), bot.get_emoji(982179449518837760), bot.get_emoji(982179450441588786), bot.get_emoji(982179450630328330), bot.get_emoji(982179450449965088), bot.get_emoji(982179449183281153), bot.get_emoji(982199640248156210), bot.get_emoji(982179451062337546), bot.get_emoji(982179450940702730), bot.get_emoji(982179449447546940), bot.get_emoji(982179451129450496), bot.get_emoji(982179450932322314), bot.get_emoji(982179449950830603), bot.get_emoji(982179449019699261), bot.get_emoji(982179449929875496), bot.get_emoji(982199575458754641), bot.get_emoji(982179449984397312), bot.get_emoji(982179449485266945), bot.get_emoji(982179450462568448), bot.get_emoji(982179450420609034), bot.get_emoji(982179450072477766), bot.get_emoji(982179449959247932), bot.get_emoji(982179450311540736), bot.get_emoji(982179450621931530), bot.get_emoji(982179449845985310), bot.get_emoji(982179449212641300), bot.get_emoji(982179449464303637), bot.get_emoji(982182124071301140), bot.get_emoji(982179448927445033), bot.get_emoji(982179448952610836), bot.get_emoji(982179450173128724), bot.get_emoji(982182206732664892), bot.get_emoji(982179449313308693), bot.get_emoji(982179449141346345), bot.get_emoji(982179450668064768), bot.get_emoji(982181991573241886), bot.get_emoji(982182052629741568)]
+                    uno_games = []
+                    p0_game = uno(uno_cards = uno_cards)
+                    mem_str = "Uno players:"
+                    for mem in uno_members:
+                        player = await bot.fetch_user(mem)
+                        uno_games.append((player, uno(get_theme(mem), uno_cards)))
+                        mem_str += f'''
+<@!{mem}>'''
+                    await mess.channel.send(mem_str)
+                    game = 0
+                    winner = None
+                    for x in uno_games:
+                        x[1].string_rows()
+                        your_cards_1 = "**Your uno cards:**"
+                        your_cards_2 = x[1].cards_string
+                        await x[0].send(your_cards_1)
+                        await x[0].send(your_cards_2)
+                    init_number = rd.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+                    init_colour = rd.choice(["red", "green", "blue", "yellow"])
+                    top_card = (init_number, init_colour)
+                    await channel.send("Hop into your DMs and start playing!")
+                    num_cards = f"It is <@!{uno_games[0][0].id}>'s turn"
+                    num_cards += '''
+
+'''
+                    for x in uno_games:
+                        num_cards += f"<@!{x[0].id}>'s cards: **{len(x[1].cards)}**"
+                        if uno_games.index(x) == 0:
+                            num_cards += "*"
+                        num_cards += '''
+'''
+                    channel_commentary_embed = discord.Embed(title = "Uno!", description = num_cards, colour = discord.Colour.blue())
+                    channel_commentary_embed.set_footer(text = "The current player is denoted by *")
+                    channel_game_2 = "**Top card:**"
+                    channel_game_3 = p0_game.colour_card(top_card)
+                    channel_commentary = await channel.send(embed = channel_commentary_embed)
+                    channel_msg_2 = await channel.send(channel_game_2)
+                    channel_msg_3 = await channel.send(channel_game_3)
+                    live_uno[channel.id] = (channel.guild.id, channel_msg_3.id)
+                    turn = 0
+                    flag = 0
+                    while game == 0 and len(uno_games) > 1:
+                        await asyncio.sleep(2)
+                        p0 = uno_games[turn][0]
+                        p0_game = uno_games[turn][1]
+                        uno_said = None
+                        if top_card[0] not in ["skip", "reverse", "+2", "+4"] or flag == 0:
+                            await p0.send("It is your turn")
+                            channel_description = ""
+                            if p0_game.available_card(top_card):
+                                while True:
+                                    p0_game.string_rows()
+                                    cur_turn_1 = "**Top card:**"
+                                    cur_turn_2 = p0_game.colour_card(top_card)
+                                    cur_turn_3 = "**Your cards:**"
+                                    cur_turn_4 = p0_game.cards_string
+                                    await p0.send(cur_turn_1)
+                                    await p0.send(cur_turn_2)
+                                    await p0.send(cur_turn_3)
+                                    await p0.send(cur_turn_4)
+                                    await p0.send("Choose the position of your card to play it; Enter 'quit' to leave the game")
+                                    try:
+                                        pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == p0.id and m.guild == None, timeout = 120.0)
+                                    except asyncio.TimeoutError:
+                                        await p0.send("You took too long to respond so you have been removed from the game")
+                                        await channel.send(f"<@!{p0.id}> took too long to respond so they have been removed from the game")
+                                        channel_description = f"<@!{p0.id}> has been removed from the game as they took too long to respond"
+                                        uno_games.pop(turn)
+                                        uno_members.pop(turn)
+                                        in_game.remove(p0.id)
+                                        turn -= 1
+                                        break
+                                    else:
+                                        pos = pos_msg.content.lower()
+                                        try:
+                                            pos = int(pos)
+                                        except ValueError:
+                                            pos = pos.lower()
+                                            if pos == "quit":
+                                                uno_games.pop(turn)
+                                                uno_members.pop(turn)
+                                                in_game.remove(p0.id)
+                                                await p0.send("We're sorry to see you leave 😢")
+                                                await channel.send(f"<@!{p0.id}> has left the game 😢")
+                                                channel_description = f"<@!{p0.id}> has left the game"
+                                                turn -= 1
+                                                break
+                                            elif pos == "uno" and len(p0_game.cards) == 2 and uno_said != True:
+                                                await channel.send(f"<@!{p0.id}> said **UNO**!")
+                                                uno_said = True
+                                            elif len(p0_game.cards) == 2 and uno_said != True:
+                                                uno_said = False
+                                                await p0.send("You can only enter integral values")
+                                            else:
+                                                await p0.send("You can only enter integral values")
+                                        else:
+                                            if len(p0_game.cards) == 2 and uno_said != True:
+                                                uno_said = False
+                                            if not (1 <= pos <= len(p0_game.cards)):
+                                                await p0.send(f"You can only enter integers from 1 to {len(p0_game.cards)}")
+                                            else:
+                                                result = p0_game.choose_card(top_card, pos)
+                                                if result[0]:
+                                                    top_card = result[1]
+                                                    chosen_card = p0_game.colour_card(result[1])
+                                                    await p0.send("You have chosen the card:")
+                                                    await p0.send(chosen_card)
+                                                    
+                                                    if result[1][0] in ["skip", "reverse", "+2", "+4"]:
+                                                        flag = 1
+                                                    if result[1][1] == "colourful":
+                                                        colour_msg = await p0.send("Choose a colour")
+                                                        await colour_msg.add_reaction("🔴")
+                                                        await colour_msg.add_reaction("🟢")
+                                                        await colour_msg.add_reaction("🔵")
+                                                        await colour_msg.add_reaction("🟡")
+                                                        reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == p0.id and r.message == colour_msg and str(r.emoji) in ["🔴", "🟢", "🔵", "🟡"])
+                                                        if str(reaction.emoji) == "🔴":
+                                                            colour = "red"
+                                                        elif str(reaction.emoji) == "🟢":
+                                                            colour = "green"
+                                                        elif str(reaction.emoji) == "🔵":
+                                                            colour = "blue"
+                                                        else:
+                                                            colour = "yellow"
+                                                        await p0.send(f"You chose the colour {colour}")
+                                                    if result[1][1] == "colourful":
+                                                        top_card = list(top_card)
+                                                        top_card[1] = colour
+                                                        top_card = tuple(top_card)
+                                                        channel_description = f"<@!{p0.id}> played a **{result[1][0]}** and chose the colour **{colour}**"
+                                                    else:
+                                                        channel_description = f"<@!{p0.id}> played a **{result[1][1]} {result[1][0]}**"
+                                                    if result[2]:
+                                                        await p0.send("You are the winner!")
+                                                        game = 1
+                                                        winner = p0.id
+                                                    else:
+                                                        p0_game.string_rows()
+                                                        cur_turn_3 = "**Your cards:**"
+                                                        cur_turn_4 = p0_game.cards_string
+                                                        await p0.send(cur_turn_3)
+                                                        await p0.send(cur_turn_4)
+                                                    break
+                                                else:
+                                                    await p0.send("That is not a valid card")
+                            else:
+                                p0_game.string_rows()
+                                cur_turn_1 = "**Top card:**"
+                                cur_turn_2 = p0_game.colour_card(top_card)
+                                cur_turn_3 = "**Your cards:**"
+                                cur_turn_4 = p0_game.cards_string
+                                await p0.send(cur_turn_1)
+                                await p0.send(cur_turn_2)
+                                await p0.send(cur_turn_3)
+                                await p0.send(cur_turn_4)
+                                await asyncio.sleep(5)
+                                p0_game.draw(1)
+                                await p0.send("You have drawn a card because you do not have a valid card to play")
+                                channel_description = f"<@!{p0.id}> did not have any valid card so they drew one"
+                                while True:
+                                    p0_game.string_rows()
+                                    cur_turn_1 = "**Top card:**"
+                                    cur_turn_2 = p0_game.colour_card(top_card)
+                                    cur_turn_3 = "**Your cards:**"
+                                    cur_turn_4 = p0_game.cards_string
+                                    await p0.send(cur_turn_1)
+                                    await p0.send(cur_turn_2)
+                                    await p0.send(cur_turn_3)
+                                    await p0.send(cur_turn_4)
+                                    if p0_game.available_card(top_card):
+                                        await p0.send("Choose the position of your card to play it; Enter 'quit' to leave the game")
+                                        try:
+                                            pos_msg = await bot.wait_for("message", check = lambda m: m.author.id == p0.id and m.guild == None, timeout = 120.0)
+                                        except asyncio.TimeoutError:
+                                            await p0.send("You took too long to respond so you have been removed from the game")
+                                            await channel.send(f"<@!{p0.id}> took too long to respond so they have been removed from the game")
+                                            channel_description = f"<@!{p0.id}> has been removed from the game as they took too long to respond"
+                                            uno_games.pop(turn)
+                                            uno_members.pop(turn)
+                                            in_game.remove(p0.id)
+                                            turn -= 1
+                                            break
+                                        else:
+                                            pos = pos_msg.content.lower()
+                                            try:
+                                                pos = int(pos)
+                                            except ValueError:
+                                                pos = pos.lower()
+                                                if pos == "quit":
+                                                    uno_games.pop(turn)
+                                                    uno_members.pop(turn)
+                                                    in_game.remove(p0.id)
+                                                    await p0.send("We're sorry to see you leave 😢")
+                                                    await channel.send(f"<@!{p0.id}> has left the game 😢")
+                                                    channel_description = f"<@!{p0.id}> has left the game"
+                                                    turn -= 1
+                                                    break
+                                                elif pos == "uno" and len(p0_game.cards) == 2 and uno_said != True:
+                                                    await channel.send(f"<@!{p0.id}> said **UNO**!")
+                                                    uno_said = True
+                                                elif len(p0_game.cards) == 2 and uno_said != True:
+                                                    uno_said = False
+                                                    await p0.send("You can only enter integral values")
+                                                else:
+                                                    await p0.send("You can only enter integral values")
+                                            else:
+                                                if len(p0_game.cards) == 2 and uno_said != True:
+                                                    uno_said = False
+                                                if not (1 <= pos <= len(p0_game.cards)):
+                                                    await p0.send(f"You can only enter integers from 1 to {len(p0_game.cards)}")
+                                                else:
+                                                    result = p0_game.choose_card(top_card, pos)
+                                                    if result[0]:
+                                                        top_card = result[1]
+                                                        chosen_card = p0_game.colour_card(result[1])
+                                                        await p0.send("You have chosen the card:")
+                                                        await p0.send(chosen_card)
+                                                        if result[1][0] in ["skip", "reverse", "+2", "+4"]:
+                                                            flag = 1
+                                                        if result[1][1] == "colourful":
+                                                            colour_msg = await p0.send("Choose a colour")
+                                                            await colour_msg.add_reaction("🔴")
+                                                            await colour_msg.add_reaction("🟢")
+                                                            await colour_msg.add_reaction("🔵")
+                                                            await colour_msg.add_reaction("🟡")
+                                                            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == p0.id and r.message == colour_msg and str(r.emoji) in ["🔴", "🟢", "🔵", "🟡"])
+                                                            if str(reaction.emoji) == "🔴":
+                                                                colour = "red"
+                                                            elif str(reaction.emoji) == "🟢":
+                                                                colour = "green"
+                                                            elif str(reaction.emoji) == "🔵":
+                                                                colour = "blue"
+                                                            else:
+                                                                colour = "yellow"
+                                                            await p0.send(f"You chose the colour {colour}")
+                                                        if result[1][1] == "colourful":
+                                                            top_card = list(top_card)
+                                                            top_card[1] = colour
+                                                            top_card = tuple(top_card)
+                                                            channel_description = f"<@!{p0.id}> drew a card and played a **{result[1][0]}** and chose the colour **{colour}**"
+                                                        else:
+                                                            channel_description = f"<@!{p0.id}> drew a card and played a **{result[1][1]} {result[1][0]}**"
+                                                        if result[2]:
+                                                            await p0.send("You are the winner!")
+                                                            game = 1
+                                                            winner = p0.id
+                                                        else:
+                                                            p0_game.string_rows()
+                                                            cur_turn_3 = "**Your cards:**"
+                                                            cur_turn_4 = p0_game.cards_string
+                                                            await p0.send(cur_turn_3)
+                                                            await p0.send(cur_turn_4)
+                                                        break
+                                                    else:
+                                                        await p0.send("That is not a valid card")
+                                                    
+                                    else:
+                                        await p0.send("Your turn has ended")
+                                        channel_description = f"<@!{p0.id}> could not play any card so their turn has passed on"
+                                        break
+                            channel_description += '''
+
+'''
+                            for x in uno_games:
+                                channel_description += f"<@!{x[0].id}>'s cards: **{len(x[1].cards)}**"
+                                if uno_games.index(x) == turn+1 or (uno_games.index(x) == 0 and turn+1 == len(uno_games)):
+                                    channel_description += "*"
+                                channel_description += '''
+'''
+                            coloured_card = p0_game.colour_card(top_card)
+                            channel_commentary_embed = discord.Embed(title = "Uno!", description = channel_description, colour = discord.Colour.blue())
+                            channel_commentary_embed.set_footer(text = "The current player is denoted by *")
+                            await channel_commentary.edit(embed = channel_commentary_embed)
+                            await channel_msg_3.edit(content = coloured_card)
+                        else:
+                            p0_game.string_rows()
+                            cur_turn_1 = "**Top card:**"
+                            cur_turn_2 = p0_game.colour_card(top_card)
+                            cur_turn_3 = "**Your cards:**"
+                            cur_turn_4 = p0_game.cards_string
+                            await p0.send(cur_turn_1)
+                            await p0.send(cur_turn_2)
+                            await p0.send(cur_turn_3)
+                            await p0.send(cur_turn_4)
+                            if top_card[0] == "skip":
+                                await p0.send(f"You have been skipped by <@!{uno_games[turn-1][0].id}>")
+                                channel_description = f"<@!{p0.id}> was skipped"
+                            elif top_card[0] == "reverse":
+                                await p0.send("The order has been reversed so it is not your turn now")
+                                if len(uno_games) > 2:
+                                    player_b4 = uno_games[turn-2]
+                                else:
+                                    player_b4 = uno_games[turn-1]
+                                uno_games.reverse()
+                                turn = uno_games.index(player_b4)-1
+                                channel_description = "The order has been reversed"
+                            elif top_card[0] == "+2":
+                                await p0.send("You have to draw 2 cards now")
+                                p0_game.draw(2)
+                                p0_game.string_rows()
+                                cur_turn_1 = "**Top card:**"
+                                cur_turn_2 = p0_game.colour_card(top_card)
+                                cur_turn_3 = "**Your cards:**"
+                                cur_turn_4 = p0_game.cards_string
+                                await p0.send(cur_turn_1)
+                                await p0.send(cur_turn_2)
+                                await p0.send(cur_turn_3)
+                                await p0.send(cur_turn_4)
+                                channel_description = f"<@!{p0.id}> drew 2 cards"
+                            elif top_card[0] == "+4":
+                                await p0.send("You have to draw 4 cards now")
+                                p0_game.draw(4)
+                                p0_game.string_rows()
+                                cur_turn_1 = "**Top card:**"
+                                cur_turn_2 = p0_game.colour_card(top_card)
+                                cur_turn_3 = "**Your cards:**"
+                                cur_turn_4 = p0_game.cards_string
+                                await p0.send(cur_turn_1)
+                                await p0.send(cur_turn_2)
+                                await p0.send(cur_turn_3)
+                                await p0.send(cur_turn_4)
+                                channel_description = f"<@!{p0.id}> drew 4 cards"
+                            channel_description += '''
+
+'''
+                            for x in uno_games:
+                                channel_description += f"<@!{x[0].id}>'s cards: **{len(x[1].cards)}**"
+                                if uno_games.index(x) == turn+1 or (uno_games.index(x) == 0 and turn+1 == len(uno_games)):
+                                    channel_description += "*"
+                                channel_description += '''
+'''
+                            coloured_card = p0_game.colour_card(top_card)
+                            channel_commentary_embed = discord.Embed(title = "Uno!", description = channel_description, colour = discord.Colour.blue())
+                            channel_commentary_embed.set_footer(text = "The current player is denoted by *")
+                            await channel_commentary.edit(embed = channel_commentary_embed)
+                            await channel_msg_3.edit(content = coloured_card)
+                            flag = 0
+
+                        if uno_said == False:
+                            while True:
+                                uno_tasks = [asyncio.create_task(bot.wait_for("message", check = lambda m: m.channel.id == channel.id and m.author.id != p0.id and m.author.id in uno_members and str(m.content).lower() == "caught", timeout = 10.0), name = "caught"), asyncio.create_task(bot.wait_for("message", check = lambda m: m.guild == None and m.author.id == p0.id and str(m.content).lower() == "uno", timeout = 10.0), name = "uno")]
+
+                                completed, pending = await asyncio.wait(uno_tasks, return_when = asyncio.FIRST_COMPLETED)
+                                
+                                finished_task: asyncio.Task = list(completed)[0]
+                                
+                                for unfinished in pending:
+                                    try:
+                                        unfinished.cancel()
+                                    except asyncio.CancelledError:
+                                        pass
+
+                                action = finished_task.get_name()
+                                try:
+                                    result = finished_task.result()
+                                except asyncio.TimeoutError:
+                                    await channel.send(f"<@!{p0.id}> did not say uno and none of the other players caught them within the 10s time limit so they are not subject to the four card penalty! The next player's turn will start in a few seconds")
+                                    break
+
+                                else:
+                                    if action == "caught":
+                                        await channel.send(f"You have caught <@!{p0.id}> as they did not say uno! They now have to draw 4 cards")
+
+                                        channel_description = f'''<@!{p0.id}> did not say uno and was caught by <@!{result.author.id}>
+
+'''
+                                        p0_game.draw(4)
+                                        for x in uno_games:
+                                            channel_description += f"<@!{x[0].id}>'s cards: **{len(x[1].cards)}**"
+                                            if uno_games.index(x) == turn+1 or (uno_games.index(x) == 0 and turn+1 == len(uno_games)):
+                                                channel_description += "*"
+                                            channel_description += '''
+'''
+                                        coloured_card = p0_game.colour_card(top_card)
+                                        channel_commentary_embed = discord.Embed(title = "Uno!", description = channel_description, colour = discord.Colour.blue())
+                                        channel_commentary_embed.set_footer(text = "The current player is denoted by *")
+                                        await channel_commentary.edit(embed = channel_commentary_embed)
+                                        await p0.send(f"You did not say uno and <@!{result.author.id}> caught you so you have to draw 4 cards now")
+                                        p0_game.string_rows()
+                                        cur_turn_3 = "**Your cards:**"
+                                        cur_turn_4 = p0_game.cards_string
+                                        await p0.send(cur_turn_3)
+                                        await p0.send(cur_turn_4)
+                                        break
+                                    elif action == "uno":
+                                        await channel.send(f"<@!{p0.id}> said uno before they were caught and does not have to draw any cards now!")
+                                        break
+                                
+                        turn += 1
+                        if turn == len(uno_games):
+                            turn = 0
+                        
+                    if game == 0:
+                        await channel.send(f"<@!{uno_games[0][0].id}> is the winner!")
+                        in_game.remove(uno_games[0][0].id)
+                    else:
+                        await channel.send(f"<@!{winner}> is the winner!")
+                        for x in uno_games:
+                            in_game.remove(x[0].id)
+                    del live_uno[channel.id]
+                    
+                else:
+                    await mess.channel.send("You need at least 2 players to play uno, so the game has been cancelled")
+                    in_game.remove(host_id)
+                    del live_uno[channel.id]
+            else:
+                if mess.channel.id not in live_uno.keys():
+                    await mess.channel.send("You're already in a game!")
+                else:
+                    await mess.channel.send("There is already an uno game going on in this channel!")
+        else:
+            await mess.channel.send("This is not a DM command!")
+
     elif msg == ";other":
         page = 1
         while True:
             if page == 1:
                 other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-                other_games.set_footer(text = "Other Games Page 1/3")
+                other_games.set_footer(text = "Other Games Page 1/4")
                 other_games.add_field(name = "Connect 4", value = '''
 Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
 
@@ -2948,7 +3444,7 @@ Othello is now here on the minesweeper bot! There are 2 players who play this ga
 
             elif page == 2:
                 other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-                other_games.set_footer(text = "Other Games Page 2/3")
+                other_games.set_footer(text = "Other Games Page 2/4")
                 other_games.add_field(name = "Mastermind", value = '''
 Mastermind is now here on the minesweeper bot! 2 players play this game and they are give one of two roles - the code setter, or the code guesser. The code setter will make a code following a prompt from the bot in their DMs. The code will consist of 4 colours, which can be repeated. The code guesser will then have to guess the code in a maximum of 8 turns. Following each turn, the code guesser will see how close their guess is to the actual word. This will be seen at the side of the grid in the following form:
 ✅ - Correct colour in the correct position
@@ -2981,7 +3477,7 @@ Yahtzee is now here on the minesweeper bot! This game is played with 2 players w
             
             elif page == 3:
                 other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-                other_games.set_footer(text = "Other Games Page 3/3")
+                other_games.set_footer(text = "Other Games Page 3/4")
                 other_games.add_field(name = "Battleship", value = '''
 Battleship is now here on the minesweeper bot! An intense two-player game, battleship requires players to destroy each others ships fastest. Based on the theme of naval warfare, the players will first have to place their ships in strategic positions to avoid getting blasted by the other player's cannons. Turn by turn, the players will then enter coordinates as they try to locate and destroy each of the opponent's 5 ships. The first person to destroy all of the other person's ships wins! Other people can follow the game by using the `;live` command in the channel the game was started in!
 
@@ -2996,12 +3492,35 @@ Hangman is now here on the minesweeper bot! An old classic, hangman is a game wh
 ''', inline = False)
                 o_games = await mess.channel.send(embed = other_games)
                 await o_games.add_reaction("◀")
+                await o_games.add_reaction("▶")
+                try:
+                    reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
+                except asyncio.TimeoutError:
+                    break
+                else:
+                    if str(reaction.emoji) == "◀":
+                        page = 2
+                    else:
+                        page = 4
+                    await o_games.delete()
+        
+            elif page == 4:
+                other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
+                other_games.set_footer(text = "Other Games Page 4/4")
+                other_games.add_field(name = "Uno", value = '''
+Uno is now here on the minesweeper bot! The classic card game that most of us have grown up playing is now here on discord! Players play cards that match the top card by face value or by colour. You can also play special cards to hamper the progress of the other players! Whoever finishes all their cards first wins the game! Everyone plays uno with different rules so it is recommended that you check out the rules in the link below as those are the rules used with this bot.
+
+**Complete rules**: https://www.ultraboardgames.com/uno/game-rules.php
+**Commands and aliases**: `;uno`, `;live`
+''', inline = False)
+                o_games = await mess.channel.send(embed = other_games)
+                await o_games.add_reaction("◀")
                 try:
                     reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
                 except asyncio.TimeoutError:
                     break
                 else:
-                    page = 2
+                    page = 3
                     await o_games.delete()
         
 
