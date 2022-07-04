@@ -2928,10 +2928,8 @@ Type 'board' to view the current board; type 'quit' to quit the game
                 channel = mess.channel
                 in_game.append(host_id)
                 live_uno[mess.channel.id] = (0, 0)
-                #thumb = bot.get_emoji(935120796358152212)
-                #check = bot.get_emoji(935455988516028486)
-                thumb = "👍"
-                check = "✅"
+                thumb = bot.get_emoji(935120796358152212)
+                check = bot.get_emoji(935455988516028486)
                 uno_members = [host_id]
                 uno_init_embed = discord.Embed(title = "Uno game started!", description = f"<@!{host_id}> started a game of uno! React with {thumb} below or type `;join` to join! Remove your reaction or type `;leave` to leave. <@!{host_id}> react with {check} or type `;start` to start the game!", colour = discord.Colour.blue())
                 uno_init = await mess.channel.send(embed = uno_init_embed)
