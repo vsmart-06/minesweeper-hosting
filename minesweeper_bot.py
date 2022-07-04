@@ -3601,7 +3601,7 @@ Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/90249810
 *`;profile settings private/public`: Control who can view your profile. By default it is set to public.
 *`;theme settings light/dark`: Change the theme the bot uses for your games. By default it is set to dark.
 *`;delete`: Delete all your data on the minesweeper bot.
-`;other`: View other games that can be played on the bot!
+`;other`: **View other games that can be played on the bot!**
 `;invite`: Get a link to invite this bot to a server.
 `;support`: Get a link to join the official minesweeper bot support server.
 `;vote`: Vote for the bot!
