@@ -47,9 +47,9 @@ This bot started as a passion project as I attempted to bring minesweeper, a gam
 - Uno
 
 ## 🔗 Links
-Bot invite: [https://discord.com/bot/minesweeper](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot)
+Bot invite: https://dsc.gg/minesweeper-bot
 
-Support server: [https://discord.gg/minesweeper](https://discord.gg/3jCG74D3RK)
+Support server: https://dsc.gg/minesweeper
 
 Vote for us on `top.gg`: https://top.gg/bot/902498109270134794/vote
 
