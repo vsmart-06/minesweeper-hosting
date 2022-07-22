@@ -8,6 +8,7 @@ from yahtzee_class import yahtzee
 from battleship_class import battleship
 from hangman_class import hangman
 from uno_class import uno
+from wordle_class import wordle
 from records import global_leaderboard, server_leaderboard, profile, privacy_change, delete_record, theme_change, get_theme, member_count
 import os
 import asyncio
@@ -48,6 +49,19 @@ async def on_ready():
 async def on_guild_join(guild):
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send("New server: "+str(guild))
+    new_server = discord.Embed(title = "Thanks for inviting me!", description = "Hey there! Thanks a lot for inviting me to your server! Here are a few commands and links you should check out first (the prefix for all commands is `;`):", colour = discord.Colour.blue())
+    new_server.add_field(name = "Commands", value = '''
+`;help`: Open the help page (probably the first thing you should do!)
+`;ms`: Start a new 8x8 minesweeper game with 8 bombs
+`;other`: View other games that can be played on the bot!
+''')
+    new_server.add_field(name = "Important links", value = '''
+[Support Server](https://discord.gg/3jCG74D3RK): Get some help with any queries that you have!
+[Invite](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot): Invite the bot to another server!
+[Vote for Us!](https://top.gg/bot/902498109270134794/vote): Vote for us on `top.gg`!
+''')
+    channel = guild.system_channel
+    await channel.send(embed = new_server)
     bot_count = bot.get_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
@@ -3407,6 +3421,189 @@ Type 'board' to view the current board; type 'quit' to quit the game
                     await mess.channel.send("There is already an uno game going on in this channel!")
         else:
             await mess.channel.send("This is not a DM command!")
+    
+    elif msg.startswith(";wordle") or msg.startswith(";wd"):
+        if not(isinstance(mess.channel, discord.DMChannel)):
+            valid_id = 0
+            channel_id = mess.channel.id
+            if msg.startswith(";wordle <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";wordle <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";wd <@!") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";wd <@!", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";wordle <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";wordle <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            elif msg.startswith(";wd <@") and msg.endswith(">"):
+                opp_id_temp = msg.replace(";wd <@", "")
+                opp_id = opp_id_temp.replace(">", "")
+                try:
+                    int(opp_id)
+                    valid_id = 1
+                except ValueError:
+                    pass
+            if valid_id == 1:
+                opp_id = int(opp_id)
+                try:
+                    a_id = mess.author.id
+                    me = await bot.fetch_user(a_id)
+                    opponent = await bot.fetch_user(opp_id)
+                    server_id = mess.guild.id
+                    guild = bot.get_guild(server_id)
+                    channel = mess.channel
+                    members = []
+                    for m in guild.members:
+                        members.append(m)
+                    if opponent in members and opponent != me and not(opponent.bot):
+                        if a_id not in in_game and opp_id not in in_game:
+                            in_game.append(a_id)
+                            in_game.append(opp_id)
+                            want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of wordle! React with the emojis below to accept or decline", colour = discord.Colour.blue())
+                            want_play = await mess.channel.send(embed = want_play_embed)
+                            await want_play.add_reaction("✅")
+                            await want_play.add_reaction("❌")
+                            try:
+                                reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
+                            except asyncio.TimeoutError:
+                                await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
+                            else:
+                                if str(reaction.emoji) == "✅":
+                                    all_words = open("minesweeper-hosting/five_letter_words.txt", "r").read().splitlines()
+                                    p1_id = rd.choice([a_id, opp_id])
+                                    if p1_id == a_id:
+                                        p2_id = opp_id
+                                    else:
+                                        p2_id = a_id
+                                    await mess.channel.send(f"<@!{p1_id}> check your DMs for a message from me to enter your 5 letter word!")
+                                    game = wordle(p1_id, p2_id, get_theme(p2_id))
+                                    p1 = await bot.fetch_user(p1_id)
+                                    while True:
+                                        await p1.send("Enter your hidden word; it must consist of only 5 letters")
+                                        try:
+                                            word_msg = await bot.wait_for("message", check = lambda m: m.author.id == p1_id and m.guild == None, timeout = 120.0)
+                                        except asyncio.TimeoutError:
+                                            await p1.send("You took too long to respond so the game has ended")
+                                            await channel.send(f"<@!{p2_id}>, <@!{p1_id}> took too long to respond so the game has ended")
+                                            game.game = 1
+                                            break
+                                        else:
+                                            word = str(word_msg.content).lower()
+                                            valid = 1
+                                            if len(word) == 5:
+                                                for x in word:
+                                                    if not(x.isalpha()):
+                                                        await p1.send("Your word can only consist of letters")
+                                                        valid = 0
+                                                        break
+                                                if valid == 1:
+                                                    if word not in all_words:
+                                                        await p1.send("This is not a valid word")
+                                                        valid = 0
+                                            else:
+                                                await p1.send("You can only enter a 5 letter word")
+                                                valid = 0
+                                            if valid == 1:
+                                                break
+                                    if game.game == 0:
+                                        game.colourify(word, 1)
+                                        hword_str = ""
+                                        for x in game.hword:
+                                            hword_str += x
+                                        await p1.send(f"You have chosen the word {hword_str}. Head back to <#{channel.id}> to watch the match!")
+                                        await channel.send(f"<@!{p2_id}> the word has been chosen! Get ready!")
+                                        timeout = 0
+                                        while game.game == 0 and game.turns < 6 and timeout == 0:
+                                            game.string_rows()
+                                            game_grid = discord.Embed(title = "Wordle!", description = game.grid, colour = discord.Colour.blue())
+                                            game_grid.add_field(name = "Keyboard", value = game.keyboard_string)
+                                            await channel.send(embed = game_grid)
+                                            while True:
+                                                await channel.send("Guess a 5 letter word (Enter 'quit' to leave the game; Enter 'grid' to view the current board)")
+                                                try:
+                                                    guess_msg = await bot.wait_for("message", check = lambda m: m.author.id == p2_id and m.channel.id == channel.id, timeout = 120.0)
+                                                except asyncio.TimeoutError:
+                                                    await channel.send("You took too long to respond so the game has ended")
+                                                    timeout = 1
+                                                    break
+                                                else:
+                                                    word = str(guess_msg.content).lower()
+                                                    valid = 1
+                                                    if len(word) == 5:
+                                                        for x in word:
+                                                            if not(x.isalpha()):
+                                                                await channel.send("Your word can only consist of letters")
+                                                                valid = 0
+                                                                break
+                                                        if valid == 1:
+                                                            if word not in all_words:
+                                                                await channel.send("This is not a valid word")
+                                                                valid = 0
+                                                    else:
+                                                        if word == "quit":
+                                                            await channel.send("We're sorry to see you leave 😢")
+                                                            timeout = 1
+                                                            break
+                                                        elif word == "grid":
+                                                            game.string_rows()
+                                                            game_grid = discord.Embed(title = "Wordle!", description = game.grid, colour = discord.Colour.blue())
+                                                            game_grid.add_field(name = "Keyboard", value = game.keyboard_string)
+                                                            await channel.send(embed = game_grid)
+                                                        else:
+                                                            await channel.send("You can only enter a 5 letter word")
+                                                        valid = 0
+                                                    if valid == 1:
+                                                        game.guess(word)
+                                                        break
+                                        if game.turns == 6:
+                                            game.winner = p1_id
+                                        if timeout == 0:
+                                            game.string_rows()
+                                            game_grid = discord.Embed(title = "Wordle!", description = game.grid, colour = discord.Colour.blue())
+                                            game_grid.add_field(name = "Keyboard", value = game.keyboard_string)
+                                            await channel.send(embed = game_grid)
+                                            await channel.send(f"<@!{game.winner}> is the winner!")
+
+
+                            in_game.remove(a_id)
+                            in_game.remove(opp_id)
+                        else:
+                            if a_id in in_game:
+                                await mess.channel.send("You're already in a game!")
+                            else:
+                                await mess.channel.send("Your opponent is already in a game!")     
+
+                    else:
+                        if opponent != me and not(opponent.bot):
+                            dual_game = discord.Embed(title = "User not in server!", description = "You cannot play against this user if they're not in the server!", color = discord.Color.blue())
+                            await mess.channel.send(embed = dual_game)
+                            
+                            
+                except discord.errors.NotFound:
+                    dual_game = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
+                    await mess.channel.send(embed = dual_game)
+                    
+                    
+            else:
+                dual_game = discord.Embed(title = "Invalid syntax!", description = "The wordle syntax is invalid! The correct syntax is: ;wordle/;wd @user", color = discord.Color.blue())
+                await mess.channel.send(embed = dual_game)
+        else:
+            await mess.channel.send("You can't play a match against someone in a DM!")
 
     elif msg == ";other":
         page = 1
@@ -3510,6 +3707,16 @@ Uno is now here on the minesweeper bot! Players play cards that match the top ca
 
 **Complete rules**: https://www.ultraboardgames.com/uno/game-rules.php
 **Commands and aliases**: `;uno`, `;live`
+''', inline = False)
+                other_games.add_field(name = "Wordle", value = '''
+Wordle is now here on the minesweeper bot! Given a hidden 5 letter word, the player must try to guess the word by making their own valid word guesses. The following colours indicate the status of a letter in the guessed word:
+🟩 - Correct letter in the correct position
+🟨 - Correct letter in the wrong position
+🟥 - Wrong letter
+These colours will be in order, so you will know exactly which letter corresponds to which colour. Using these colours, deduce the hidden word to win the game! Wordle on the minesweeper comes with a little twist - it's a two player game! One player will give a word that the other player has to guess!
+
+**Complete rules**: https://www.nytimes.com/games/wordle/index.html
+**Commands and aliases**: `;wordle`, `;wd`
 ''', inline = False)
                 o_games = await mess.channel.send(embed = other_games)
                 await o_games.add_reaction("◀")
