@@ -3484,7 +3484,7 @@ Type 'board' to view the current board; type 'quit' to quit the game
                                 await mess.channel.send(f"<@!{a_id}> your challenge has not been accepted")
                             else:
                                 if str(reaction.emoji) == "✅":
-                                    all_words = open("minesweeper-hosting/five_letter_words.txt", "r").read().splitlines()
+                                    all_words = open("five_letter_words.txt", "r").read().splitlines()
                                     p1_id = rd.choice([a_id, opp_id])
                                     if p1_id == a_id:
                                         p2_id = opp_id
