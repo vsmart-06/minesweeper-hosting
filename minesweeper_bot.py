@@ -61,7 +61,8 @@ async def on_guild_join(guild):
 [Vote for Us!](https://top.gg/bot/902498109270134794/vote): Vote for us on `top.gg`!
 ''')
     channel = guild.system_channel
-    await channel.send(embed = new_server)
+    if channel != None:
+        await channel.send(embed = new_server)
     bot_count = bot.get_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
