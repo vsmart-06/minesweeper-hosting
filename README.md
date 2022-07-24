@@ -45,6 +45,7 @@ This bot started as a passion project as I attempted to bring minesweeper, a gam
 - Battleship
 - Hangman
 - Uno
+- Wordle
 
 ## 🔗 Links
 Bot invite: https://dsc.gg/minesweeper-bot
