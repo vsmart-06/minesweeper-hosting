@@ -15,8 +15,7 @@ import os
 import asyncio
 import random as rd
 from nextcord.utils import get
-import topgg
-import discordspy
+import dbots
 import statcord
 
 intents = discord.Intents.default()
@@ -27,9 +26,11 @@ bot = commands.Bot(command_prefix = ";", intents = intents, help_command = None)
 token = os.getenv("DISCORD_TOKEN")
 topgg_token = os.getenv("TOPGG_TOKEN")
 discords_token = os.getenv("DISCORDS_TOKEN")
+discordlabs_token = os.getenv("DISCORDLABS_TOKEN")
+discordbots_token = os.getenv("DISCORDBOTS_TOKEN")
+discordbotlist_token = os.getenv("DISCORDBOTLIST_TOKEN")
 statcord_token = os.getenv("STATCORD_TOKEN")
-topgg_client = topgg.DBLClient(bot, topgg_token, autopost = True)
-discords_client = discordspy.Client(bot, discords_token, post = discordspy.Post.intervals(0, 30, 0))
+dbots_client = dbots.ClientPoster(bot, "nextcord", api_keys = {"top.gg": topgg_token, "botsfordiscord.com": discords_token, "bots.discordlabs.org": discordlabs_token, "discord.bots.gg": discordbots_token, "discordbotlist.com": discordbotlist_token})
 statcord_client = statcord.Client(bot, statcord_token)
 statcord_client.start_loop()
 
@@ -52,6 +53,8 @@ async def on_ready():
     await my_user.send("I'm in "+str(len(bot.guilds))+" servers!")
     bot_count = bot.get_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
+    await dbots_client.post()
+    dbots_client.start_loop()
 
 @bot.event
 async def on_guild_join(guild: discord.Guild):
