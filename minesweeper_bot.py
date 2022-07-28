@@ -64,7 +64,7 @@ async def on_guild_join(guild):
 ''')
     new_server.add_field(name = "Important links", value = '''
 [Support Server](https://discord.gg/3jCG74D3RK): Get some help with any queries that you have!
-[Invite](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot): Invite the bot to another server!
+[Invite](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands): Invite the bot to another server!
 [Vote for Us!](https://top.gg/bot/902498109270134794/vote): Vote for us on `top.gg`!
 ''')
     channel = guild.system_channel
@@ -3912,7 +3912,7 @@ async def help(mess):
 3. The number signifies how many bombs are there behind the circles adjacent to it (diagonals included).
 4. If you know the location of a bomb, you can place a flag over there for reference.
 5. Open up all the circles without the bombs to win the game!''', inline = False)
-            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4)", inline = False)
+            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4)", inline = False)
             help = await mess.channel.send(embed = help_embed)
             await help.add_reaction("▶")
             try:
@@ -3944,7 +3944,7 @@ async def help(mess):
 `;vote`: Vote for the bot!
 ''', inline = False)
             help_embed.add_field(name = "Note:", value = "*: These commands, despite giving a confirmation message, will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.", inline = False)
-            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4)", inline = False)
+            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4)", inline = False)
             help = await mess.channel.send(embed = help_embed)
             await help.add_reaction("◀")
             try:
