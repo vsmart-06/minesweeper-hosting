@@ -1,5 +1,5 @@
-import discord
-from discord.ext import commands
+import nextcord as discord
+from nextcord.ext import commands
 from minesweeper_class import minesweeper
 from connect4_class import connect4
 from othello_class import othello
@@ -14,7 +14,7 @@ from records import profile as uprofile
 import os
 import asyncio
 import random as rd
-from discord.utils import get
+from nextcord.utils import get
 import topgg
 import discordspy
 import statcord
@@ -22,6 +22,7 @@ import statcord
 intents = discord.Intents.default()
 intents.members = True
 intents.guilds = True
+intents.message_content = True
 bot = commands.Bot(command_prefix = ";", intents = intents, help_command = None)
 token = os.getenv("DISCORD_TOKEN")
 topgg_token = os.getenv("TOPGG_TOKEN")
@@ -53,7 +54,7 @@ async def on_ready():
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
 @bot.event
-async def on_guild_join(guild):
+async def on_guild_join(guild: discord.Guild):
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send("New server: "+str(guild))
     new_server = discord.Embed(title = "Thanks for inviting me!", description = "Hey there! Thanks a lot for inviting me to your server! Here are a few commands and links you should check out first (the prefix for all commands is `;`):", colour = discord.Colour.blue())
@@ -74,18 +75,22 @@ async def on_guild_join(guild):
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
 @bot.event
-async def on_guild_remove(guild):
+async def on_guild_remove(guild: discord.Guild):
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send("Removed from: "+str(guild))
     bot_count = bot.get_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
+@bot.event
+async def on_thread_join(thread: discord.Thread):
+    await thread.join()
+
 @bot.command(name = "ms", description = "Start an 8x8 minesweeper game with 8 bombs", aliases = ["minesweeper"])
-async def ms(mess):
+async def ms(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     if msg == ";minesweeper" or msg == ";ms":
@@ -444,11 +449,11 @@ async def ms(mess):
             await mess.channel.send("You can't play a match against someone in a DM!")
 
 @bot.command(name = "mscustom", description = "Start a custom minesweeper game", aliases = ["minesweepercustom"])
-async def mscustom(mess):
+async def mscustom(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     author_id = mess.author.id
@@ -577,11 +582,11 @@ async def mscustom(mess):
         await mess.channel.send("You're already in a game!")
 
 @bot.command(name = "tournament", description = "Starts a minesweeper tournament")
-async def tournament(mess):
+async def tournament(mess: commands.Context):
     global in_game, tourney_channels
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -915,11 +920,11 @@ async def tournament(mess):
         await mess.channel.send("You can't start a tournament in a DM!")
 
 @bot.command(name = "lb", description = "View the global leaderboard", aliases = ["leaderboard"])
-async def lb(mess):
+async def lb(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
     page = 1
@@ -1065,11 +1070,11 @@ async def lb(mess):
                 page = 2
 
 @bot.command(name = "serverlb", description = "View the server leaderboard", aliases = ["serverleaderboard"])
-async def serverlb(mess):
+async def serverlb(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -1226,11 +1231,11 @@ async def serverlb(mess):
         await mess.channel.send("This is not a server!")
 
 @bot.command(name = "profile", description = "View anyone's profile")
-async def profile(mess):
+async def profile(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     valid_id = 0
@@ -1290,7 +1295,7 @@ async def profile(mess):
                         hun_club = bot.get_emoji(946733351195254814)
                         p_title += " "+str(hun_club)
                     user_profile = discord.Embed(title = p_title, description = "All stats about this user on the minesweeper bot!", color = discord.Color.blue())
-                    user_profile.set_thumbnail(url = u.avatar_url)
+                    user_profile.set_thumbnail(url = u.display_avatar)
                     user_profile.add_field(name = "Discord handle:", value = "||"+user_handle+"||", inline = True)
                     if prof[1] != None:
                         user_profile.add_field(name = "Best time:", value = str(time_mins)+"m "+str(time_secs)+"s", inline = True)
@@ -1320,11 +1325,11 @@ async def profile(mess):
     await mess.channel.send(embed=user_profile)
 
 @bot.command(name = "delete", description = "Delete your stats on the bot")
-async def delete(mess):
+async def delete(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     aut_id = mess.author.id
@@ -1347,11 +1352,11 @@ async def delete(mess):
         await mess.channel.send(embed = record_d)
 
 @bot.command(name = "theme", description = "Change your game theme")
-async def theme(mess):
+async def theme(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     theme = msg.replace(";theme settings ", "")
@@ -1364,11 +1369,11 @@ async def theme(mess):
     await mess.channel.send(embed = theme_settings)
 
 @bot.command(name = "c4", description = "Start a game of conenct 4", aliases = ["connect4"])
-async def c4(mess):
+async def c4(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -1567,11 +1572,11 @@ async def c4(mess):
         await mess.channel.send("You can't play a match against someone in a DM!")
 
 @bot.command(name = "oto", description = "Start a game of othello", aliases = ["othello"])
-async def oto(mess):
+async def oto(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -1777,11 +1782,11 @@ async def oto(mess):
         await mess.channel.send("You can't play a match against someone in a DM!")
 
 @bot.command(name = "mm", description = "Start a game of mastermind", aliases = ["mastermind"])
-async def mm(mess):
+async def mm(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -1988,11 +1993,11 @@ Type 'board' to view the current board; type 'quit' to quit the game
         await mess.channel.send("You can't play a match against someone in a DM!")
     
 @bot.command(name = "yz", description = "Start a game of yahtzee", aliases = ["yahtzee"])
-async def yz(mess):
+async def yz(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -2417,11 +2422,11 @@ async def yz(mess):
         await mess.channel.send("You can't play a match against someone in a DM!")
 
 @bot.command(name = "bs", description = "Start a game of battleship", aliases = ["battleship"])
-async def bs(mess):
+async def bs(mess: commands.Context):
     global in_game, live_battles
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -2770,11 +2775,11 @@ async def bs(mess):
         await mess.channel.send("You can't play a match against someone in a DM!")
 
 @bot.command(name = "live", description = "Send the links for current battleship and uno games")
-async def live(mess):
+async def live(mess: commands.Context):
     global in_game, live_battles, live_uno
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -2795,11 +2800,11 @@ async def live(mess):
         await mess.channel.send("This is not a DM command!")
 
 @bot.command(name = "hm", description = "Start a game of hangman", aliases = ["hangman"])
-async def hm(mess):
+async def hm(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -3019,11 +3024,11 @@ async def hm(mess):
         await mess.channel.send("You can't play a match against someone in a DM!")
 
 @bot.command(name = "uno", description = "Start a game of uno")
-async def uno(mess):
+async def uno(mess: commands.Context):
     global in_game, live_uno
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -3513,11 +3518,11 @@ async def uno(mess):
         await mess.channel.send("This is not a DM command!")
 
 @bot.command(name = "wd", description = "Start a game of wordle", aliases = ["wordle"])
-async def wd(mess):
+async def wd(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     if not(isinstance(mess.channel, discord.DMChannel)):
@@ -3703,11 +3708,11 @@ async def wd(mess):
         await mess.channel.send("You can't play a match against someone in a DM!")
 
 @bot.command(name = "other", description = "List all the other games on the bot")
-async def other(mess):
+async def other(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
     page = 1
@@ -3833,33 +3838,33 @@ These colours will be in order, so you will know exactly which letter correspond
                 await o_games.delete()
 
 @bot.command(name = "invite", description = "Send an invite link for the bot")
-async def invite(mess):
+async def invite(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://dsc.gg/minesweeper-bot", colour = discord.Colour.blue())
     await mess.channel.send(embed = invite)
 
 @bot.command(name = "support", description = "Send an invite link for the support server")
-async def support(mess):
+async def support(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     support = discord.Embed(title = "Join the official minesweeper bot support server!", description = "Use this link to join the server: https://dsc.gg/minesweeper", colour = discord.Colour.blue())
     await mess.channel.send(embed = support)
 
 @bot.command(name = "vote", description = "Send all the voting links for the bot")
-async def vote(mess):
+async def vote(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
     vote = discord.Embed(title = "Vote for me!", description = '''Enjoyed using the bot?
@@ -3870,11 +3875,11 @@ Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/90249810
     await mess.channel.send(embed = vote)
 
 @bot.command(name = "strength", description = "A private command to view the number of servers the bot is in")
-async def strength(mess):
+async def strength(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)) or not(mess.author.id == 706855396828250153):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.author.id == 706855396828250153):
         return
 
     await mess.channel.send(f"I'm in {len(bot.guilds)} servers!")
@@ -3883,21 +3888,21 @@ async def strength(mess):
     await mess.channel.send("Updated server count in <#948144061305479198>")
 
 @bot.command(name = "count", description = "A private command to view the number of minesweeper users")
-async def count(mess):
+async def count(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)) or not(mess.author.id == 706855396828250153):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.author.id == 706855396828250153):
         return
     
     await mess.channel.send(f"We have {member_count()} users!")
 
 @bot.command(name = "help", description = "View the help page of the bot")
-async def help(mess):
+async def help(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel)):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     page = 1

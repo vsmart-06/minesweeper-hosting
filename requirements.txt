@@ -1,4 +1,4 @@
-discord
+nextcord
 mysql-connector
 topggpy
 discordspy
