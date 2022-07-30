@@ -36,6 +36,8 @@ This bot started as a passion project as I attempted to bring minesweeper, a gam
 
 `;vote`: Vote for the bot!
 
+Note: Slash commands are also available!
+
 ## 🎮 Games list
 - Minesweeper
 - Connect 4
