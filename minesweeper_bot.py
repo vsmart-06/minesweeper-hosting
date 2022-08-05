@@ -100,12 +100,12 @@ async def ms(mess: commands.Context):
         author_id = mess.author.id
         if author_id not in in_game:
             play = minesweeper(8, 8, 8, author_id, "no", get_theme(author_id))
-            in_game.append(author_id)
             game_init = discord.Embed(title=author+"'s minesweeper game", description='''
             You do not have to use ; while playing
             '''
             + play.str_row, color=discord.Color.blue())
             await mess.channel.send(embed=game_init)
+            in_game.append(author_id)
             while play.game == 1:
                 while True:
                     while True:
@@ -227,12 +227,12 @@ async def ms(mess: commands.Context):
                         members.append(m)
                     if opponent in members and opponent != me and not(opponent.bot):
                         if a_id not in in_game and opp_id not in in_game:
-                            in_game.append(a_id)
-                            in_game.append(opp_id)
                             want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of minesweeper! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                             want_play = await mess.channel.send(embed = want_play_embed)
                             await want_play.add_reaction("✅")
                             await want_play.add_reaction("❌")
+                            in_game.append(a_id)
+                            in_game.append(opp_id)
                             try:
                                 reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                             except asyncio.TimeoutError:
@@ -595,7 +595,6 @@ async def tournament(mess: commands.Context):
     if not(isinstance(mess.channel, discord.DMChannel)):
         host_id = mess.author.id
         if host_id not in in_game and mess.channel.id not in tourney_channels:
-            in_game.append(host_id)
             tourney_channels.append(mess.channel.id)
             thumb = bot.get_emoji(935120796358152212)
             check = bot.get_emoji(935455988516028486)
@@ -606,6 +605,7 @@ async def tournament(mess: commands.Context):
             tourney_init = await mess.channel.send(embed = tourney_init_embed)
             await tourney_init.add_reaction(str(thumb))
             await tourney_init.add_reaction(str(check))
+            in_game.append(host_id)
             while True:
                 decisions = [asyncio.create_task(bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "radd"), asyncio.create_task(bot.wait_for("reaction_remove", check = lambda r, p: str(r.emoji) == str(thumb) and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "rrem"), asyncio.create_task(bot.wait_for("message", check = lambda m: m.channel == mess.channel, timeout = 60.0), name = "msgd")]
 
@@ -1426,12 +1426,12 @@ async def c4(mess: commands.Context):
                     members.append(m)
                 if opponent in members and opponent != me and not(opponent.bot):
                     if a_id not in in_game and opp_id not in in_game:
-                        in_game.append(a_id)
-                        in_game.append(opp_id)
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of connect 4! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
                         await want_play.add_reaction("❌")
+                        in_game.append(a_id)
+                        in_game.append(opp_id)
                         try:
                             reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                         except asyncio.TimeoutError:
@@ -1629,12 +1629,12 @@ async def oto(mess: commands.Context):
                     members.append(m)
                 if opponent in members and opponent != me and not(opponent.bot):
                     if a_id not in in_game and opp_id not in in_game:
-                        in_game.append(a_id)
-                        in_game.append(opp_id)
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of othello! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
                         await want_play.add_reaction("❌")
+                        in_game.append(a_id)
+                        in_game.append(opp_id)
                         try:
                             reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                         except asyncio.TimeoutError:
@@ -1840,12 +1840,12 @@ async def mm(mess: commands.Context):
                     members.append(m)
                 if opponent in members and opponent != me and not(opponent.bot):
                     if a_id not in in_game and opp_id not in in_game:
-                        in_game.append(a_id)
-                        in_game.append(opp_id)
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of mastermind! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
                         await want_play.add_reaction("❌")
+                        in_game.append(a_id)
+                        in_game.append(opp_id)
                         try:
                             reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                         except asyncio.TimeoutError:
@@ -2051,12 +2051,12 @@ async def yz(mess: commands.Context):
                     members.append(m)
                 if opponent in members and opponent != me and not(opponent.bot):
                     if a_id not in in_game and opp_id not in in_game:
-                        in_game.append(a_id)
-                        in_game.append(opp_id)
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of yahtzee! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
                         await want_play.add_reaction("❌")
+                        in_game.append(a_id)
+                        in_game.append(opp_id)
                         try:
                             reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                         except asyncio.TimeoutError:
@@ -2481,12 +2481,12 @@ async def bs(mess: commands.Context):
                     members.append(m)
                 if opponent in members and opponent != me and not(opponent.bot):
                     if a_id not in in_game and opp_id not in in_game and channel.id not in live_battles.keys():
-                        in_game.append(a_id)
-                        in_game.append(opp_id)
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of battleship! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
                         await want_play.add_reaction("❌")
+                        in_game.append(a_id)
+                        in_game.append(opp_id)
                         try:
                             reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                         except asyncio.TimeoutError:
@@ -2859,12 +2859,12 @@ async def hm(mess: commands.Context):
                     members.append(m)
                 if opponent in members and opponent != me and not(opponent.bot):
                     if a_id not in in_game and opp_id not in in_game:
-                        in_game.append(a_id)
-                        in_game.append(opp_id)
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of hangman! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
                         await want_play.add_reaction("❌")
+                        in_game.append(a_id)
+                        in_game.append(opp_id)
                         try:
                             reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                         except asyncio.TimeoutError:
@@ -3038,7 +3038,6 @@ async def uno(mess: commands.Context):
         host_id = mess.author.id
         if host_id not in in_game and mess.channel.id not in live_uno.keys():
             channel = mess.channel
-            in_game.append(host_id)
             live_uno[mess.channel.id] = (0, 0)
             thumb = bot.get_emoji(935120796358152212)
             check = bot.get_emoji(935455988516028486)
@@ -3047,6 +3046,7 @@ async def uno(mess: commands.Context):
             uno_init = await mess.channel.send(embed = uno_init_embed)
             await uno_init.add_reaction(str(thumb))
             await uno_init.add_reaction(str(check))
+            in_game.append(host_id)
             while True:
                 decisions = [asyncio.create_task(bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == uno_init.id, timeout = 60.0), name = "radd"), asyncio.create_task(bot.wait_for("reaction_remove", check = lambda r, p: str(r.emoji) == str(thumb) and p != bot.user and r.message.id == uno_init.id, timeout = 60.0), name = "rrem"), asyncio.create_task(bot.wait_for("message", check = lambda m: m.channel == mess.channel, timeout = 60.0), name = "msgd")]
 
@@ -3577,12 +3577,12 @@ async def wd(mess: commands.Context):
                     members.append(m)
                 if opponent in members and opponent != me and not(opponent.bot):
                     if a_id not in in_game and opp_id not in in_game:
-                        in_game.append(a_id)
-                        in_game.append(opp_id)
                         want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of wordle! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                         want_play = await mess.channel.send(embed = want_play_embed)
                         await want_play.add_reaction("✅")
                         await want_play.add_reaction("❌")
+                        in_game.append(a_id)
+                        in_game.append(opp_id)
                         try:
                             reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                         except asyncio.TimeoutError:
@@ -3976,12 +3976,12 @@ async def ms(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
         if author_id not in in_game:
             await mess.send("Done!", ephemeral = True)
             play = minesweeper(8, 8, 8, author_id, "no", get_theme(author_id))
-            in_game.append(author_id)
             game_init = discord.Embed(title=author+"'s minesweeper game", description='''
             You do not have to use ; while playing
             '''
             + play.str_row, color=discord.Color.blue())
             await mess.channel.send(embed=game_init)
+            in_game.append(author_id)
             while play.game == 1:
                 while True:
                     while True:
@@ -4067,13 +4067,13 @@ async def ms(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
             if opponent != me and not(opponent.bot):
                 if a_id not in in_game and opp_id not in in_game:
                     await mess.send("Done!", ephemeral = True)
-                    in_game.append(a_id)
-                    in_game.append(opp_id)
                     await mess.channel.send(f"<@!{opp_id}>")
                     want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of minesweeper! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                     want_play = await mess.channel.send(embed = want_play_embed)
                     await want_play.add_reaction("✅")
                     await want_play.add_reaction("❌")
+                    in_game.append(a_id)
+                    in_game.append(opp_id)
                     try:
                         reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                     except asyncio.TimeoutError:
@@ -4306,13 +4306,13 @@ async def mscustom(mess: discord.Interaction, rows: int = discord.SlashOption(na
         if play.items_tot+((((len(str(num_rows))+1)*num_rows))+((len(str(num_cols))+1)*num_cols)+((len(str(num_rows))+1)*(len(str(num_cols))+1))) > 198:
             await mess.send("Your grid is too big (you can have only a max of 198 objects (row and column numbers included))", ephemeral = True)
             return
-        in_game.append(author_id)
         await mess.send("Done!", ephemeral = True)
         game_init = discord.Embed(title=author+"'s minesweeper game", description='''
         You do not have to use ; while playing
         '''
         + play.str_row, color=discord.Color.blue())
         await mess.channel.send(embed=game_init)
+        in_game.append(author_id)
         while play.game == 1:
             while True:
                 while True:
@@ -4395,7 +4395,6 @@ async def tournament(mess: discord.Interaction):
         host_id = mess.user.id
         if host_id not in in_game and mess.channel.id not in tourney_channels:
             await mess.send("Done!", ephemeral = True)
-            in_game.append(host_id)
             tourney_channels.append(mess.channel.id)
             thumb = bot.get_emoji(935120796358152212)
             check = bot.get_emoji(935455988516028486)
@@ -4406,6 +4405,7 @@ async def tournament(mess: discord.Interaction):
             tourney_init = await mess.channel.send(embed = tourney_init_embed)
             await tourney_init.add_reaction(str(thumb))
             await tourney_init.add_reaction(str(check))
+            in_game.append(host_id)
             while True:
                 decisions = [asyncio.create_task(bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "radd"), asyncio.create_task(bot.wait_for("reaction_remove", check = lambda r, p: str(r.emoji) == str(thumb) and p != bot.user and r.message.id == tourney_init.id, timeout = 60.0), name = "rrem"), asyncio.create_task(bot.wait_for("message", check = lambda m: m.channel == mess.channel, timeout = 60.0), name = "msgd")]
 
@@ -5188,13 +5188,13 @@ async def c4(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
         if opponent != me and not(opponent.bot):
             if a_id not in in_game and opp_id not in in_game:
                 await mess.send("Done!", ephemeral = True)
-                in_game.append(a_id)
-                in_game.append(opp_id)
                 await mess.channel.send(f"<@!{opp_id}>")
                 want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of connect 4! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                 want_play = await mess.channel.send(embed = want_play_embed)
                 await want_play.add_reaction("✅")
                 await want_play.add_reaction("❌")
+                in_game.append(a_id)
+                in_game.append(opp_id)
                 try:
                     reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                 except asyncio.TimeoutError:
@@ -5335,13 +5335,13 @@ async def oto(mess: discord.Interaction, user: discord.Member = discord.SlashOpt
         if opponent != me and not(opponent.bot):
             if a_id not in in_game and opp_id not in in_game:
                 await mess.send("Done!", ephemeral = True)
-                in_game.append(a_id)
-                in_game.append(opp_id)
                 await mess.channel.send(f"<@!{opp_id}>")
                 want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of othello! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                 want_play = await mess.channel.send(embed = want_play_embed)
                 await want_play.add_reaction("✅")
                 await want_play.add_reaction("❌")
+                in_game.append(a_id)
+                in_game.append(opp_id)
                 try:
                     reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                 except asyncio.TimeoutError:
@@ -5491,13 +5491,13 @@ async def mm(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
         if opponent != me and not(opponent.bot):
             if a_id not in in_game and opp_id not in in_game:
                 await mess.send("Done!", ephemeral = True)
-                in_game.append(a_id)
-                in_game.append(opp_id)
                 await mess.channel.send(f"<@!{opp_id}>")
                 want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of mastermind! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                 want_play = await mess.channel.send(embed = want_play_embed)
                 await want_play.add_reaction("✅")
                 await want_play.add_reaction("❌")
+                in_game.append(a_id)
+                in_game.append(opp_id)
                 try:
                     reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                 except asyncio.TimeoutError:
@@ -5647,13 +5647,13 @@ async def yz(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
         if opponent != me and not(opponent.bot):
             if a_id not in in_game and opp_id not in in_game:
                 await mess.send("Done!", ephemeral = True)
-                in_game.append(a_id)
-                in_game.append(opp_id)
                 await mess.channel.send(f"<@!{opp_id}>")
                 want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of yahtzee! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                 want_play = await mess.channel.send(embed = want_play_embed)
                 await want_play.add_reaction("✅")
                 await want_play.add_reaction("❌")
+                in_game.append(a_id)
+                in_game.append(opp_id)
                 try:
                     reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                 except asyncio.TimeoutError:
@@ -6022,13 +6022,13 @@ async def bs(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
         if opponent != me and not(opponent.bot):
             if a_id not in in_game and opp_id not in in_game and channel.id not in live_battles.keys():
                 await mess.send("Done!", ephemeral = True)
-                in_game.append(a_id)
-                in_game.append(opp_id)
                 await mess.channel.send(f"<@!{opp_id}>")
                 want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of battleship! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                 want_play = await mess.channel.send(embed = want_play_embed)
                 await want_play.add_reaction("✅")
                 await want_play.add_reaction("❌")
+                in_game.append(a_id)
+                in_game.append(opp_id)
                 try:
                     reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                 except asyncio.TimeoutError:
@@ -6351,13 +6351,13 @@ async def hm(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
         if opponent in members and opponent != me and not(opponent.bot):
             if a_id not in in_game and opp_id not in in_game:
                 await mess.send("Done!", ephemeral = True)
-                in_game.append(a_id)
-                in_game.append(opp_id)
                 await mess.channel.send(f"<@!{opp_id}>")
                 want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of hangman! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                 want_play = await mess.channel.send(embed = want_play_embed)
                 await want_play.add_reaction("✅")
                 await want_play.add_reaction("❌")
+                in_game.append(a_id)
+                in_game.append(opp_id)
                 try:
                     reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                 except asyncio.TimeoutError:
@@ -6517,7 +6517,6 @@ async def uno(mess: discord.Interaction):
         if host_id not in in_game and mess.channel.id not in live_uno.keys():
             await mess.send("Done!", ephemeral = True)
             channel = mess.channel
-            in_game.append(host_id)
             live_uno[mess.channel.id] = (0, 0)
             thumb = bot.get_emoji(935120796358152212)
             check = bot.get_emoji(935455988516028486)
@@ -6526,6 +6525,7 @@ async def uno(mess: discord.Interaction):
             uno_init = await mess.channel.send(embed = uno_init_embed)
             await uno_init.add_reaction(str(thumb))
             await uno_init.add_reaction(str(check))
+            in_game.append(host_id)
             while True:
                 decisions = [asyncio.create_task(bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in [str(thumb), str(check)] and p != bot.user and r.message.id == uno_init.id, timeout = 60.0), name = "radd"), asyncio.create_task(bot.wait_for("reaction_remove", check = lambda r, p: str(r.emoji) == str(thumb) and p != bot.user and r.message.id == uno_init.id, timeout = 60.0), name = "rrem"), asyncio.create_task(bot.wait_for("message", check = lambda m: m.channel == mess.channel, timeout = 60.0), name = "msgd")]
 
@@ -7018,13 +7018,13 @@ async def wd(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
         if opponent != me and not(opponent.bot):
             if a_id not in in_game and opp_id not in in_game:
                 await mess.send("Done!", ephemeral = True)
-                in_game.append(a_id)
-                in_game.append(opp_id)
                 await mess.channel.send(f"<@!{opp_id}>")
                 want_play_embed = discord.Embed(title = "React to play!", description = f"<@!{opp_id}>, <@!{a_id}> has challenged you to a game of wordle! React with the emojis below to accept or decline", colour = discord.Colour.blue())
                 want_play = await mess.channel.send(embed = want_play_embed)
                 await want_play.add_reaction("✅")
                 await want_play.add_reaction("❌")
+                in_game.append(a_id)
+                in_game.append(opp_id)
                 try:
                     reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: p.id == opp_id and str(r.emoji) in ["✅", "❌"] and r.message.id == want_play.id, timeout = 120.0)
                 except asyncio.TimeoutError:
