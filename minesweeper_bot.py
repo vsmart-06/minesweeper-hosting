@@ -22,7 +22,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.guilds = True
 intents.message_content = True
-bot = commands.Bot(command_prefix = ";", intents = intents, help_command = None)
+bot = commands.Bot(command_prefix = ";", intents = intents, help_command = None, case_insensitive = True)
 token = os.getenv("DISCORD_TOKEN")
 topgg_token = os.getenv("TOPGG_TOKEN")
 discords_token = os.getenv("DISCORDS_TOKEN")
