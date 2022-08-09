@@ -1372,7 +1372,7 @@ async def theme(mess: commands.Context):
         theme_settings = discord.Embed(title = "Invalid syntax!", description = "The theme settings syntax is invalid! The correct syntax is: ;theme settings light/dark", color = discord.Color.blue())
     await mess.channel.send(embed = theme_settings)
 
-@bot.command(name = "c4", description = "Start a game of conenct 4", aliases = ["connect4"])
+@bot.command(name = "c4", description = "Start a game of connect 4", aliases = ["connect4"])
 async def c4(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
@@ -5265,7 +5265,7 @@ async def theme(mess: discord.Interaction, theme: str = discord.SlashOption(name
     theme_settings = discord.Embed(title = "Theme changed successfully!", description = f"Your game theme has been successfully changed to {theme} mode!", color = discord.Color.blue())
     await mess.send(embed = theme_settings)
 
-@bot.slash_command(name = "connect4", description = "Start a game of conenct 4")
+@bot.slash_command(name = "connect4", description = "Start a game of connect 4")
 async def c4(mess: discord.Interaction, user: discord.Member = discord.SlashOption(name = "opponent", description = "The opponent you wish to play against", required = True)):
     global in_game
     author = mess.user.name
