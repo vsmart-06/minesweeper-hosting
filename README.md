@@ -48,6 +48,7 @@ Note: Slash commands are also available!
 - Hangman
 - Uno
 - Wordle
+- 2048
 
 ## 🔗 Links
 Bot invite: https://dsc.gg/minesweeper-bot

@@ -9,6 +9,7 @@ from battleship_class import battleship
 from hangman_class import hangman
 from uno_class import uno as uno_c
 from wordle_class import wordle
+from tzfe_class import tzfe as tzfe_c
 from records import global_leaderboard, server_leaderboard, privacy_change, delete_record, theme_change, get_theme, member_count
 from records import profile as uprofile
 import os
@@ -3710,6 +3711,77 @@ async def wd(mess: commands.Context):
     else:
         await mess.channel.send("You can't play a match against someone in a DM!")
 
+@bot.command(name = "tzfe", description = "Start a game of 2048", aliases = ["2048"])
+async def tzfe(mess: commands.Context):
+    global in_game
+    msg = mess.message.content.lower()
+    author = mess.author.name
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
+        return
+    
+    author_id = mess.author.id
+    if author_id not in in_game:
+        p0 = mess.author
+        a = bot.get_emoji(1006186622322212914)
+        b = bot.get_emoji(1006186619822419970)
+        c = bot.get_emoji(1006186617746239558)
+        d = bot.get_emoji(1006186615300968458)
+        e = bot.get_emoji(1006186612826321007)
+        f = bot.get_emoji(1006186610456539296)
+        g = bot.get_emoji(1006186607793156139)
+        h = bot.get_emoji(1006186605469515897)
+        i = bot.get_emoji(1006186602567041074)
+        j = bot.get_emoji(1006186600197275678)
+        k = bot.get_emoji(1006186597529698364)
+        dirs = {"w": "up", "a": "left", "d": "right", "s": "down"}
+        game = tzfe_c(a, b, c, d, e, f, g, h, i, j, k, get_theme(author_id))
+        game.string_rows()
+        game_embed = discord.Embed(title = "2048!", description = f"Player: <@!{author_id}>\nScore: {game.score}", colour = discord.Colour.blue())
+        await mess.channel.send(embed = game_embed)
+        await mess.channel.send(game.game_board)
+        while game.game == 1:
+            while True:
+                await mess.channel.send("Enter the direction in which you would like to swipe ('w' for up, 's' for down, 'a' for left, 'd' for right); Enter 'quit' to quit the game, Enter 'board' to see the current board")
+                try:
+                    reaction_msg = await bot.wait_for("message", check = lambda m: m.author.id == author_id and m.channel.id == mess.channel.id, timeout = 120.0)
+                except asyncio.TimeoutError:
+                    await mess.channel.send(f"<@!{author_id}> you took too long to respond to the game has ended")
+                    game.game = 0
+                    break
+                else:
+                    dir = str(reaction_msg.content).lower()
+                    if dir not in dirs.keys():
+                        if dir == "quit":
+                            await mess.channel.send("We're sorry to see you leave 😢")
+                            game.game = 0
+                            break
+                        elif dir == "board":
+                            game.string_rows()
+                            game_embed = discord.Embed(title = "2048!", description = f"Player: <@!{author_id}>\nScore: {game.score}", colour = discord.Colour.blue())
+                            await mess.channel.send(embed = game_embed)
+                            await mess.channel.send(game.game_board)
+                        else:
+                            await mess.channel.send("Invalid direction")
+                    else:
+                        dir = dirs[dir]
+                        break
+            if game.game == 1:
+                game.swipe(dir)
+                game.string_rows()
+                game_embed = discord.Embed(title = "2048!", description = f"Player: <@!{author_id}>\nScore: {game.score}", colour = discord.Colour.blue())
+                await mess.channel.send(embed = game_embed)
+                await mess.channel.send(game.game_board)
+                if game.game == 0:
+                    await mess.channel.send(f"<@!{author_id}> you won! Your final score is {game.score}")
+                    break
+                game.game_over()
+                if game.game == 0:
+                    await mess.channel.send(f"<@!{author_id}> the game is over! Your final score is {game.score}")
+                    break
+       
+    else:
+        await mess.channel.send("You're already in a game!")
+
 @bot.command(name = "other", description = "List all the other games on the bot")
 async def other(mess: commands.Context):
     global in_game
@@ -3722,7 +3794,7 @@ async def other(mess: commands.Context):
     while True:
         if page == 1:
             other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-            other_games.set_footer(text = "Other Games Page 1/4")
+            other_games.set_footer(text = "Other Games Page 1/5")
             other_games.add_field(name = "Connect 4", value = '''
 Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
 
@@ -3751,7 +3823,7 @@ Othello is now here on the minesweeper bot! There are 2 players who play this ga
 
         elif page == 2:
             other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-            other_games.set_footer(text = "Other Games Page 2/4")
+            other_games.set_footer(text = "Other Games Page 2/5")
             other_games.add_field(name = "Mastermind", value = '''
 Mastermind is now here on the minesweeper bot! 2 players play this game and they are give one of two roles - the code setter, or the code guesser. The code setter will make a code following a prompt from the bot in their DMs. The code will consist of 4 colours, which can be repeated. The code guesser will then have to guess the code in a maximum of 8 turns. Following each turn, the code guesser will see how close their guess is to the actual word. This will be seen at the side of the grid in the following form:
 ✅ - Correct colour in the correct position
@@ -3784,7 +3856,7 @@ Yahtzee is now here on the minesweeper bot! This game is played with 2 players w
         
         elif page == 3:
             other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-            other_games.set_footer(text = "Other Games Page 3/4")
+            other_games.set_footer(text = "Other Games Page 3/5")
             other_games.add_field(name = "Battleship", value = '''
 Battleship is now here on the minesweeper bot! An intense two-player game, battleship requires players to destroy each others ships fastest. Based on the theme of naval warfare, the players will first have to place their ships in strategic positions to avoid getting blasted by the other player's cannons. Turn by turn, the players will then enter coordinates as they try to locate and destroy each of the opponent's 5 ships. The first person to destroy all of the other person's ships wins! Other people can follow the game by using the `;live` command in the channel the game was started in!
 
@@ -3813,7 +3885,7 @@ Hangman is now here on the minesweeper bot! An old classic, hangman is a game wh
     
         elif page == 4:
             other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-            other_games.set_footer(text = "Other Games Page 4/4")
+            other_games.set_footer(text = "Other Games Page 4/5")
             other_games.add_field(name = "Uno", value = '''
 Uno is now here on the minesweeper bot! Players play cards that match the top card by face value or by colour. You can also play special cards to hamper the progress of the other players! Before you play your second last card, you must say `uno` in the DM and then play the card. If you play the card without saying `uno`, someone else can say `caught` in the game channel within 10 seconds and then you will have to draw 4 cards. However, even after playing your second last card, you can say `uno` before someone else catches you and then you would not be subject to the 4 card penalty. If neither `uno` nor `caught` is said within 10 seconds, the 4 card penalty will not be applicable. Whoever finishes all their cards first wins the game! Everyone plays uno with different rules so it is recommended that you check out the rules in the link below as those are the rules used with this bot.
 
@@ -3832,12 +3904,34 @@ These colours will be in order, so you will know exactly which letter correspond
 ''', inline = False)
             o_games = await mess.channel.send(embed = other_games)
             await o_games.add_reaction("◀")
+            await o_games.add_reaction("▶")
+            try:
+                reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
+            except asyncio.TimeoutError:
+                break
+            else:
+                if str(reaction.emoji) == "◀":
+                    page = 3
+                else:
+                    page = 5
+                await o_games.delete()
+
+        elif page == 5:
+            other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
+            other_games.set_footer(text = "Other Games Page 5/5")
+            other_games.add_field(name = "2048", value = '''
+2048 is now here on the minesweeper bot! A highly addictive and fun game, 2048 is based on moving tiles and when tiles having the same number on them bump into each other, they will add up. If you manage to add up to 2048, you win the game! To slide the tiles, you will have to use the WASD keys as arrow keys. With every swipe, all tiles on the board move in that direction. You can also look at an incremental score counter that comes along with the board!
+
+**Commands and aliases**: `;2048`, `;tzfe`
+''', inline = False)
+            o_games = await mess.channel.send(embed = other_games)
+            await o_games.add_reaction("◀")
             try:
                 reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
             except asyncio.TimeoutError:
                 break
             else:
-                page = 3
+                page = 4
                 await o_games.delete()
 
 @bot.command(name = "invite", description = "Send an invite link for the bot")
@@ -7138,6 +7232,78 @@ async def wd(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
     else:
         await mess.send("You can't play a match against someone in a DM!", ephemeral = True)
 
+@bot.slash_command(name = "2048", description = "Start a game of 2048")
+async def tzfe(mess: discord.Interaction):
+    global in_game
+    author = mess.user.name
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
+        return
+    
+    await mess.send("Done!", ephemeral = True)
+
+    author_id = mess.user.id
+    if author_id not in in_game:
+        p0 = mess.user
+        a = bot.get_emoji(1006186622322212914)
+        b = bot.get_emoji(1006186619822419970)
+        c = bot.get_emoji(1006186617746239558)
+        d = bot.get_emoji(1006186615300968458)
+        e = bot.get_emoji(1006186612826321007)
+        f = bot.get_emoji(1006186610456539296)
+        g = bot.get_emoji(1006186607793156139)
+        h = bot.get_emoji(1006186605469515897)
+        i = bot.get_emoji(1006186602567041074)
+        j = bot.get_emoji(1006186600197275678)
+        k = bot.get_emoji(1006186597529698364)
+        dirs = {"w": "up", "a": "left", "d": "right", "s": "down"}
+        game = tzfe_c(a, b, c, d, e, f, g, h, i, j, k, get_theme(author_id))
+        game.string_rows()
+        game_embed = discord.Embed(title = "2048!", description = f"Player: <@!{author_id}>\nScore: {game.score}", colour = discord.Colour.blue())
+        await mess.channel.send(embed = game_embed)
+        await mess.channel.send(game.game_board)
+        while game.game == 1:
+            while True:
+                await mess.channel.send("Enter the direction in which you would like to swipe ('w' for up, 's' for down, 'a' for left, 'd' for right); Enter 'quit' to quit the game, Enter 'board' to see the current board")
+                try:
+                    reaction_msg = await bot.wait_for("message", check = lambda m: m.author.id == author_id and m.channel.id == mess.channel.id, timeout = 120.0)
+                except asyncio.TimeoutError:
+                    await mess.channel.send(f"<@!{author_id}> you took too long to respond to the game has ended")
+                    game.game = 0
+                    break
+                else:
+                    dir = str(reaction_msg.content).lower()
+                    if dir not in dirs.keys():
+                        if dir == "quit":
+                            await mess.channel.send("We're sorry to see you leave 😢")
+                            game.game = 0
+                            break
+                        elif dir == "board":
+                            game.string_rows()
+                            game_embed = discord.Embed(title = "2048!", description = f"Player: <@!{author_id}>\nScore: {game.score}", colour = discord.Colour.blue())
+                            await mess.channel.send(embed = game_embed)
+                            await mess.channel.send(game.game_board)
+                        else:
+                            await mess.channel.send("Invalid direction")
+                    else:
+                        dir = dirs[dir]
+                        break
+            if game.game == 1:
+                game.swipe(dir)
+                game.string_rows()
+                game_embed = discord.Embed(title = "2048!", description = f"Player: <@!{author_id}>\nScore: {game.score}", colour = discord.Colour.blue())
+                await mess.channel.send(embed = game_embed)
+                await mess.channel.send(game.game_board)
+                if game.game == 0:
+                    await mess.channel.send(f"<@!{author_id}> you won! Your final score is {game.score}")
+                    break
+                game.game_over()
+                if game.game == 0:
+                    await mess.channel.send(f"<@!{author_id}> the game is over! Your final score is {game.score}")
+                    break
+       
+    else:
+        await mess.channel.send("You're already in a game!")
+
 @bot.slash_command(name = "other", description = "List all the other games on the bot")
 async def other(mess: discord.Interaction):
     global in_game
@@ -7151,7 +7317,7 @@ async def other(mess: discord.Interaction):
     while True:
         if page == 1:
             other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-            other_games.set_footer(text = "Other Games Page 1/4")
+            other_games.set_footer(text = "Other Games Page 1/5")
             other_games.add_field(name = "Connect 4", value = '''
 Connect 4 or Four-in-a-row is now here on the minesweeper bot! The main aim of this game is to get 4 of your tokens in a line: horizontally, vertically, or diagonally. Drop your tokens in the columns to place them!
 
@@ -7180,7 +7346,7 @@ Othello is now here on the minesweeper bot! There are 2 players who play this ga
 
         elif page == 2:
             other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-            other_games.set_footer(text = "Other Games Page 2/4")
+            other_games.set_footer(text = "Other Games Page 2/5")
             other_games.add_field(name = "Mastermind", value = '''
 Mastermind is now here on the minesweeper bot! 2 players play this game and they are give one of two roles - the code setter, or the code guesser. The code setter will make a code following a prompt from the bot in their DMs. The code will consist of 4 colours, which can be repeated. The code guesser will then have to guess the code in a maximum of 8 turns. Following each turn, the code guesser will see how close their guess is to the actual word. This will be seen at the side of the grid in the following form:
 ✅ - Correct colour in the correct position
@@ -7213,7 +7379,7 @@ Yahtzee is now here on the minesweeper bot! This game is played with 2 players w
         
         elif page == 3:
             other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-            other_games.set_footer(text = "Other Games Page 3/4")
+            other_games.set_footer(text = "Other Games Page 3/5")
             other_games.add_field(name = "Battleship", value = '''
 Battleship is now here on the minesweeper bot! An intense two-player game, battleship requires players to destroy each others ships fastest. Based on the theme of naval warfare, the players will first have to place their ships in strategic positions to avoid getting blasted by the other player's cannons. Turn by turn, the players will then enter coordinates as they try to locate and destroy each of the opponent's 5 ships. The first person to destroy all of the other person's ships wins! Other people can follow the game by using the `;live` command in the channel the game was started in!
 
@@ -7242,7 +7408,7 @@ Hangman is now here on the minesweeper bot! An old classic, hangman is a game wh
     
         elif page == 4:
             other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
-            other_games.set_footer(text = "Other Games Page 4/4")
+            other_games.set_footer(text = "Other Games Page 4/5")
             other_games.add_field(name = "Uno", value = '''
 Uno is now here on the minesweeper bot! Players play cards that match the top card by face value or by colour. You can also play special cards to hamper the progress of the other players! Before you play your second last card, you must say `uno` in the DM and then play the card. If you play the card without saying `uno`, someone else can say `caught` in the game channel within 10 seconds and then you will have to draw 4 cards. However, even after playing your second last card, you can say `uno` before someone else catches you and then you would not be subject to the 4 card penalty. If neither `uno` nor `caught` is said within 10 seconds, the 4 card penalty will not be applicable. Whoever finishes all their cards first wins the game! Everyone plays uno with different rules so it is recommended that you check out the rules in the link below as those are the rules used with this bot.
 
@@ -7261,12 +7427,34 @@ These colours will be in order, so you will know exactly which letter correspond
 ''', inline = False)
             o_games = await mess.channel.send(embed = other_games)
             await o_games.add_reaction("◀")
+            await o_games.add_reaction("▶")
+            try:
+                reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) in ["◀", "▶"] and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
+            except asyncio.TimeoutError:
+                break
+            else:
+                if str(reaction.emoji) == "◀":
+                    page = 3
+                else:
+                    page = 5
+                await o_games.delete()
+
+        elif page == 5:
+            other_games = discord.Embed(title = "Other games on the bot!", description = "A list of all other games that can be played on the bot and their respective commands", colour = discord.Colour.blue())
+            other_games.set_footer(text = "Other Games Page 5/5")
+            other_games.add_field(name = "2048", value = '''
+2048 is now here on the minesweeper bot! A highly addictive and fun game, 2048 is based on moving tiles and when tiles having the same number on them bump into each other, they will add up. If you manage to add up to 2048, you win the game! To slide the tiles, you will have to use the WASD keys as arrow keys. With every swipe, all tiles on the board move in that direction. You can also look at an incremental score counter that comes along with the board!
+
+**Commands and aliases**: `;2048`, `;tzfe`
+''', inline = False)
+            o_games = await mess.channel.send(embed = other_games)
+            await o_games.add_reaction("◀")
             try:
                 reaction, user = await bot.wait_for("reaction_add", check=lambda r, p: str(r.emoji) == "◀" and p.id != bot.user.id and r.message.id == o_games.id, timeout = 30.0)
             except asyncio.TimeoutError:
                 break
             else:
-                page = 3
+                page = 4
                 await o_games.delete()
 
 @bot.slash_command(name = "invite", description = "Send an invite link for the bot")
