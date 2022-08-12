@@ -31,7 +31,7 @@ discordlabs_token = os.getenv("DISCORDLABS_TOKEN")
 discordbots_token = os.getenv("DISCORDBOTS_TOKEN")
 discordbotlist_token = os.getenv("DISCORDBOTLIST_TOKEN")
 statcord_token = os.getenv("STATCORD_TOKEN")
-dbots_client = dbots.ClientPoster(bot, "discord.py", api_keys = {"top.gg": topgg_token, "discords.com": discords_token, "bots.discordlabs.org": discordlabs_token, "discord.bots.gg": discordbots_token, "discordbotlist.com": discordbotlist_token})
+dbots_client = dbots.ClientPoster(bot, "discord.py", api_keys = {"top.gg": topgg_token, "discords.com": discords_token, "discordlabs.org": discordlabs_token, "discord.bots.gg": discordbots_token, "discordbotlist.com": discordbotlist_token})
 statcord_client = statcord.Client(bot, statcord_token)
 statcord_client.start_loop()
 
