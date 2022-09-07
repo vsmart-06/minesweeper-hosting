@@ -4367,7 +4367,7 @@ async def ms(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
         else:
             await mess.send("You can't play a match against someone in a DM!", ephemeral = True)
 
-@bot.slash_command(name = "minesweepercustom", description = "Start a custom minesweeper game")
+@bot.slash_command(name = "minesweeper-custom", description = "Start a custom minesweeper game")
 async def mscustom(mess: discord.Interaction, rows: int = discord.SlashOption(name = "rows", description = "The number of rows for your grid", required = True), columns: int = discord.SlashOption(name = "columns", description = "The number of columns for your grid", required = True), bombs: int = discord.SlashOption(name = "bombs", description = "The number of bombs for your grid", required = True)):
     global in_game
     author = mess.user.name
@@ -4965,7 +4965,7 @@ async def lb(mess: discord.Interaction):
             else:
                 page = 2
 
-@bot.slash_command(name = "serverleaderboard", description = "View the server leaderboard")
+@bot.slash_command(name = "server-leaderboard", description = "View the server leaderboard")
 async def serverlb(mess: discord.Interaction):
     global in_game
     author = mess.user.name
@@ -5218,7 +5218,7 @@ async def profile(mess: discord.Interaction, user: discord.Member = discord.Slas
             user_profile = discord.Embed(title = "User not detected!", description = "This user hasn't used the bot yet!", color = discord.Color.blue())
     await mess.send(embed=user_profile)
 
-@bot.slash_command(name = "profilesettings", description = "Change your profile settings")
+@bot.slash_command(name = "profile-settings", description = "Change your profile settings")
 async def settings(mess: discord.Interaction, privacy: str = discord.SlashOption(name = "privacy", description = "Your privacy option", choices = ["public", "private"], required = True)):
     user_id = mess.user.id
     privacy_change(user_id, privacy)
@@ -5253,7 +5253,7 @@ async def delete(mess: discord.Interaction):
             record_d = discord.Embed(title = "Operation cancelled!", description = "Data deletion has been cancelled!", colour = discord.Colour.blue())
         await mess.channel.send(embed = record_d)
 
-@bot.slash_command(name = "themesettings", description = "Change your game theme")
+@bot.slash_command(name = "theme-settings", description = "Change your game theme")
 async def theme(mess: discord.Interaction, theme: str = discord.SlashOption(name = "theme", description = "Your preferred theme", choices = ["light", "dark"], required = True)):
     global in_game
     author = mess.user.name
