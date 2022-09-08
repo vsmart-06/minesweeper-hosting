@@ -70,6 +70,7 @@ async def on_guild_join(guild: discord.Guild):
     new_server.add_field(name = "Important links", value = '''
 [Support Server](https://discord.gg/3jCG74D3RK): Get some help with any queries that you have!
 [Invite](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands): Invite the bot to another server!
+[Website](https://minesweeper-bot.carrd.co): Check out our website!
 [Vote for Us!](https://top.gg/bot/902498109270134794/vote): Vote for us on `top.gg`!
 ''')
     channel = guild.system_channel
@@ -3971,6 +3972,17 @@ Vote for us on `discords.com`: https://discords.com/bots/bot/902498109270134794/
 Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/902498109270134794?vote''', colour = discord.Colour.blue())
     await mess.channel.send(embed = vote)
 
+@bot.command(name = "website", description = "Send the link for the website")
+async def website(mess: commands.Context):
+    global in_game
+    msg = mess.message.content.lower()
+    author = mess.author.name
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
+        return
+    
+    website = discord.Embed(title = "Visit our website!", description = "Use this link to view our website: https://minesweeper-bot.carrd.co", colour = discord.Colour.blue())
+    await mess.channel.send(embed = website)
+
 @bot.command(name = "strength", description = "A private command to view the number of servers the bot is in")
 async def strength(mess: commands.Context):
     global in_game
@@ -4014,7 +4026,7 @@ async def help(mess: commands.Context):
 3. The number signifies how many bombs are there behind the circles adjacent to it (diagonals included).
 4. If you know the location of a bomb, you can place a flag over there for reference.
 5. Open up all the circles without the bombs to win the game!''', inline = False)
-            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4)", inline = False)
+            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4) · [Website](https://minesweeper-bot.carrd.co)", inline = False)
             help = await mess.channel.send(embed = help_embed)
             await help.add_reaction("▶")
             try:
@@ -4047,7 +4059,7 @@ async def help(mess: commands.Context):
 ''', inline = False)
             help_embed.add_field(name = "Note:", value = "*: These commands, despite giving a confirmation message, will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.", inline = False)
             help_embed.add_field(name = "Slash Commands", value = "Slash commands are also available with the minesweeper bot! Type `/` and click on the minesweeper bot's icon to view all of its slash commands! If you cannot see them, you may have to re-invite the bot to your server.")
-            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4)", inline = False)
+            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4) · [Website](https://minesweeper-bot.carrd.co)", inline = False)
             help = await mess.channel.send(embed = help_embed)
             await help.add_reaction("◀")
             try:
@@ -7491,6 +7503,16 @@ Vote for us on `discords.com`: https://discords.com/bots/bot/902498109270134794/
 Vote for us on `bots.discordlabs.org`: https://bots.discordlabs.org/bot/902498109270134794?vote''', colour = discord.Colour.blue())
     await mess.send(embed = vote)
 
+@bot.slash_command(name = "website", description = "Send the link for the website")
+async def website(mess: discord.Interaction):
+    global in_game
+    author = mess.user.name
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
+        return
+    
+    website = discord.Embed(title = "Visit our website!", description = "Use this link to view our website: https://minesweeper-bot.carrd.co", colour = discord.Colour.blue())
+    await mess.send(embed = website)
+
 @bot.slash_command(name = "help", description = "View the help page of the bot")
 async def help(mess: discord.Interaction):
     global in_game
@@ -7512,7 +7534,7 @@ async def help(mess: discord.Interaction):
 3. The number signifies how many bombs are there behind the circles adjacent to it (diagonals included).
 4. If you know the location of a bomb, you can place a flag over there for reference.
 5. Open up all the circles without the bombs to win the game!''', inline = False)
-            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4)", inline = False)
+            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4) · [Website](https://minesweeper-bot.carrd.co)", inline = False)
             help = await mess.channel.send(embed = help_embed)
             await help.add_reaction("▶")
             try:
@@ -7545,7 +7567,7 @@ async def help(mess: discord.Interaction):
 ''', inline = False)
             help_embed.add_field(name = "Note:", value = "*: These commands, despite giving a confirmation message, will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.", inline = False)
             help_embed.add_field(name = "Slash Commands", value = "Slash commands are also available with the minesweeper bot! Type `/` and click on the minesweeper bot's icon to view all of its slash commands! If you cannot see them, you may have to re-invite the bot to your server.")
-            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4)", inline = False)
+            help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/oauth2/authorize?client_id=902498109270134794&permissions=274878188608&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4) · [Website](https://minesweeper-bot.carrd.co)", inline = False)
             help = await mess.channel.send(embed = help_embed)
             await help.add_reaction("◀")
             try:
