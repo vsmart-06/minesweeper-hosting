@@ -4043,7 +4043,7 @@ async def help(mess: commands.Context):
             help_embed.add_field(name = "Commands: ", value = 
 '''
 `;help`: Open the guide.
-`;minesweeper`/`;ms`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone in your server to play a game against them!
+`;minesweeper`/`;ms`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone else to play a game against them!
 `;minesweepercustom`/`;mscustom`: Start a custom minesweeper game.
 `;tournament`: Start a minesweeper tournament in your server!
 `;leaderboard`/`;lb`: View the global leaderboard.
@@ -4055,6 +4055,7 @@ async def help(mess: commands.Context):
 `;other`: **View other games that can be played on the bot!**
 `;invite`: Get a link to invite this bot to a server.
 `;support`: Get a link to join the official minesweeper bot support server.
+`;website`: Get a link to our website.
 `;vote`: Vote for the bot!
 ''', inline = False)
             help_embed.add_field(name = "Note:", value = "*: These commands, despite giving a confirmation message, will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.", inline = False)
@@ -7551,7 +7552,7 @@ async def help(mess: discord.Interaction):
             help_embed.add_field(name = "Commands: ", value = 
 '''
 `;help`: Open the guide.
-`;minesweeper`/`;ms`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone in your server to play a game against them!
+`;minesweeper`/`;ms`: Start a new minesweeper game in an 8x8 grid with 8 bombs. Tag someone else to play a game against them!
 `;minesweepercustom`/`;mscustom`: Start a custom minesweeper game.
 `;tournament`: Start a minesweeper tournament in your server!
 `;leaderboard`/`;lb`: View the global leaderboard.
@@ -7563,6 +7564,7 @@ async def help(mess: discord.Interaction):
 `;other`: **View other games that can be played on the bot!**
 `;invite`: Get a link to invite this bot to a server.
 `;support`: Get a link to join the official minesweeper bot support server.
+`;website`: Get a link to our website.
 `;vote`: Vote for the bot!
 ''', inline = False)
             help_embed.add_field(name = "Note:", value = "*: These commands, despite giving a confirmation message, will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.", inline = False)
