@@ -41,10 +41,23 @@ tourney_channels = []
 live_uno = {}
 
 @bot.event
-async def on_command_error(mess, error):
+async def on_command_error(mess: commands.Context, error):
     if isinstance(error, commands.CommandNotFound):
         return
-    raise error
+    else:
+        logs = bot.get_channel(1018406288885039154)
+        description = f"Channel: {mess.channel.mention}\nUser: {mess.author.mention}\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{error}```"
+        if "Cannot send messages to this user" in str(error):
+            await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
+        await logs.send(description)
+
+@bot.event
+async def on_application_command_error(mess: discord.Interaction, error):
+    logs = bot.get_channel(1018406288885039154)
+    description = f"Channel: {mess.channel.mention}\nUser: {mess.user.mention}\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{error}```"
+    if "Cannot send messages to this user" in str(error):
+        await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
+    await logs.send(description)
 
 @bot.event
 async def on_ready():
@@ -1870,10 +1883,15 @@ async def mm(mess: commands.Context):
                                 game = mastermind(p1_id, p2_id, get_theme(p2_id), red, orange, yellow, green, blue, purple, brown)
                                 p1 = await bot.fetch_user(p1_id)
                                 while True:
-                                    await p1.send(f'''Enter the hidden code with the following numbers:
+                                    try:
+                                        await p1.send(f'''Enter the hidden code with the following numbers:
 {red}, {orange}, {yellow}, {green}, {blue}, {purple}, {brown}
 Ex: 1 2 3 4
 ''')
+                                    except discord.errors.Forbidden:
+                                        in_game.remove(p1_id)
+                                        in_game.remove(p2_id)
+                                        raise Exception("Cannot send messages to this user")
                                     try:
                                         hcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p1_id and m.guild == None, timeout = 120.0)
                                     except asyncio.TimeoutError:
@@ -2510,7 +2528,13 @@ async def bs(mess: commands.Context):
                                                 invalid = 0
                                                 p0_game.string_grid()
                                                 grid = discord.Embed(title = "Your grid", description = p0_game.grid_string, colour = discord.Colour.blue())
-                                                await p0.send(embed = grid)
+                                                try:
+                                                    await p0.send(embed = grid)
+                                                except discord.errors.Forbidden:
+                                                    in_game.remove(id)
+                                                    in_game.remove(o_id)
+                                                    del live_battles[channel.id]
+                                                    raise Exception("Cannot send messages to this user")
                                                 await p0.send(f"Where would you like to place your {ship[0]} ({ship[1]} holes)? (Enter the start and end coordinates separated by spaces. Ex: 1 1 1 5)")
                                                 try:
                                                     ship_loc = await bot.wait_for("message", check = lambda m: m.author.id == id and m.guild == None, timeout = 60.0)
@@ -2881,7 +2905,12 @@ async def hm(mess: commands.Context):
                                 await mess.channel.send(f"<@!{p1.id}> check your DMs for a message from me to enter your word/phrase!")
                                 timeout = 0
                                 while True:
-                                    await p1.send("Enter the hidden word/phrase; it must be at least 3 characters in length and must consist of only letters and spaces")
+                                    try:
+                                        await p1.send("Enter the hidden word/phrase; it must be at least 3 characters in length and must consist of only letters and spaces")
+                                    except discord.errors.Forbidden:
+                                        in_game.remove(p1.id)
+                                        in_game.remove(p2.id)
+                                        raise Exception("Cannot send messages to this user")
                                     try:
                                         hmsg = await bot.wait_for("message", check = lambda m: m.author.id == p1.id and m.guild == None, timeout = 120.0)
                                     except asyncio.TimeoutError:
@@ -3123,7 +3152,13 @@ async def uno(mess: commands.Context):
                     x[1].string_rows()
                     your_cards_1 = "**Your uno cards:**"
                     your_cards_2 = x[1].cards_string
-                    await x[0].send(your_cards_1)
+                    try:
+                        await x[0].send(your_cards_1)
+                    except discord.errors.Forbidden:
+                        for id in uno_members:
+                            in_game.remove(id)
+                        del live_uno[channel.id]
+                        raise Exception("Cannot send messages to this user")
                     await x[0].send(your_cards_2)
                 init_number = rd.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
                 init_colour = rd.choice(["red", "green", "blue", "yellow"])
@@ -5627,10 +5662,15 @@ async def mm(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
                         game = mastermind(p1_id, p2_id, get_theme(p2_id), red, orange, yellow, green, blue, purple, brown)
                         p1 = await bot.fetch_user(p1_id)
                         while True:
-                            await p1.send(f'''Enter the hidden code with the following numbers:
+                            try:
+                                await p1.send(f'''Enter the hidden code with the following numbers:
 {red}, {orange}, {yellow}, {green}, {blue}, {purple}, {brown}
 Ex: 1 2 3 4
 ''')
+                            except discord.errors.Forbidden:
+                                in_game.remove(p1_id)
+                                in_game.remove(p2_id)
+                                raise Exception("Cannot send messages to this user")
                             try:
                                 hcode_msg = await bot.wait_for("message", check = lambda m: m.author.id == p1_id and m.guild == None, timeout = 120.0)
                             except asyncio.TimeoutError:
@@ -6157,7 +6197,13 @@ async def bs(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
                                         invalid = 0
                                         p0_game.string_grid()
                                         grid = discord.Embed(title = "Your grid", description = p0_game.grid_string, colour = discord.Colour.blue())
-                                        await p0.send(embed = grid)
+                                        try:
+                                            await p0.send(embed = grid)
+                                        except discord.errors.Forbidden:
+                                            in_game.remove(id)
+                                            in_game.remove(o_id)
+                                            del live_battles[channel.id]
+                                            raise Exception("Cannot send messages to this user")
                                         await p0.send(f"Where would you like to place your {ship[0]} ({ship[1]} holes)? (Enter the start and end coordinates separated by spaces. Ex: 1 1 1 5)")
                                         try:
                                             ship_loc = await bot.wait_for("message", check = lambda m: m.author.id == id and m.guild == None, timeout = 60.0)
@@ -6479,7 +6525,12 @@ async def hm(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
                         await mess.channel.send(f"<@!{p1.id}> check your DMs for a message from me to enter your word/phrase!")
                         timeout = 0
                         while True:
-                            await p1.send("Enter the hidden word/phrase; it must be at least 3 characters in length and must consist of only letters and spaces")
+                            try:
+                                await p1.send("Enter the hidden word/phrase; it must be at least 3 characters in length and must consist of only letters and spaces")
+                            except discord.errors.Forbidden:
+                                in_game.remove(p1.id)
+                                in_game.remove(p2.id)
+                                raise Exception("Cannot send messages to this user")
                             try:
                                 hmsg = await bot.wait_for("message", check = lambda m: m.author.id == p1.id and m.guild == None, timeout = 120.0)
                             except asyncio.TimeoutError:
@@ -6707,7 +6758,13 @@ async def uno(mess: discord.Interaction):
                     x[1].string_rows()
                     your_cards_1 = "**Your uno cards:**"
                     your_cards_2 = x[1].cards_string
-                    await x[0].send(your_cards_1)
+                    try:
+                        await x[0].send(your_cards_1)
+                    except discord.errors.Forbidden:
+                        for id in uno_members:
+                            in_game.remove(id)
+                        del live_uno[channel.id]
+                        raise Exception("Cannot send messages to this user")
                     await x[0].send(your_cards_2)
                 init_number = rd.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
                 init_colour = rd.choice(["red", "green", "blue", "yellow"])
