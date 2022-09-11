@@ -41,25 +41,6 @@ tourney_channels = []
 live_uno = {}
 
 @bot.event
-async def on_command_error(mess: commands.Context, error):
-    if isinstance(error, commands.CommandNotFound):
-        return
-    else:
-        logs = bot.get_channel(1018406288885039154)
-        description = f"Channel: {mess.channel.mention}\nUser: {mess.author.mention}\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{error}```"
-        if "Cannot send messages to this user" in str(error):
-            await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
-        await logs.send(description)
-
-@bot.event
-async def on_application_command_error(mess: discord.Interaction, error):
-    logs = bot.get_channel(1018406288885039154)
-    description = f"Channel: {mess.channel.mention}\nUser: {mess.user.mention}\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{error}```"
-    if "Cannot send messages to this user" in str(error):
-        await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
-    await logs.send(description)
-
-@bot.event
 async def on_ready():
     await bot.change_presence(activity = discord.Game(name = "Minesweeper | ;help"))
     print("Ready for takeoff!")
@@ -98,6 +79,25 @@ async def on_guild_remove(guild: discord.Guild):
     await my_user.send("Removed from: "+str(guild))
     bot_count = bot.get_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
+
+@bot.event
+async def on_command_error(mess: commands.Context, error):
+    if isinstance(error, commands.CommandNotFound):
+        return
+    else:
+        logs = bot.get_channel(1018406288885039154)
+        description = f"Normal command\n\nChannel: <#{mess.channel.id}>\nUser: <@!{mess.author.id}>\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{error}```"
+        if "Cannot send messages to this user" in str(error):
+            await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
+        await logs.send(description)
+
+@bot.event
+async def on_application_command_error(mess: discord.Interaction, error):
+    logs = bot.get_channel(1018406288885039154)
+    description = f"Slash command\n\nChannel: <#{mess.channel.id}>\nUser: <@!{mess.user.id}>\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{error}```"
+    if "Cannot send messages to this user" in str(error):
+        await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
+    await logs.send(description)
 
 @bot.event
 async def on_thread_join(thread: discord.Thread):
