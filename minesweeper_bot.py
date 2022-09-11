@@ -69,7 +69,10 @@ async def on_guild_join(guild: discord.Guild):
 ''')
     channel = guild.system_channel
     if channel != None:
-        await channel.send(embed = new_server)
+        try:
+            await channel.send(embed = new_server)
+        except discord.errors.Forbidden:
+            pass
     bot_count = bot.get_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
