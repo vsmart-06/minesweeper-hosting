@@ -15,6 +15,7 @@ from records import profile as uprofile
 import os
 import asyncio
 import random as rd
+import requests
 from nextcord.utils import get
 import dbots
 import statcord
@@ -3821,6 +3822,58 @@ async def tzfe(mess: commands.Context):
     else:
         await mess.channel.send("You're already in a game!")
 
+@bot.command(name = "trivia", description = "Get a random multiple choice trivia question", aliases = ["quiz"])
+async def trivia(mess: commands.Context):
+    global in_game
+    msg = mess.message.content.lower()
+    author = mess.author.name
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
+        return
+    
+    author_id = mess.author.id
+    if author_id not in in_game:
+        if msg == ";trivia" or msg == ";quiz":
+            question_data = requests.get("https://the-trivia-api.com/api/questions?limit=1").json()[0]
+        else:
+            if msg.startswith(";trivia "):
+                t = msg.replace(";trivia ", "")
+            elif msg.startswith(";quiz "):
+                t = msg.replace(";quiz ", "")
+            if t not in ["easy", "medium", "hard"]:
+                await mess.channel.send("Invalid difficulty")
+                return
+            else:
+                question_data = requests.get(f"https://the-trivia-api.com/api/questions?limit=1&difficulty={t}").json()[0]
+        question = question_data["question"]
+        options = question_data["incorrectAnswers"]
+        options.append(question_data["correctAnswer"])
+        rd.shuffle(options)
+        question_embed = discord.Embed(title = "Trivia", description = f"Difficulty: **{question_data['difficulty'].capitalize()}**", colour = discord.Colour.blue())
+        question_embed.add_field(name = "Question", value = f"**{question}**", inline = False)
+        question_embed.add_field(name = "Options", value = f'''1️⃣ *{str(options[0]).capitalize()}*
+2️⃣ *{str(options[1]).capitalize()}*
+3️⃣ *{str(options[2]).capitalize()}*
+4️⃣ *{str(options[3]).capitalize()}*
+''', inline = False)
+        question_final = await mess.channel.send(embed = question_embed)
+        await question_final.add_reaction("1️⃣")
+        await question_final.add_reaction("2️⃣")
+        await question_final.add_reaction("3️⃣")
+        await question_final.add_reaction("4️⃣")
+        try:
+            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in ["1️⃣", "2️⃣", "3️⃣", "4️⃣"] and r.message.id == question_final.id and p.id == author_id, timeout = 120.0)
+        except asyncio.TimeoutError:
+            await question_final.reply(f"<@!{author_id}> you took too long to respond so the question has been cancelled")
+        else:
+            t = {"1️⃣": 0, "2️⃣": 1, "3️⃣": 2, "4️⃣": 3}
+            if options[t[str(reaction.emoji)]] == question_data["correctAnswer"]:
+                await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]].capitalize()}` and that is the correct answer!", mention_author = False)
+            else:
+                await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]].capitalize()}` and that is incorrect! The correct answer is `{question_data['correctAnswer'].capitalize()}`", mention_author = False)
+    else:
+        await mess.channel.send("You're already in a game!")
+
+
 @bot.command(name = "other", description = "List all the other games on the bot")
 async def other(mess: commands.Context):
     global in_game
@@ -3962,6 +4015,11 @@ These colours will be in order, so you will know exactly which letter correspond
 2048 is now here on the minesweeper bot! A highly addictive and fun game, 2048 is based on moving tiles and when tiles having the same number on them bump into each other, they will add up. If you manage to add up to 2048, you win the game! To slide the tiles, you will have to use the WASD keys as arrow keys. With every swipe, all tiles on the board move in that direction. You can also look at an incremental score counter that comes along with the board!
 
 **Commands and aliases**: `;2048`, `;tzfe`
+''', inline = False)
+            other_games.add_field(name = "Trivia", value = '''
+Trivia is now here on the minesweeper bot! In the mood for some fun trivia? Use the trivia command to get a random multiple choice trivia question for you to answer! Try out as many questions as you want - there are no limits! If you want to personalize the question furthur, you can also choose the difficulty for the question that you receive.
+
+**Commands and aliases**: `;trivia`, `;quiz`
 ''', inline = False)
             o_games = await mess.channel.send(embed = other_games)
             await o_games.add_reaction("◀")
@@ -7377,6 +7435,50 @@ async def tzfe(mess: discord.Interaction):
     else:
         await mess.channel.send("You're already in a game!")
 
+@bot.slash_command(name = "trivia", description = "Get a random multiple choice trivia question")
+async def trivia(mess: discord.Interaction, difficulty: str = discord.SlashOption(name = "difficulty", description = "The difficulty of the question that you will attempt", choices = ["easy", "medium", "hard"], required = False)):
+    global in_game
+    author = mess.user.name
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
+        return
+
+    await mess.send("Done!", ephemeral = True)
+    
+    author_id = mess.user.id
+    if author_id not in in_game:
+        if difficulty is None:
+            question_data = requests.get("https://the-trivia-api.com/api/questions?limit=1").json()[0]
+        else:
+            question_data = requests.get(f"https://the-trivia-api.com/api/questions?limit=1&difficulty={difficulty}").json()[0]
+        question = question_data["question"]
+        options = question_data["incorrectAnswers"]
+        options.append(question_data["correctAnswer"])
+        rd.shuffle(options)
+        question_embed = discord.Embed(title = "Trivia", description = f"Difficulty: **{question_data['difficulty'].capitalize()}**", colour = discord.Colour.blue())
+        question_embed.add_field(name = "Question", value = f"**{question}**", inline = False)
+        question_embed.add_field(name = "Options", value = f'''1️⃣ *{str(options[0]).capitalize()}*
+2️⃣ *{str(options[1]).capitalize()}*
+3️⃣ *{str(options[2]).capitalize()}*
+4️⃣ *{str(options[3]).capitalize()}*
+''', inline = False)
+        question_final = await mess.channel.send(embed = question_embed)
+        await question_final.add_reaction("1️⃣")
+        await question_final.add_reaction("2️⃣")
+        await question_final.add_reaction("3️⃣")
+        await question_final.add_reaction("4️⃣")
+        try:
+            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in ["1️⃣", "2️⃣", "3️⃣", "4️⃣"] and r.message.id == question_final.id and p.id == author_id, timeout = 120.0)
+        except asyncio.TimeoutError:
+            await question_final.reply(f"<@!{author_id}> you took too long to respond so the question has been cancelled")
+        else:
+            t = {"1️⃣": 0, "2️⃣": 1, "3️⃣": 2, "4️⃣": 3}
+            if options[t[str(reaction.emoji)]] == question_data["correctAnswer"]:
+                await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]].capitalize()}` and that is the correct answer!", mention_author = False)
+            else:
+                await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]].capitalize()}` and that is incorrect! The correct answer is `{question_data['correctAnswer'].capitalize()}`", mention_author = False)
+    else:
+        await mess.send("You're already in a game!", ephemeral = True)
+
 @bot.slash_command(name = "other", description = "List all the other games on the bot")
 async def other(mess: discord.Interaction):
     global in_game
@@ -7519,6 +7621,11 @@ These colours will be in order, so you will know exactly which letter correspond
 2048 is now here on the minesweeper bot! A highly addictive and fun game, 2048 is based on moving tiles and when tiles having the same number on them bump into each other, they will add up. If you manage to add up to 2048, you win the game! To slide the tiles, you will have to use the WASD keys as arrow keys. With every swipe, all tiles on the board move in that direction. You can also look at an incremental score counter that comes along with the board!
 
 **Commands and aliases**: `;2048`, `;tzfe`
+''', inline = False)
+            other_games.add_field(name = "Trivia", value = '''
+Trivia is now here on the minesweeper bot! In the mood for some fun trivia? Use the trivia command to get a random multiple choice trivia question for you to answer! Try out as many questions as you want - there are no limits! If you want to personalize the question furthur, you can also choose the difficulty for the question that you receive.
+
+**Commands and aliases**: `;trivia`, `;quiz`
 ''', inline = False)
             o_games = await mess.channel.send(embed = other_games)
             await o_games.add_reaction("◀")
