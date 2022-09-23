@@ -49,6 +49,7 @@ Note: Slash commands are also available!
 - Uno
 - Wordle
 - 2048
+- Trivia
 
 ## 🔗 Links
 Bot invite: https://dsc.gg/minesweeper-bot
