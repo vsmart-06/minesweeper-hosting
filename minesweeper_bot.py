@@ -3848,7 +3848,7 @@ async def trivia(mess: commands.Context):
         options = question_data["incorrectAnswers"]
         options.append(question_data["correctAnswer"])
         rd.shuffle(options)
-        question_embed = discord.Embed(title = "Trivia", description = f"Difficulty: **{question_data['difficulty'].capitalize()}**", colour = discord.Colour.blue())
+        question_embed = discord.Embed(title = "Trivia", description = f"*Difficulty*: **{question_data['difficulty'].capitalize()}**", colour = discord.Colour.blue())
         question_embed.add_field(name = "Question", value = f"**{question}**", inline = False)
         question_embed.add_field(name = "Options", value = f'''1️⃣ *{str(options[0]).capitalize()}*
 2️⃣ *{str(options[1]).capitalize()}*
@@ -7454,7 +7454,7 @@ async def trivia(mess: discord.Interaction, difficulty: str = discord.SlashOptio
         options = question_data["incorrectAnswers"]
         options.append(question_data["correctAnswer"])
         rd.shuffle(options)
-        question_embed = discord.Embed(title = "Trivia", description = f"Difficulty: **{question_data['difficulty'].capitalize()}**", colour = discord.Colour.blue())
+        question_embed = discord.Embed(title = "Trivia", description = f"*Difficulty*: **{question_data['difficulty'].capitalize()}**", colour = discord.Colour.blue())
         question_embed.add_field(name = "Question", value = f"**{question}**", inline = False)
         question_embed.add_field(name = "Options", value = f'''1️⃣ *{str(options[0]).capitalize()}*
 2️⃣ *{str(options[1]).capitalize()}*
