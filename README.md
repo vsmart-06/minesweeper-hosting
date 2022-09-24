@@ -50,6 +50,7 @@ Note: Slash commands are also available!
 - Wordle
 - 2048
 - Trivia
+- Flags
 
 ## 🔗 Links
 Bot invite: https://dsc.gg/minesweeper-bot
