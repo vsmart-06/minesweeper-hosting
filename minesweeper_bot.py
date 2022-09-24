@@ -7538,7 +7538,7 @@ async def trivia(mess: discord.Interaction, difficulty: str = discord.SlashOptio
         await mess.send("You're already in a game!", ephemeral = True)
 
 @bot.slash_command(name = "flags", description = "Get a random flag and guess the country")
-async def flags(mess: discord.Integration):
+async def flags(mess: discord.Interaction):
     global in_game
     author = mess.user.name
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
