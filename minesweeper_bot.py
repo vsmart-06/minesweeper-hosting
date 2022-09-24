@@ -7374,11 +7374,10 @@ async def tzfe(mess: discord.Interaction):
     author = mess.user.name
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
-    
-    await mess.send("Done!", ephemeral = True)
 
     author_id = mess.user.id
     if author_id not in in_game:
+        await mess.send("Done!", ephemeral = True)
         in_game.append(author_id)
         p0 = mess.user
         a = bot.get_emoji(1006186622322212914)
@@ -7443,7 +7442,7 @@ async def tzfe(mess: discord.Interaction):
                     break
        
     else:
-        await mess.channel.send("You're already in a game!")
+        await mess.send("You're already in a game!", ephemeral = True)
 
 @bot.slash_command(name = "trivia", description = "Get a random multiple choice trivia question")
 async def trivia(mess: discord.Interaction, difficulty: str = discord.SlashOption(name = "difficulty", description = "The difficulty of the question that you will attempt", choices = ["easy", "medium", "hard"], required = False)):
