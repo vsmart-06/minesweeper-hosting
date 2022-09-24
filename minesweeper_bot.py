@@ -16,6 +16,7 @@ import os
 import asyncio
 import random as rd
 import requests
+import pandas as pd
 from nextcord.utils import get
 import dbots
 import statcord
@@ -3878,6 +3879,55 @@ async def trivia(mess: commands.Context):
     else:
         await mess.channel.send("You're already in a game!")
 
+@bot.command(name = "flags", description = "Get a random flag and guess the country")
+async def flags(mess: commands.Context):
+    global in_game
+    msg = mess.message.content.lower()
+    author = mess.author.name
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
+        return
+    
+    author_id = mess.author.id
+    if author_id not in in_game:
+        df = pd.read_csv("flag_codes.txt", delimiter = "\t")
+        flag_codes = df.to_numpy().tolist()
+        real_flag = rd.choice(flag_codes)
+        flag_codes.remove(real_flag)
+        options = [real_flag]
+        for t in range(3):
+            option_flag = rd.choice(flag_codes)
+            options.append(option_flag)
+            flag_codes.remove(option_flag)
+        rd.shuffle(options)
+        flag_id = str(real_flag[1])
+        if len(flag_id) != 3:
+            flag_id = "0"*(3-(len(flag_id)))+flag_id
+        flag_image = f"https://countryflagsapi.com/png/{flag_id}"
+        question_embed = discord.Embed(title = "Flags!", description = "**Which country's flag is shown below?**", colour = discord.Colour.blue())
+        question_embed.add_field(name = "Options", value = f'''1️⃣ *{options[0][0]}*
+2️⃣ *{options[1][0]}*
+3️⃣ *{options[2][0]}*
+4️⃣ *{options[3][0]}*
+''', inline = False)
+        question_embed.set_image(url = flag_image)
+        question_final = await mess.channel.send(embed = question_embed)
+        await question_final.add_reaction("1️⃣")
+        await question_final.add_reaction("2️⃣")
+        await question_final.add_reaction("3️⃣")
+        await question_final.add_reaction("4️⃣")
+        try:
+            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in ["1️⃣", "2️⃣", "3️⃣", "4️⃣"] and r.message.id == question_final.id and p.id == author_id, timeout = 120.0)
+        except asyncio.TimeoutError:
+            await question_final.reply(f"<@!{author_id}> you took too long to respond so the question has been cancelled")
+        else:
+            t = {"1️⃣": 0, "2️⃣": 1, "3️⃣": 2, "4️⃣": 3}
+            if options[t[str(reaction.emoji)]][0] == real_flag[0]:
+                await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]][0]}` and that is the correct answer!", mention_author = False)
+            else:
+                await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]][0]}` and that is incorrect! The correct answer is `{real_flag[0]}`", mention_author = False)
+
+    else:
+        await mess.channel.send("You're already in a game!")
 
 @bot.command(name = "other", description = "List all the other games on the bot")
 async def other(mess: commands.Context):
@@ -4022,9 +4072,9 @@ These colours will be in order, so you will know exactly which letter correspond
 **Commands and aliases**: `;2048`, `;tzfe`
 ''', inline = False)
             other_games.add_field(name = "Trivia", value = '''
-Trivia is now here on the minesweeper bot! In the mood for some fun trivia? Use the trivia command to get a random multiple choice trivia question for you to answer! Try out as many questions as you want - there are no limits! If you want to personalize the question furthur, you can also choose the difficulty for the question that you receive.
+Trivia is now here on the minesweeper bot! In the mood for some fun trivia? Use the trivia command to get a random multiple choice trivia question for you to answer! Try out as many questions as you want - there are no limits! If you want to personalize the question furthur, you can also choose the difficulty for the question that you receive. Are you a flag enthusiast? We also have a flag quiz with the bot! Try to guess as many flags as you can!
 
-**Commands and aliases**: `;trivia`, `;quiz`
+**Commands and aliases**: `;trivia`, `;quiz`, `;flags`
 ''', inline = False)
             o_games = await mess.channel.send(embed = other_games)
             await o_games.add_reaction("◀")
@@ -7487,6 +7537,56 @@ async def trivia(mess: discord.Interaction, difficulty: str = discord.SlashOptio
     else:
         await mess.send("You're already in a game!", ephemeral = True)
 
+@bot.slash_command(name = "flags", description = "Get a random flag and guess the country")
+async def flags(mess: discord.Integration):
+    global in_game
+    author = mess.user.name
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
+        return
+    
+    author_id = mess.user.id
+    if author_id not in in_game:
+        await mess.send("Done!", ephemeral = True)
+        df = pd.read_csv("flag_codes.txt", delimiter = "\t")
+        flag_codes = df.to_numpy().tolist()
+        real_flag = rd.choice(flag_codes)
+        flag_codes.remove(real_flag)
+        options = [real_flag]
+        for t in range(3):
+            option_flag = rd.choice(flag_codes)
+            options.append(option_flag)
+            flag_codes.remove(option_flag)
+        rd.shuffle(options)
+        flag_id = str(real_flag[1])
+        if len(flag_id) != 3:
+            flag_id = "0"*(3-(len(flag_id)))+flag_id
+        flag_image = f"https://countryflagsapi.com/png/{flag_id}"
+        question_embed = discord.Embed(title = "Flags!", description = "**Which country's flag is shown below?**", colour = discord.Colour.blue())
+        question_embed.add_field(name = "Options", value = f'''1️⃣ *{options[0][0]}*
+2️⃣ *{options[1][0]}*
+3️⃣ *{options[2][0]}*
+4️⃣ *{options[3][0]}*
+''', inline = False)
+        question_embed.set_image(url = flag_image)
+        question_final = await mess.channel.send(embed = question_embed)
+        await question_final.add_reaction("1️⃣")
+        await question_final.add_reaction("2️⃣")
+        await question_final.add_reaction("3️⃣")
+        await question_final.add_reaction("4️⃣")
+        try:
+            reaction, person = await bot.wait_for("reaction_add", check = lambda r, p: str(r.emoji) in ["1️⃣", "2️⃣", "3️⃣", "4️⃣"] and r.message.id == question_final.id and p.id == author_id, timeout = 120.0)
+        except asyncio.TimeoutError:
+            await question_final.reply(f"<@!{author_id}> you took too long to respond so the question has been cancelled")
+        else:
+            t = {"1️⃣": 0, "2️⃣": 1, "3️⃣": 2, "4️⃣": 3}
+            if options[t[str(reaction.emoji)]][0] == real_flag[0]:
+                await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]][0]}` and that is the correct answer!", mention_author = False)
+            else:
+                await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]][0]}` and that is incorrect! The correct answer is `{real_flag[0]}`", mention_author = False)
+
+    else:
+        await mess.send("You're already in a game!", ephemeral = True)
+
 @bot.slash_command(name = "other", description = "List all the other games on the bot")
 async def other(mess: discord.Interaction):
     global in_game
@@ -7631,9 +7731,9 @@ These colours will be in order, so you will know exactly which letter correspond
 **Commands and aliases**: `;2048`, `;tzfe`
 ''', inline = False)
             other_games.add_field(name = "Trivia", value = '''
-Trivia is now here on the minesweeper bot! In the mood for some fun trivia? Use the trivia command to get a random multiple choice trivia question for you to answer! Try out as many questions as you want - there are no limits! If you want to personalize the question furthur, you can also choose the difficulty for the question that you receive.
+Trivia is now here on the minesweeper bot! In the mood for some fun trivia? Use the trivia command to get a random multiple choice trivia question for you to answer! Try out as many questions as you want - there are no limits! If you want to personalize the question furthur, you can also choose the difficulty for the question that you receive. Are you a flag enthusiast? We also have a flag quiz with the bot! Try to guess as many flags as you can!
 
-**Commands and aliases**: `;trivia`, `;quiz`
+**Commands and aliases**: `;trivia`, `;quiz`, `;flags`
 ''', inline = False)
             o_games = await mess.channel.send(embed = other_games)
             await o_games.add_reaction("◀")

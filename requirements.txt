@@ -3,3 +3,4 @@ mysql-connector
 dbots
 statcord.py
 requests
+pandas
