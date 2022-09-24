@@ -7450,11 +7450,10 @@ async def trivia(mess: discord.Interaction, difficulty: str = discord.SlashOptio
     author = mess.user.name
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
-
-    await mess.send("Done!", ephemeral = True)
     
     author_id = mess.user.id
     if author_id not in in_game:
+        await mess.send("Done!", ephemeral = True)
         if difficulty is None:
             question_data = requests.get("https://the-trivia-api.com/api/questions?limit=1").json()[0]
         else:
