@@ -3761,6 +3761,7 @@ async def tzfe(mess: commands.Context):
     
     author_id = mess.author.id
     if author_id not in in_game:
+        in_game.append(author_id)
         p0 = mess.author
         a = bot.get_emoji(1006186622322212914)
         b = bot.get_emoji(1006186619822419970)
@@ -3787,6 +3788,7 @@ async def tzfe(mess: commands.Context):
                 except asyncio.TimeoutError:
                     await mess.channel.send(f"<@!{author_id}> you took too long to respond to the game has ended")
                     game.game = 0
+                    in_game.remove(author_id)
                     break
                 else:
                     dir = str(reaction_msg.content).lower()
@@ -3794,6 +3796,7 @@ async def tzfe(mess: commands.Context):
                         if dir == "quit":
                             await mess.channel.send("We're sorry to see you leave 😢")
                             game.game = 0
+                            in_game.remove(author_id)
                             break
                         elif dir == "board":
                             game.string_rows()
@@ -3813,10 +3816,12 @@ async def tzfe(mess: commands.Context):
                 await mess.channel.send(game.game_board)
                 if game.game == 0:
                     await mess.channel.send(f"<@!{author_id}> you won! Your final score is {game.score}")
+                    in_game.remove(author_id)
                     break
                 game.game_over()
                 if game.game == 0:
                     await mess.channel.send(f"<@!{author_id}> the game is over! Your final score is {game.score}")
+                    in_game.remove(author_id)
                     break
        
     else:
@@ -7374,6 +7379,7 @@ async def tzfe(mess: discord.Interaction):
 
     author_id = mess.user.id
     if author_id not in in_game:
+        in_game.append(author_id)
         p0 = mess.user
         a = bot.get_emoji(1006186622322212914)
         b = bot.get_emoji(1006186619822419970)
@@ -7400,6 +7406,7 @@ async def tzfe(mess: discord.Interaction):
                 except asyncio.TimeoutError:
                     await mess.channel.send(f"<@!{author_id}> you took too long to respond to the game has ended")
                     game.game = 0
+                    in_game.remove(author_id)
                     break
                 else:
                     dir = str(reaction_msg.content).lower()
@@ -7407,6 +7414,7 @@ async def tzfe(mess: discord.Interaction):
                         if dir == "quit":
                             await mess.channel.send("We're sorry to see you leave 😢")
                             game.game = 0
+                            in_game.remove(author_id)
                             break
                         elif dir == "board":
                             game.string_rows()
@@ -7426,10 +7434,12 @@ async def tzfe(mess: discord.Interaction):
                 await mess.channel.send(game.game_board)
                 if game.game == 0:
                     await mess.channel.send(f"<@!{author_id}> you won! Your final score is {game.score}")
+                    in_game.remove(author_id)
                     break
                 game.game_over()
                 if game.game == 0:
                     await mess.channel.send(f"<@!{author_id}> the game is over! Your final score is {game.score}")
+                    in_game.remove(author_id)
                     break
        
     else:
