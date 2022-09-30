@@ -18,6 +18,7 @@ import random as rd
 import requests
 import pandas as pd
 import matplotlib.pyplot as plt
+import traceback
 from nextcord.utils import get
 import dbots
 import statcord
@@ -92,7 +93,7 @@ async def on_command_error(mess: commands.Context, error):
         return
     else:
         logs = bot.get_channel(1018406288885039154)
-        description = f"Normal command\n\nChannel: <#{mess.channel.id}>\nUser: <@!{mess.author.id}>\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{error}```"
+        description = f"Normal command\n\nChannel: <#{mess.channel.id}>\nUser: <@!{mess.author.id}>\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{''.join(traceback.format_exception(error, error, error.__traceback__))}```"
         if "Cannot send messages to this user" in str(error):
             await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
         await logs.send(description)
@@ -100,7 +101,7 @@ async def on_command_error(mess: commands.Context, error):
 @bot.event
 async def on_application_command_error(mess: discord.Interaction, error):
     logs = bot.get_channel(1018406288885039154)
-    description = f"Slash command\n\nChannel: <#{mess.channel.id}>\nUser: <@!{mess.user.id}>\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{error}```"
+    description = f"Slash command\n\nChannel: <#{mess.channel.id}>\nUser: <@!{mess.user.id}>\nServer: {mess.guild.name} ({mess.guild.id})\n\nError:\n```{''.join(traceback.format_exception(error, error, error.__traceback__))}```"
     if "Cannot send messages to this user" in str(error):
         await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
     await logs.send(description)
