@@ -7867,10 +7867,10 @@ async def strength(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.user.id == 706855396828250153):
         return
 
-    old_msg = await mess.send(f"I'm in {len(bot.guilds)} servers!")
+    await mess.send(f"I'm in {len(bot.guilds)} servers!")
     bot_count = bot.get_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
-    await old_msg.reply("Updated server count in <#948144061305479198>", mention_author = False)
+    await mess.send("Updated server count in <#948144061305479198>", mention_author = False)
 
 @bot.slash_command(name = "count", description = "A private command to view the number of minesweeper users", guild_ids = [852578295967121438])
 async def count(mess: discord.Interaction):
