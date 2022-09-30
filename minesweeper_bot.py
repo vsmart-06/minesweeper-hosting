@@ -7860,6 +7860,46 @@ async def website(mess: discord.Interaction):
     website = discord.Embed(title = "Visit our website!", description = "Use this link to view our website: https://minesweeper-bot.carrd.co", colour = discord.Colour.blue())
     await mess.send(embed = website)
 
+@bot.slash_command(name = "strength", description = "A private command to view the number of servers the bot is in", guild_ids = [852578295967121438])
+async def strength(mess: discord.Interaction):
+    global in_game
+    author = mess.user.name
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.user.id == 706855396828250153):
+        return
+
+    old_msg = await mess.send(f"I'm in {len(bot.guilds)} servers!")
+    bot_count = bot.get_channel(948144061305479198)
+    await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
+    await old_msg.reply("Updated server count in <#948144061305479198>", mention_author = False)
+
+@bot.slash_command(name = "count", description = "A private command to view the number of minesweeper users", guild_ids = [852578295967121438])
+async def count(mess: discord.Interaction):
+    global in_game
+    author = mess.user.name
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.user.id == 706855396828250153):
+        return
+    
+    await mess.send(f"We have {member_count()} users!")
+
+@bot.slash_command(name = "statistics", description = "A private command to view the command statistics of the bot", guild_ids = [852578295967121438])
+async def stats(mess: discord.Interaction):
+    global in_game
+    author = mess.user.name
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.user.id == 706855396828250153):
+        return
+
+    commands_data = get_stats()
+    commands = list(commands_data.keys())
+    values = list(commands_data.values())
+
+    fig = plt.figure(figsize = (16, 9))
+    plt.barh(commands, values, color = "blue")
+    plt.ylabel("Commands")
+    plt.xlabel("Number of calls")
+    plt.title("Commands data")
+    plt.savefig("commands_graph.png")
+    await mess.send("Commands graph", file = discord.File("commands_graph.png"))
+
 @bot.slash_command(name = "help", description = "View the help page of the bot")
 async def help(mess: discord.Interaction):
     global in_game
