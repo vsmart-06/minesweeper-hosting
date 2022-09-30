@@ -10,13 +10,14 @@ from hangman_class import hangman
 from uno_class import uno as uno_c
 from wordle_class import wordle
 from tzfe_class import tzfe as tzfe_c
-from records import global_leaderboard, server_leaderboard, privacy_change, delete_record, theme_change, get_theme, member_count
+from records import global_leaderboard, server_leaderboard, privacy_change, delete_record, theme_change, get_theme, member_count, change_stats, get_stats
 from records import profile as uprofile
-import os
 import asyncio
+import os
 import random as rd
 import requests
 import pandas as pd
+import matplotlib.pyplot as plt
 from nextcord.utils import get
 import dbots
 import statcord
@@ -116,6 +117,7 @@ async def ms(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("minesweeper")
     if msg == ";minesweeper" or msg == ";ms":
         author_id = mess.author.id
         if author_id not in in_game:
@@ -479,6 +481,7 @@ async def mscustom(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("minesweeper_custom")
     author_id = mess.author.id
     if author_id not in in_game:
         in_game.append(author_id)
@@ -612,6 +615,7 @@ async def tournament(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("tournament")
     if not(isinstance(mess.channel, discord.DMChannel)):
         host_id = mess.author.id
         if host_id not in in_game and mess.channel.id not in tourney_channels:
@@ -950,6 +954,7 @@ async def lb(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("leaderboard")
     page = 1
     while True:
         if page == 1:
@@ -1100,6 +1105,7 @@ async def serverlb(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("server_leaderboard")
     if not(isinstance(mess.channel, discord.DMChannel)):
         server_id = mess.guild.id
         guild = bot.get_guild(server_id)
@@ -1296,7 +1302,8 @@ async def profile(mess: commands.Context):
             valid_id = 1
         except ValueError:
             pass
-    if valid_id == 1: 
+    if valid_id == 1:
+        change_stats("user_profile") 
         prof = uprofile(int(user_id))
         try:
             u = await bot.fetch_user(user_id)
@@ -1342,6 +1349,7 @@ async def profile(mess: commands.Context):
         except discord.errors.NotFound:
             user_profile = discord.Embed(title = "Invalid user!", description = "The ID entered does not exist!", color = discord.Color.blue())
     elif inv_setting == 0:
+        change_stats("profile_settings")
         user_profile = discord.Embed(title = "Profile settings changed!", description = "Your profile is now "+priv+"!", color = discord.Color.blue())
     else:
         user_profile = discord.Embed(title = "Invalid syntax!", description = "The profile syntax is invalid! The correct syntax is: ;profile @user", color = discord.Color.blue())
@@ -1355,6 +1363,7 @@ async def delete(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("delete_stats")
     aut_id = mess.author.id
     delete_data = await mess.channel.send("Are you sure you want to delete all of your data on this bot? React to confirm!")
     await delete_data.add_reaction("✅")
@@ -1382,6 +1391,7 @@ async def theme(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("theme")
     theme = msg.replace(";theme settings ", "")
     aut_id = mess.author.id
     if theme in ["light", "dark"]:
@@ -1399,6 +1409,7 @@ async def c4(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("connect_four")
     if not(isinstance(mess.channel, discord.DMChannel)):
         valid_id = 0
         if msg.startswith(";connect4 <@!") and msg.endswith(">"):
@@ -1602,6 +1613,7 @@ async def oto(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("othello")
     if not(isinstance(mess.channel, discord.DMChannel)):
         valid_id = 0
         if msg.startswith(";othello <@!") and msg.endswith(">"):
@@ -1812,6 +1824,7 @@ async def mm(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("mastermind")
     if not(isinstance(mess.channel, discord.DMChannel)):
         valid_id = 0
         channel_id = mess.channel.id
@@ -2028,6 +2041,7 @@ async def yz(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("yahtzee")
     if not(isinstance(mess.channel, discord.DMChannel)):
         valid_id = 0
         channel_id = mess.channel.id
@@ -2457,6 +2471,7 @@ async def bs(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("battleship")
     if not(isinstance(mess.channel, discord.DMChannel)):
         valid_id = 0
         channel_id = mess.channel.id
@@ -2816,6 +2831,7 @@ async def live(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("live")
     if not(isinstance(mess.channel, discord.DMChannel)):
         channel_id = mess.channel.id
         if channel_id in live_battles.keys():
@@ -2841,6 +2857,7 @@ async def hm(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("hangman")
     if not(isinstance(mess.channel, discord.DMChannel)):
         valid_id = 0
         channel_id = mess.channel.id
@@ -3070,6 +3087,7 @@ async def uno(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("uno")
     if not(isinstance(mess.channel, discord.DMChannel)):
         host_id = mess.author.id
         if host_id not in in_game and mess.channel.id not in live_uno.keys():
@@ -3570,6 +3588,7 @@ async def wd(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("wordle")
     if not(isinstance(mess.channel, discord.DMChannel)):
         valid_id = 0
         channel_id = mess.channel.id
@@ -3760,6 +3779,7 @@ async def tzfe(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("tzfe")
     author_id = mess.author.id
     if author_id not in in_game:
         in_game.append(author_id)
@@ -3836,6 +3856,7 @@ async def trivia(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("trivia")
     author_id = mess.author.id
     if author_id not in in_game:
         if msg == ";trivia" or msg == ";quiz":
@@ -3887,6 +3908,7 @@ async def flags(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("flags")
     author_id = mess.author.id
     if author_id not in in_game:
         df = pd.read_csv("flag_codes.txt", delimiter = "\t")
@@ -3937,6 +3959,7 @@ async def other(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("other")
     page = 1
     while True:
         if page == 1:
@@ -4094,6 +4117,7 @@ async def invite(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("invite")
     invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://dsc.gg/minesweeper-bot", colour = discord.Colour.blue())
     await mess.channel.send(embed = invite)
 
@@ -4105,6 +4129,7 @@ async def support(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("support")
     support = discord.Embed(title = "Join the official minesweeper bot support server!", description = "Use this link to join the server: https://dsc.gg/minesweeper", colour = discord.Colour.blue())
     await mess.channel.send(embed = support)
 
@@ -4116,6 +4141,7 @@ async def vote(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("vote")
     vote = discord.Embed(title = "Vote for me!", description = '''Enjoyed using the bot?
 Vote for us on `top.gg`: https://top.gg/bot/902498109270134794/vote
 Vote for us on `discordbotlist.com`: https://discordbotlist.com/bots/minesweeper-bot/upvote
@@ -4131,6 +4157,7 @@ async def website(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("website")
     website = discord.Embed(title = "Visit our website!", description = "Use this link to view our website: https://minesweeper-bot.carrd.co", colour = discord.Colour.blue())
     await mess.channel.send(embed = website)
 
@@ -4157,6 +4184,26 @@ async def count(mess: commands.Context):
     
     await mess.channel.send(f"We have {member_count()} users!")
 
+@bot.command(name = "stats", description = "A private command to view the command statistics of the bot")
+async def stats(mess: commands.Context):
+    global in_game
+    msg = mess.message.content.lower()
+    author = mess.author.name
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.author.id == 706855396828250153):
+        return
+
+    commands_data = get_stats()
+    commands = list(commands_data.keys())
+    values = list(commands_data.values())
+
+    fig = plt.figure(figsize = (16, 9))
+    plt.barh(commands, values, color = "blue")
+    plt.ylabel("Commands")
+    plt.xlabel("Number of calls")
+    plt.title("Commands data")
+    plt.savefig("commands_graph.png")
+    await mess.channel.send("Commands graph", file = discord.File("commands_graph.png"))
+
 @bot.command(name = "help", description = "View the help page of the bot")
 async def help(mess: commands.Context):
     global in_game
@@ -4165,6 +4212,7 @@ async def help(mess: commands.Context):
     if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("help")
     page = 1
     while True:
         if page == 1:
@@ -4229,6 +4277,7 @@ async def ms(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("minesweeper")
     if user is None:
         author_id = mess.user.id
         if author_id not in in_game:
@@ -4538,6 +4587,7 @@ async def mscustom(mess: discord.Interaction, rows: int = discord.SlashOption(na
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("minesweeper_custom")
     author_id = mess.user.id
     if author_id not in in_game:
         if rows <= 1:
@@ -4649,6 +4699,7 @@ async def tournament(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("tournament")
     if not(isinstance(mess.channel, discord.DMChannel)):
         host_id = mess.user.id
         if host_id not in in_game and mess.channel.id not in tourney_channels:
@@ -4986,7 +5037,7 @@ async def lb(mess: discord.Interaction):
         return
 
     await mess.send("Done!", ephemeral = True)
-
+    change_stats("leaderboard")
     page = 1
     while True:
         if page == 1:
@@ -5136,6 +5187,7 @@ async def serverlb(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("server_leaderboard")
     if not(isinstance(mess.channel, discord.DMChannel)):
         await mess.send("Done!", ephemeral = True)
         server_id = mess.guild.id
@@ -5296,7 +5348,7 @@ async def profile(mess: discord.Interaction, user: discord.Member = discord.Slas
         return
 
     prof_author = mess.user.id
-
+    change_stats("user_profile")
     if user is None:
         user_id = mess.user.id
         prof = uprofile(int(user_id))
@@ -5385,6 +5437,7 @@ async def profile(mess: discord.Interaction, user: discord.Member = discord.Slas
 @bot.slash_command(name = "profile-settings", description = "Change your profile settings")
 async def settings(mess: discord.Interaction, privacy: str = discord.SlashOption(name = "privacy", description = "Your privacy option", choices = ["public", "private"], required = True)):
     user_id = mess.user.id
+    change_stats("profile_settings")
     privacy_change(user_id, privacy)
     profile_privacy = discord.Embed(title = "Profile settings changed!", description = f"Your profile is now {privacy}!", color = discord.Color.blue())
     await mess.send(embed = profile_privacy)
@@ -5397,7 +5450,7 @@ async def delete(mess: discord.Interaction):
         return
     
     await mess.send("Done!", ephemeral = True)
-
+    change_stats("delete_stats")
     aut_id = mess.user.id
     delete_data = await mess.channel.send("Are you sure you want to delete all of your data on this bot? React to confirm!")
     await delete_data.add_reaction("✅")
@@ -5424,6 +5477,7 @@ async def theme(mess: discord.Interaction, theme: str = discord.SlashOption(name
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("theme")
     aut_id = mess.user.id
     theme_change(aut_id, theme)
     theme_settings = discord.Embed(title = "Theme changed successfully!", description = f"Your game theme has been successfully changed to {theme} mode!", color = discord.Color.blue())
@@ -5436,6 +5490,7 @@ async def c4(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("connect_four")
     if not(isinstance(mess.channel, discord.DMChannel)):
         opp_id = user.id
         a_id = mess.user.id
@@ -5583,6 +5638,7 @@ async def oto(mess: discord.Interaction, user: discord.Member = discord.SlashOpt
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("othello")
     if not(isinstance(mess.channel, discord.DMChannel)):
         opp_id = user.id
         a_id = mess.user.id
@@ -5738,6 +5794,7 @@ async def mm(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("mastermind")
     if not(isinstance(mess.channel, discord.DMChannel)):
         channel_id = mess.channel.id
         opp_id = user.id
@@ -5899,6 +5956,7 @@ async def yz(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("yahtzee")
     if not(isinstance(mess.channel, discord.DMChannel)):
         channel_id = mess.channel.id
         opp_id = user.id
@@ -6273,6 +6331,7 @@ async def bs(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("battleship")
     if not(isinstance(mess.channel, discord.DMChannel)):
         channel_id = mess.channel.id
         opp_id = user.id
@@ -6579,6 +6638,7 @@ async def live(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("live")
     if not(isinstance(mess.channel, discord.DMChannel)):
         channel_id = mess.channel.id
         live_msg = ""
@@ -6605,6 +6665,7 @@ async def hm(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("hangman")
     if not(isinstance(mess.channel, discord.DMChannel)):
         channel_id = mess.channel.id
         opp_id = user.id
@@ -6786,6 +6847,7 @@ async def uno(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("uno")
     if not(isinstance(mess.channel, discord.DMChannel)):
         host_id = mess.user.id
         if host_id not in in_game and mess.channel.id not in live_uno.keys():
@@ -7286,6 +7348,7 @@ async def wd(mess: discord.Interaction, user: discord.Member = discord.SlashOpti
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("wordle")
     if not(isinstance(mess.channel, discord.DMChannel)):
         channel_id = mess.channel.id
         opp_id = user.id
@@ -7425,6 +7488,7 @@ async def tzfe(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("tzfe")
     author_id = mess.user.id
     if author_id not in in_game:
         await mess.send("Done!", ephemeral = True)
@@ -7501,6 +7565,7 @@ async def trivia(mess: discord.Interaction, difficulty: str = discord.SlashOptio
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("trivia")
     author_id = mess.user.id
     if author_id not in in_game:
         await mess.send("Done!", ephemeral = True)
@@ -7544,6 +7609,7 @@ async def flags(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("flags")
     author_id = mess.user.id
     if author_id not in in_game:
         await mess.send("Done!", ephemeral = True)
@@ -7596,6 +7662,7 @@ async def other(mess: discord.Interaction):
 
     await mess.send("Done!", ephemeral = True)
 
+    change_stats("other")
     page = 1
     while True:
         if page == 1:
@@ -7752,6 +7819,7 @@ async def invite(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("invite")
     invite = discord.Embed(title = "Invite me to your server!", description = "Use this link to invite me: https://dsc.gg/minesweeper-bot", colour = discord.Colour.blue())
     await mess.send(embed = invite)
 
@@ -7762,6 +7830,7 @@ async def support(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("support")
     support = discord.Embed(title = "Join the official minesweeper bot support server!", description = "Use this link to join the server: https://dsc.gg/minesweeper", colour = discord.Colour.blue())
     await mess.send(embed = support)
 
@@ -7772,6 +7841,7 @@ async def vote(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
+    change_stats("vote")
     vote = discord.Embed(title = "Vote for me!", description = '''Enjoyed using the bot?
 Vote for us on `top.gg`: https://top.gg/bot/902498109270134794/vote
 Vote for us on `discordbotlist.com`: https://discordbotlist.com/bots/minesweeper-bot/upvote
@@ -7786,6 +7856,7 @@ async def website(mess: discord.Interaction):
     if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
+    change_stats("website")
     website = discord.Embed(title = "Visit our website!", description = "Use this link to view our website: https://minesweeper-bot.carrd.co", colour = discord.Colour.blue())
     await mess.send(embed = website)
 
@@ -7798,6 +7869,7 @@ async def help(mess: discord.Interaction):
 
     await mess.send("Done!", ephemeral = True)
     
+    change_stats("help")
     page = 1
     while True:
         if page == 1:

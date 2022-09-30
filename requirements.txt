@@ -4,3 +4,4 @@ dbots
 statcord.py
 requests
 pandas
+matplotlib

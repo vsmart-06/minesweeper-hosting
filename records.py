@@ -35,6 +35,37 @@ try:
         avg_moves INT,
         theme VARCHAR
         )''')
+
+    c.execute('''CREATE TABLE bot_stats (
+        id INT NOT NULL PRIMARY KEY, 
+        minesweeper INT NOT NULL, 
+        minesweeper_custom INT NOT NULL, 
+        tournament INT NOT NULL, 
+        leaderboard INT NOT NULL, 
+        server_leaderboard INT NOT NULL, 
+        user_profile INT NOT NULL, 
+        profile_settings INT NOT NULL, 
+        delete_stats INT NOT NULL, 
+        theme INT NOT NULL,
+        connect_four INT NOT NULL,
+        othello INT NOT NULL,
+        mastermind INT NOT NULL,
+        yahtzee INT NOT NULL,
+        battleship INT NOT NULL,
+        live INT NOT NULL,
+        hangman INT NOT NULL,
+        uno INT NOT NULL,
+        wordle INT NOT NULL,
+        tzfe INT NOT NULL,
+        trivia INT NOT NULL,
+        flags INT NOT NULL,
+        other INT NOT NULL,
+        invite INT NOT NULL,
+        support INT NOT NULL,
+        vote INT NOT NULL,
+        website INT NOT NULL,
+        help INT NOT NULL
+        )''')
 except db.errors.ProgrammingError:
     pass
 
@@ -283,6 +314,40 @@ def member_count():
     c.close()
     conn.close()
     return count
+
+def change_stats(column):
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    c.execute("SELECT * FROM bot_stats WHERE id = 1")
+    stats = c.fetchone()
+    columns = ["id", "minesweeper", "minesweeper_custom", "tournament", "leaderboard", "server_leaderboard", "user_profile", "profile_settings", "delete_stats", "theme", "connect_four","othello", "mastermind", "yahtzee", "battleship", "live", "hangman", "uno" ,"wordle", "tzfe", "trivia", "flags", "other", "invite", "support", "vote", "website", "help"]
+    ind = columns.index(column)
+    new_value = stats[ind] + 1
+    c.execute(f"UPDATE bot_stats SET {column} = {new_value} WHERE id = 1")
+    conn.commit()
+    c.close()
+    conn.close()
+
+def get_stats():
+    conn = db.connect(
+    host = h,
+    user = u,
+    password = p,
+    database = d
+    )
+    c = conn.cursor()
+    c.execute("SELECT * FROM bot_stats WHERE id = 1")
+    stats = c.fetchone()
+    columns = ["id", "minesweeper", "minesweeper_custom", "tournament", "leaderboard", "server_leaderboard", "user_profile", "profile_settings", "delete_stats", "theme", "connect_four","othello", "mastermind", "yahtzee", "battleship", "live", "hangman", "uno" ,"wordle", "tzfe", "trivia", "flags", "other", "invite", "support", "vote", "website", "help"]
+    data = {}
+    for x in range(1, len(columns)):
+        data[columns[x]] = stats[x]
+    return data
 
 c.close()
 conn.close()
