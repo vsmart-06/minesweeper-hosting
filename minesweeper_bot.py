@@ -4198,7 +4198,8 @@ async def stats(mess: commands.Context):
     values = list(commands_data.values())
 
     fig = plt.figure(figsize = (16, 9))
-    plt.barh(commands, values, color = "blue")
+    bars = plt.barh(commands, values, color = "blue")
+    plt.bar_label(bars)
     plt.ylabel("Commands")
     plt.xlabel("Number of calls")
     plt.title("Commands data")
@@ -7894,7 +7895,8 @@ async def stats(mess: discord.Interaction):
     values = list(commands_data.values())
 
     fig = plt.figure(figsize = (16, 9))
-    plt.barh(commands, values, color = "blue")
+    bars = plt.barh(commands, values, color = "blue")
+    plt.bar_label(bars)
     plt.ylabel("Commands")
     plt.xlabel("Number of calls")
     plt.title("Commands data")
