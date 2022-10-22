@@ -7866,7 +7866,7 @@ async def website(mess: discord.Interaction):
 async def strength(mess: discord.Interaction):
     global in_game
     author = mess.user.name
-    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.user.id == 706855396828250153):
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
     await mess.send(f"I'm in {len(bot.guilds)} servers!")
@@ -7878,7 +7878,7 @@ async def strength(mess: discord.Interaction):
 async def count(mess: discord.Interaction):
     global in_game
     author = mess.user.name
-    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.user.id == 706855396828250153):
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     await mess.send(f"We have {member_count()} users!")
@@ -7887,7 +7887,7 @@ async def count(mess: discord.Interaction):
 async def stats(mess: discord.Interaction):
     global in_game
     author = mess.user.name
-    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.user.id == 706855396828250153):
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
 
     commands_data = get_stats()
