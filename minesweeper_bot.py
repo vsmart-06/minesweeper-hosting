@@ -7862,7 +7862,7 @@ async def website(mess: discord.Interaction):
     website = discord.Embed(title = "Visit our website!", description = "Use this link to view our website: https://minesweeper-bot.carrd.co", colour = discord.Colour.blue())
     await mess.send(embed = website)
 
-@bot.slash_command(name = "strength", description = "A private command to view the number of servers the bot is in", guild_ids = [852578295967121438])
+@bot.slash_command(name = "strength", description = "A private command to view the number of servers the bot is in", guild_ids = [852578295967121438, 835448058656587777])
 async def strength(mess: discord.Interaction):
     global in_game
     author = mess.user.name
@@ -7874,7 +7874,7 @@ async def strength(mess: discord.Interaction):
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
     await mess.send("Updated server count in <#948144061305479198>", mention_author = False)
 
-@bot.slash_command(name = "count", description = "A private command to view the number of minesweeper users", guild_ids = [852578295967121438])
+@bot.slash_command(name = "count", description = "A private command to view the number of minesweeper users", guild_ids = [852578295967121438, 835448058656587777])
 async def count(mess: discord.Interaction):
     global in_game
     author = mess.user.name
@@ -7883,7 +7883,7 @@ async def count(mess: discord.Interaction):
     
     await mess.send(f"We have {member_count()} users!")
 
-@bot.slash_command(name = "statistics", description = "A private command to view the command statistics of the bot", guild_ids = [852578295967121438])
+@bot.slash_command(name = "statistics", description = "A private command to view the command statistics of the bot", guild_ids = [852578295967121438, 835448058656587777])
 async def stats(mess: discord.Interaction):
     global in_game
     author = mess.user.name
