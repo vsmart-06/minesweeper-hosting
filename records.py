@@ -1,11 +1,10 @@
 import mysql.connector as db
 import os
 
-db_url = os.getenv("JAWSDB_URL")
-db_url_temp = db_url.replace("mysql://", "")
-db_url_temp = db_url_temp.replace("@", ":")
-db_url_temp = db_url_temp.replace("3306/", "")
-u, p, h, d = map(str, db_url_temp.split(":"))
+h = os.getenv("PLANETSCALE_HOST")
+u = os.getenv("PLANETSCALE_USERNAME")
+p = os.getenv("PLANETSCALE_PASSWORD")
+d = os.getenv("PLANETSCALE_DATABASE")
 
 conn = db.connect(
     host = h,
