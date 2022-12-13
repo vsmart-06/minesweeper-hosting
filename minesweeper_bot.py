@@ -3860,6 +3860,7 @@ async def trivia(mess: commands.Context):
     change_stats("trivia")
     author_id = mess.author.id
     if author_id not in in_game:
+        in_game.append(author_id)
         if msg == ";trivia" or msg == ";quiz":
             question_data = requests.get("https://the-trivia-api.com/api/questions?limit=1").json()[0]
         else:
@@ -3898,6 +3899,7 @@ async def trivia(mess: commands.Context):
                 await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]].capitalize()}` and that is the correct answer!", mention_author = False)
             else:
                 await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]].capitalize()}` and that is incorrect! The correct answer is `{question_data['correctAnswer'].capitalize()}`", mention_author = False)
+        in_game.remove(author_id)
     else:
         await mess.channel.send("You're already in a game!")
 
@@ -3912,6 +3914,7 @@ async def flags(mess: commands.Context):
     change_stats("flags")
     author_id = mess.author.id
     if author_id not in in_game:
+        in_game.append(author_id)
         df = pd.read_csv("flag_codes.txt", delimiter = "\t")
         flag_codes = df.to_numpy().tolist()
         real_flag = rd.choice(flag_codes)
@@ -3948,6 +3951,7 @@ async def flags(mess: commands.Context):
                 await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]][0]}` and that is the correct answer!", mention_author = False)
             else:
                 await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]][0]}` and that is incorrect! The correct answer is `{real_flag[0]}`", mention_author = False)
+        in_game.remove(author_id)
 
     else:
         await mess.channel.send("You're already in a game!")
@@ -7570,6 +7574,7 @@ async def trivia(mess: discord.Interaction, difficulty: str = discord.SlashOptio
     change_stats("trivia")
     author_id = mess.user.id
     if author_id not in in_game:
+        in_game.append(author_id)
         await mess.send("Done!", ephemeral = True)
         if difficulty is None:
             question_data = requests.get("https://the-trivia-api.com/api/questions?limit=1").json()[0]
@@ -7601,6 +7606,7 @@ async def trivia(mess: discord.Interaction, difficulty: str = discord.SlashOptio
                 await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]].capitalize()}` and that is the correct answer!", mention_author = False)
             else:
                 await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]].capitalize()}` and that is incorrect! The correct answer is `{question_data['correctAnswer'].capitalize()}`", mention_author = False)
+        in_game.remove(author_id)
     else:
         await mess.send("You're already in a game!", ephemeral = True)
 
@@ -7614,6 +7620,7 @@ async def flags(mess: discord.Interaction):
     change_stats("flags")
     author_id = mess.user.id
     if author_id not in in_game:
+        in_game.append(author_id)
         await mess.send("Done!", ephemeral = True)
         df = pd.read_csv("flag_codes.txt", delimiter = "\t")
         flag_codes = df.to_numpy().tolist()
@@ -7651,6 +7658,7 @@ async def flags(mess: discord.Interaction):
                 await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]][0]}` and that is the correct answer!", mention_author = False)
             else:
                 await question_final.reply(f"<@!{author_id}> you chose the option `{options[t[str(reaction.emoji)]][0]}` and that is incorrect! The correct answer is `{real_flag[0]}`", mention_author = False)
+        in_game.remove(author_id)
 
     else:
         await mess.send("You're already in a game!", ephemeral = True)
