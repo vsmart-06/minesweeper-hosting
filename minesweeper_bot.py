@@ -4210,6 +4210,24 @@ async def stats(mess: commands.Context):
     plt.savefig("commands_graph.png")
     await mess.channel.send("Commands graph", file = discord.File("commands_graph.png"))
 
+@bot.command(name = "remove", description = "A private command to remove the in_game status of a user")
+async def stats(mess: commands.Context):
+    global in_game
+    msg = mess.message.content.lower()
+    author = mess.author.name
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.author.id == 706855396828250153):
+        return
+    
+    try:
+        msg = msg.replace(";remove ", "")
+        msg = msg.replace("<@!", "")
+        msg = msg.replace("<@", "")
+        msg = msg.replace(">", "")
+        user_id = int(msg)
+        in_game.remove(user_id)
+    except:
+        pass
+
 @bot.command(name = "help", description = "View the help page of the bot")
 async def help(mess: commands.Context):
     global in_game
