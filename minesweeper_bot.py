@@ -46,8 +46,8 @@ live_uno = {}
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity = discord.Game(name = "Minesweeper | ;help"))
     print("Ready for takeoff!")
+    await bot.change_presence(activity = discord.Game(name = "Minesweeper | ;help"))
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send("I'm in "+str(len(bot.guilds))+" servers!")
     bot_count = bot.get_channel(948144061305479198)
