@@ -4225,6 +4225,7 @@ async def stats(mess: commands.Context):
         msg = msg.replace(">", "")
         user_id = int(msg)
         in_game.remove(user_id)
+        await mess.channel.send("User removed!")
     except:
         pass
 
