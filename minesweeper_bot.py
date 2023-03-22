@@ -3928,7 +3928,7 @@ async def flags(mess: commands.Context):
         flag_id = str(real_flag[1])
         if len(flag_id) != 3:
             flag_id = "0"*(3-(len(flag_id)))+flag_id
-        flag_image = f"https://countryflagsapi.com/png/{flag_id}"
+        flag_image = f"https://raw.githubusercontent.com/vsmart-06/minesweeper-hosting/master/flags/flag_{flag_id}.png"
         question_embed = discord.Embed(title = "Flags!", description = "**Which country's flag is shown below?**", colour = discord.Colour.blue())
         question_embed.add_field(name = "Options", value = f'''1️⃣ *{options[0][0]}*
 2️⃣ *{options[1][0]}*
@@ -7654,7 +7654,7 @@ async def flags(mess: discord.Interaction):
         flag_id = str(real_flag[1])
         if len(flag_id) != 3:
             flag_id = "0"*(3-(len(flag_id)))+flag_id
-        flag_image = f"https://countryflagsapi.com/png/{flag_id}"
+        flag_image = f"https://raw.githubusercontent.com/vsmart-06/minesweeper-hosting/master/flags/flag_{flag_id}.png"
         question_embed = discord.Embed(title = "Flags!", description = "**Which country's flag is shown below?**", colour = discord.Colour.blue())
         question_embed.add_field(name = "Options", value = f'''1️⃣ *{options[0][0]}*
 2️⃣ *{options[1][0]}*
