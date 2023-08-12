@@ -4215,7 +4215,7 @@ async def remove(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.author.id == 706855396828250153) or not mess.message.author.guild_permissions.administrator:
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.message.author.guild_permissions.administrator or mess.author.id == 706855396828250153):
         return
     
     try:
@@ -7938,7 +7938,7 @@ async def stats(mess: discord.Interaction):
 async def remove(mess: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user who you wish to remove from their game", required = True)):
     global in_game
     author = mess.user.name
-    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.user.id == 706855396828250153):
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)):
         return
     
     try:
