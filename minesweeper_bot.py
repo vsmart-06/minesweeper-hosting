@@ -4224,8 +4224,8 @@ async def remove(mess: commands.Context):
         msg = msg.replace("<@", "")
         msg = msg.replace(">", "")
         user_id = int(msg)
-        member = await bot.fetch_user(user_id)
-        if member not in mess.guild.members:
+        member = mess.guild.get_member(user_id)
+        if member and member not in mess.guild.members:
             await mess.channel.send("You can't remove a user who isn't in your server!")
             return
         in_game.remove(user_id)
