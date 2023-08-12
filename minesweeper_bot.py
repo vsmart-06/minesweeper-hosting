@@ -4211,11 +4211,11 @@ async def stats(mess: commands.Context):
     await mess.channel.send("Commands graph", file = discord.File("commands_graph.png"))
 
 @bot.command(name = "remove", description = "A private command to remove the in_game status of a user")
-async def stats(mess: commands.Context):
+async def remove(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
     author = mess.author.name
-    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.author.id == 706855396828250153):
+    if mess.author == bot.user or mess.author.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.author.id == 706855396828250153) or not mess.message.author.guild_permissions.administrator:
         return
     
     try:
@@ -4282,7 +4282,7 @@ async def help(mess: commands.Context):
 `;website`: Get a link to our website.
 `;vote`: Vote for the bot!
 ''', inline = False)
-            help_embed.add_field(name = "Note:", value = "*: These commands, despite giving a confirmation message, will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.", inline = False)
+            help_embed.add_field(name = "Note:", value = "1. Commands marked by a *, despite giving a confirmation message, will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.\n2. If a user happens to be stuck in a game, use the command `;remove` and tag the user to get them out of it! Only members with administrator permissions in the server can use this command!", inline = False)
             help_embed.add_field(name = "Slash Commands", value = "Slash commands are also available with the minesweeper bot! Type `/` and click on the minesweeper bot's icon to view all of its slash commands! If you cannot see them, you may have to re-invite the bot to your server.")
             help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878254144&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4) · [Website](https://minesweeper-bot.carrd.co)", inline = False)
             help = await mess.channel.send(embed = help_embed)
@@ -7930,6 +7930,19 @@ async def stats(mess: discord.Interaction):
     plt.savefig("commands_graph.png")
     await mess.send("Commands graph", file = discord.File("commands_graph.png"))
 
+@bot.slash_command(name = "remove", description = "A command to remove a user from a game they are stuck in", default_member_permissions = discord.Permissions(administrator = True))
+async def remove(mess: discord.Interaction, user: discord.Member = discord.SlashOption(name = "user", description = "The user who you wish to remove from their game", required = True)):
+    global in_game
+    author = mess.user.name
+    if mess.user == bot.user or mess.user.bot or not(isinstance(mess.channel, discord.TextChannel) or isinstance(mess.channel, discord.DMChannel) or isinstance(mess.channel, discord.Thread)) or not(mess.user.id == 706855396828250153) or not mess.message.author.guild_permissions.administrator:
+        return
+    
+    try:
+        in_game.remove(user.id)
+        await mess.send("User removed!", ephemeral = True)
+    except:
+        await mess.send("The user is not stuck in a game!", ephemeral = True)
+
 @bot.slash_command(name = "help", description = "View the help page of the bot")
 async def help(mess: discord.Interaction):
     global in_game
@@ -7984,7 +7997,7 @@ async def help(mess: discord.Interaction):
 `;website`: Get a link to our website.
 `;vote`: Vote for the bot!
 ''', inline = False)
-            help_embed.add_field(name = "Note:", value = "*: These commands, despite giving a confirmation message, will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.", inline = False)
+            help_embed.add_field(name = "Note:", value = "1. Commands marked by a *, despite giving a confirmation message, will not have any effect unless the user plays at least 1 game of normal minesweeper on the bot.\n2. If a user happens to be stuck in a game, use the command `;remove` and tag the user to get them out of it! Only members with administrator permissions in the server can use this command!", inline = False)
             help_embed.add_field(name = "Slash Commands", value = "Slash commands are also available with the minesweeper bot! Type `/` and click on the minesweeper bot's icon to view all of its slash commands! If you cannot see them, you may have to re-invite the bot to your server.")
             help_embed.add_field(name = "The Nexus:", value = "[Invite Me](https://discord.com/api/oauth2/authorize?client_id=902498109270134794&permissions=274878254144&scope=bot%20applications.commands) · [Support Server](https://discord.gg/3jCG74D3RK) · [Vote for Us!](https://top.gg/bot/902498109270134794/vote) · [GitHub](https://github.com/vsmart-06/minesweeper-hosting) · [Privacy Policy](https://gist.github.com/vsmart-06/cc24bd805d50c519853c43adafb993d7) · [Terms of Service](https://gist.github.com/vsmart-06/f68961c5515cb50025db1a34f4e2a1a4) · [Website](https://minesweeper-bot.carrd.co)", inline = False)
             help = await mess.channel.send(embed = help_embed)
