@@ -51,8 +51,8 @@ async def on_ready():
     await my_user.send("I'm in "+str(len(bot.guilds))+" servers!")
     bot_count = bot.get_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
-    await dbots_client.post()
-    dbots_client.start_loop()
+    #await dbots_client.post()
+    #dbots_client.start_loop()
     #statcord_client.start_loop()
 
 @bot.event
