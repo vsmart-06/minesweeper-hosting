@@ -4210,7 +4210,7 @@ async def stats(mess: commands.Context):
     plt.savefig("commands_graph.png")
     await mess.channel.send("Commands graph", file = discord.File("commands_graph.png"))
 
-@bot.command(name = "remove", description = "A private command to remove the in_game status of a user")
+@bot.command(name = "remove", description = "A command to remove a user from a game they are stuck in")
 async def remove(mess: commands.Context):
     global in_game
     msg = mess.message.content.lower()
