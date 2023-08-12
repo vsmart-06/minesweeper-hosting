@@ -37,7 +37,6 @@ discordbotlist_token = os.getenv("DISCORDBOTLIST_TOKEN")
 statcord_token = os.getenv("STATCORD_TOKEN")
 dbots_client = dbots.ClientPoster(bot, "discord.py", api_keys = {"top.gg": topgg_token, "discords.com": discords_token, "discordlabs.org": discordlabs_token, "discord.bots.gg": discordbots_token, "discordbotlist.com": discordbotlist_token})
 statcord_client = statcord.Client(bot, statcord_token)
-statcord_client.start_loop()
 
 in_game = []
 live_battles = {}
@@ -54,6 +53,7 @@ async def on_ready():
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
     await dbots_client.post()
     dbots_client.start_loop()
+    statcord_client.start_loop()
 
 @bot.event
 async def on_guild_join(guild: discord.Guild):
