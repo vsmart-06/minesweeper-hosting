@@ -1,4 +1,4 @@
-nextcord
+nextcord>=2.6.0
 mysql-connector
 dbots
 statcord.py
