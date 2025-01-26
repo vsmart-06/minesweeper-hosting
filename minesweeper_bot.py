@@ -58,7 +58,7 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild: discord.Guild):
     my_user = await bot.fetch_user(706855396828250153)
-    await my_user.send("New server: "+guild.name)
+    await my_user.send("New server: "+str(guild.name))
     new_server = discord.Embed(title = "Thanks for inviting me!", description = "Hey there! Thanks a lot for inviting me to your server! Here are a few commands and links you should check out first (the prefix for all commands is `;`):", colour = discord.Colour.blue())
     new_server.add_field(name = "Commands", value = '''
 `;help`: Open the help page (probably the first thing you should do!)
@@ -83,7 +83,7 @@ async def on_guild_join(guild: discord.Guild):
 @bot.event
 async def on_guild_remove(guild: discord.Guild):
     my_user = await bot.fetch_user(706855396828250153)
-    await my_user.send("Removed from: "+guild.name)
+    await my_user.send("Removed from: "+str(guild.name))
     bot_count = await bot.fetch_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
