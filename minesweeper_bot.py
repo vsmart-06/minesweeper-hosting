@@ -77,14 +77,14 @@ async def on_guild_join(guild: discord.Guild):
             await channel.send(embed = new_server)
         except discord.errors.Forbidden:
             pass
-    bot_count = bot.get_channel(948144061305479198)
+    bot_count = await bot.fetch_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
 @bot.event
 async def on_guild_remove(guild: discord.Guild):
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send("Removed from: "+str(guild))
-    bot_count = bot.get_channel(948144061305479198)
+    bot_count = await bot.fetch_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
 
 @bot.event
@@ -92,7 +92,7 @@ async def on_command_error(mess: commands.Context, error):
     if isinstance(error, commands.CommandNotFound):
         return
     else:
-        logs = bot.get_channel(1018406288885039154)
+        logs = await bot.fetch_channel(1018406288885039154)
         description = f"Normal command\n\nChannel: <#{mess.channel.id}>\nUser: <@!{mess.author.id}>\nServer: {mess.guild.name} ({mess.guild.id})\n\nTraceback:\n```{''.join(traceback.format_exception(error, error, error.__traceback__))}```\nError:\n```{error}```"
         if "Cannot send messages to this user" in str(error):
             await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
@@ -100,7 +100,7 @@ async def on_command_error(mess: commands.Context, error):
 
 @bot.event
 async def on_application_command_error(mess: discord.Interaction, error):
-    logs = bot.get_channel(1018406288885039154)
+    logs = await bot.fetch_channel(1018406288885039154)
     description = f"Slash command\n\nChannel: <#{mess.channel.id}>\nUser: <@!{mess.user.id}>\nServer: {mess.guild.name} ({mess.guild.id})\n\nTraceback:\n```{''.join(traceback.format_exception(error, error, error.__traceback__))}```\nError:\n```{error}```"
     if "Cannot send messages to this user" in str(error):
         await mess.channel.send("One of the players has not allowed DMs from the bot so the game has been cancelled")
@@ -4175,7 +4175,7 @@ async def strength(mess: commands.Context):
         return
 
     await mess.channel.send(f"I'm in {len(bot.guilds)} servers!")
-    bot_count = bot.get_channel(948144061305479198)
+    bot_count = await bot.fetch_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
     await mess.channel.send("Updated server count in <#948144061305479198>")
 
@@ -7901,7 +7901,7 @@ async def strength(mess: discord.Interaction):
         return
 
     await mess.send(f"I'm in {len(bot.guilds)} servers!")
-    bot_count = bot.get_channel(948144061305479198)
+    bot_count = await bot.fetch_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
     await mess.send("Updated server count in <#948144061305479198>")
 
