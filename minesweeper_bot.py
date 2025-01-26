@@ -49,7 +49,7 @@ async def on_ready():
     await bot.change_presence(activity = discord.Game(name = "Minesweeper | ;help"))
     my_user = await bot.fetch_user(706855396828250153)
     await my_user.send("I'm in "+str(len(bot.guilds))+" servers!")
-    bot_count = bot.get_channel(948144061305479198)
+    bot_count = await bot.fetch_channel(948144061305479198)
     await bot_count.edit(name = f"Servers: {len(bot.guilds)}")
     await dbots_client.post()
     dbots_client.start_loop()
